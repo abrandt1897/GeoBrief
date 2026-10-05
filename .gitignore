@@ -3,3 +3,6 @@ __pycache__/
 node_modules/
 .mypy_cache/
 .ruff_cache/
+test-results/
+playwright-report/
+.pytest_cache/

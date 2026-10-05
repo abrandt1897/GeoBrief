@@ -26,8 +26,11 @@ Public mirror (GitHub Pages): <https://abrandt1897.github.io/GeoBrief/>
 ```text
 pip install -r requirements-dev.txt && npm ci
 npm run lint          # eslint, stylelint, markdownlint, html-validate, tsc (strict checkJs), prettier --check
-ruff check . && ruff format --check . && mypy   # Python lint, format, strict types
+ruff check . && ruff format --check . && python3 -m mypy   # Python lint, format, strict types
 npm run format && ruff format .                 # auto-format
+python3 -m pytest                               # unit + data integrity tests
+npm run test:e2e                                # Playwright tests against the built dashboard
+                                                # (set CHROMIUM_PATH to use a preinstalled Chromium)
 ```
 
 Manual update: edit the data, run `python3 dashboard/build.py`, commit, republish.

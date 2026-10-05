@@ -3,7 +3,7 @@ import js from "@eslint/js";
 import globals from "globals";
 
 export default [
-  { ignores: ["node_modules/", "dashboard/dist/"] },
+  { ignores: ["node_modules/", "dashboard/dist/", "test-results/", "playwright-report/"] },
   js.configs.recommended,
   {
     files: ["dashboard/**/*.js"],
@@ -16,7 +16,12 @@ export default [
     },
   },
   {
-    files: ["eslint.config.js"],
+    files: ["eslint.config.js", "playwright.config.js"],
     languageOptions: { ecmaVersion: 2022, sourceType: "module", globals: globals.node },
+  },
+  {
+    // Playwright specs run in Node, but page.evaluate callbacks run in the browser.
+    files: ["tests/e2e/**/*.js"],
+    languageOptions: { ecmaVersion: 2022, sourceType: "module", globals: { ...globals.node, ...globals.browser } },
   },
 ];

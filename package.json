@@ -12,10 +12,14 @@
     "lint:html": "npm run build && html-validate dashboard/dist/index.html",
     "typecheck": "tsc -p tsconfig.json",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test": "python3 -m pytest && npm run test:e2e",
+    "test:e2e": "npm run build && playwright test"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "1.56",
+    "@types/node": "^26.6.4",
     "eslint": "^10.12.0",
     "globals": "^17.13.0",
     "html-validate": "^11.16.2",

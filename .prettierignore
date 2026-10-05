@@ -2,3 +2,5 @@ node_modules/
 dashboard/dist/
 package-lock.json
 data/
+test-results/
+playwright-report/

@@ -13,7 +13,10 @@
     "exactOptionalPropertyTypes": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["node"]
   },
-  "include": ["dashboard/**/*.js", "eslint.config.js"]
+  "include": ["dashboard/**/*.js", "tests/e2e/**/*.js", "eslint.config.js", "playwright.config.js"]
 }

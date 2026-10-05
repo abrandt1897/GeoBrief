@@ -20,7 +20,7 @@ python3 dashboard/build.py --check  # checks only
 5. Check each armed tripwire. If fired: set `status=fired`, `fired_on`, `evidence`.
 6. If anything is material: re-derive odds; append a full row set per horizon to `data/odds.csv` (date = today; if today already has rows, replace them); append re-forecasts to `data/forecasts.csv` (new row, same `id`, new `made_on`; never edit a past `p`); update `state/current.md`, `state/brief.json` (headline, status, change_note, bets, blink10, deal_p, updated) and `data/tripwires.csv`.
 7. Resolve forecasts whose `resolves_on` has passed (`outcome`, `resolved_on`).
-8. `python3 dashboard/build.py`. Fix any failed check before continuing. Then `npm ci` (first time) and `npx prettier --write state log` so CI's format check stays green.
+8. `python3 dashboard/build.py`. Fix any failed check before continuing. Run `python3 -m pytest tests/test_data.py` (data schema and integrity) and fix the data until it passes. Then `npm ci` (first time) and `npx prettier --write state log` so CI's format check stays green.
 9. Commit `run: YYYY-MM-DD am|pm — <one-line summary>` and push to `main`. If nothing changed, skip the commit.
 10. Republish: Artifact tool, `url` = the dashboard link above, `file_path` = `dashboard/dist/artifact.html` (read the artifact first if this session hasn't). Always republish so "Updated" stays current, even when only gas moved.
 11. Push notification only if a tripwire fired or any Nov 3 scenario moved ≥3 points.
