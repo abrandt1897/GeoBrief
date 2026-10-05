@@ -9,7 +9,7 @@
 /** @typedef {{ id: string, made_on: string, question: string, p: number, resolves_on: string, resolution_rule: string, outcome: number | null, resolved_on: string, notes: string }} Forecast */
 /** @typedef {{ id: string, condition: string, effect: string, status: "armed" | "fired" | "expired", set_on: string, fired_on: string, evidence: string }} Tripwire */
 /** @typedef {{ term: string, p: number, rubio: string }} Term */
-/** @typedef {{ date: string, end_date: string, label: string, type: "blink" | "non_blink" | "pending" | "unscored" }} Blink */
+/** @typedef {{ date: string, end_date: string, label: string, detail: string, type: "blink" | "non_blink" | "pending" | "unscored" }} Blink */
 /** @typedef {{ date: string, text: string, chart: string | null }} GBEvent */
 /** @typedef {{ cond: string, effect: string }} Bet */
 /**
@@ -527,6 +527,20 @@
     });
   }
 
+  /** @param {Blink} b @returns {string} */
+  const blinkDates = (b) => {
+    if (!b.end_date || b.type === "pending") return fmtDate(b.date);
+    const sameMonth = b.end_date.slice(5, 7) === b.date.slice(5, 7);
+    return `${fmtDate(b.date)}–${sameMonth ? Number(b.end_date.slice(8)) : fmtDate(b.end_date)}`;
+  };
+  /** @type {Record<Blink["type"], [string, string]>} */
+  const BLINK_TAGS = {
+    blink: ["BLINK", "--limbo"],
+    non_blink: ["CARRIED OUT", "--war"],
+    pending: ["PENDING", "--war"],
+    unscored: ["NOT SCORED", "--muted"],
+  };
+
   /** @param {HTMLElement} el */
   function blinkPanel(el) {
     const s = day("2026-04-01");
@@ -542,22 +556,25 @@
       } else {
         h += `<div class="mark" style="left:${P(b.date)}%;${b.type === "pending" ? "background:var(--war)" : ""}"></div>`;
       }
-      const sameMonth = b.end_date.slice(5, 7) === b.date.slice(5, 7);
-      const range =
-        b.end_date && b.type !== "pending" ? `–${sameMonth ? Number(b.end_date.slice(8)) : fmtDate(b.end_date)}` : "";
-      h += `<div class="cap" style="left:${P(b.date)}%;top:${tops[i % 4] ?? 8}px"><b>${esc(fmtDate(b.date) + range)}</b><span>${esc(b.label)}</span></div>`;
+      const cls = b.type === "non_blink" ? "cap non-blink" : "cap";
+      // Keep captions near either edge inside the chart instead of centring them on the mark.
+      const pos = P(b.date);
+      const shift = pos < 10 ? -15 : pos > 90 ? -85 : -50;
+      h += `<div class="${cls}" style="left:${pos}%;top:${tops[i % 4] ?? 8}px;transform:translateX(${shift}%)">${esc(b.label)}</div>`;
     });
     for (let m = 3; m <= 11; m++) {
       const ms = `2026-${String(m + 1).padStart(2, "0")}-01`;
       if (day(ms) <= e) h += `<div class="mo" style="left:${P(ms)}%">${MO_SHORT[m] ?? ""}</div>`;
     }
     h += "</div>";
-    const b10 = D.brief.blink10;
     const nb = D.blinks.filter((b) => b.type === "blink").length;
-    h +=
-      '<div style="display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center;margin-top:16px" class="sans"><div style="font-size:15px"><b>Blink #10, “deal or annihilate”</b> <span class="muted">· resolves Dec. 31</span></div>' +
-      `<div class="stack" style="flex:1 1 320px"><div style="width:${b10.blink}%;background:var(--limbo)">Blink ${b10.blink}%</div><div style="width:${b10.no_blink}%;background:var(--war)">No blink ${b10.no_blink}%</div><div style="width:${b10.unresolved}%;background:var(--track);color:var(--fg)">Open ${b10.unresolved}%</div></div></div>`;
-    h += `<div class="note" style="margin-top:12px">Grey marks: ${nb} US threats or deadlines that lapsed. Orange band: the one exception, when strikes were carried out. Rubio’s three terms met so far: ${b10.rubio_met}.</div>`;
+    h += `<ol class="blist" aria-label="Every US threat or deadline, oldest first">${D.blinks
+      .map((b) => {
+        const [tag, color] = BLINK_TAGS[b.type];
+        return `<li><span class="when">${esc(blinkDates(b))}</span><span class="what"><b>${esc(b.label)}</b><span>${esc(b.detail)}</span></span><span class="tag" style="color:${cv(color)}">${tag}</span></li>`;
+      })
+      .join("")}</ol>`;
+    h += `<div class="note" style="margin-top:12px">${nb} blinks, 1 threat carried out. Rubio’s three terms met so far: ${D.brief.blink10.rubio_met}.</div>`;
     el.innerHTML = h;
   }
 
@@ -805,11 +822,31 @@
   $("bets").innerHTML = D.brief.bets
     .map((b) => `<div class="bet"><div class="c">${esc(b.cond)}</div><div class="e">${esc(b.effect)}</div></div>`)
     .join("");
-  $("disp").innerHTML = D.events
-    .slice(-6)
-    .reverse()
-    .map((e) => `<div class="disp"><div class="d">${fmtDate(e.date)}</div><div>${esc(e.text)}</div></div>`)
-    .join("");
+  // Dispatches: newest first, older ones revealed a page at a time back to the start of the war.
+  const DISP_FIRST = 6;
+  const DISP_PAGE = 8;
+  const dispAll = [...D.events].reverse();
+  let dispShown = 0;
+  const dispMore = /** @type {HTMLButtonElement} */ ($("disp-more"));
+  /** @param {number} n */
+  const showDispatches = (n) => {
+    const next = dispAll.slice(dispShown, dispShown + n);
+    $("disp").insertAdjacentHTML(
+      "beforeend",
+      next
+        .map(
+          (e) =>
+            `<div class="disp"><div class="d">${fmtDate(e.date)}${e.date.slice(0, 4) === D.brief.updated.slice(0, 4) ? "" : `, ${e.date.slice(0, 4)}`}</div><div>${esc(e.text)}</div></div>`,
+        )
+        .join(""),
+    );
+    dispShown += next.length;
+    const left = dispAll.length - dispShown;
+    dispMore.hidden = left <= 0;
+    dispMore.textContent = `Load ${Math.min(DISP_PAGE, left)} older dispatches (${left} left)`;
+  };
+  dispMore.addEventListener("click", () => showDispatches(DISP_PAGE));
+  showDispatches(DISP_FIRST);
 
   // ---------- ticker ----------
   const gNow = groups(latest.v);
@@ -857,6 +894,13 @@
     )
     .join("");
   $("ticker").innerHTML = `${one}<span aria-hidden="true" style="display:inline-flex">${one}</span>`;
+  const tickerBtn = $("ticker-toggle");
+  tickerBtn.addEventListener("click", () => {
+    const paused = tickerBtn.getAttribute("aria-pressed") !== "true";
+    tickerBtn.setAttribute("aria-pressed", String(paused));
+    tickerBtn.setAttribute("aria-label", paused ? "Resume ticker" : "Pause ticker");
+    tickerBtn.closest(".ticker")?.classList.toggle("paused", paused);
+  });
 
   render();
 })();

@@ -1,12 +1,12 @@
-date,end_date,label,type
-2026-04-07,,Ultimatum,blink
-2026-05-04,2026-05-06,Project Freedom,blink
-2026-05-18,,Strike called off,blink
-2026-05-28,,Oman threat,blink
-2026-06-11,,Kharg,blink
-2026-06-17,,Folded into MOU,blink
-2026-06-28,,Stand-down,blink
-2026-07-07,2026-07-18,Strikes carried out,non_blink
-2026-07-18,2026-07-19,Troops killed; no response,blink
-2026-08-28,,Bank deadline lapsed,blink
-2026-09-22,2026-12-31,Deal or annihilate (#10),pending
+date,end_date,label,detail,type
+2026-04-07,,Ultimatum,Ultimatum issued; the deadline lapsed without strikes.,blink
+2026-05-04,2026-05-06,Project Freedom,Project Freedom announced and then not carried out.,blink
+2026-05-18,,Strike off,A planned strike was called off.,blink
+2026-05-28,,Oman threat,Threat over Oman not followed through.,blink
+2026-06-11,,Kharg threat,Threat against Kharg Island not carried out.,blink
+2026-06-17,,MOU signed,The pressure campaign ended in the Islamabad MOU instead of strikes.,blink
+2026-06-28,,Stand-down,Stand-down after the first kinetic round over shipping routes.,blink
+2026-07-07,2026-07-18,Strikes,"About 11 nights of strikes on 300+ targets; oil waiver revoked. The only non-blink.",non_blink
+2026-07-18,2026-07-19,Troops killed,US troops killed in Jordan; no escalation followed.,blink
+2026-08-28,,Bank deadline,The major-bank deadline lapsed.,blink
+2026-09-22,2026-12-31,Blink #10?,"""Deal or annihilate."" Resolves Dec. 31.",pending

@@ -137,7 +137,55 @@ test("phone width: no horizontal scroll, blink captions shrink", async ({ page }
     .first()
     .evaluate((el) => getComputedStyle(el).fontSize);
   expect(parseFloat(size)).toBeLessThanOrEqual(9);
-  await expect(page.locator(".timeline .cap span").first()).toBeHidden();
+  await expect(page.locator(".timeline .cap").first()).toHaveText("Ultimatum");
+});
+
+test("blink tab: short captions on the chart and a full list below it", async ({ page }) => {
+  await page.goto(`${PAGE}#blinks`);
+  const caps = await page.locator(".timeline .cap").allTextContents();
+  expect(caps.length).toBeGreaterThanOrEqual(10);
+  for (const c of caps) {
+    expect(c.trim().split(/\s+/).length).toBeLessThanOrEqual(3);
+    expect(c).not.toMatch(/\d{1,2}$/);
+  }
+  const items = page.locator(".blist li");
+  await expect(items).toHaveCount(caps.length);
+  await expect(items.first()).toContainText("April 7");
+  await expect(page.locator(".blist .tag").getByText("CARRIED OUT", { exact: true })).toHaveCount(1);
+  await expect(items.last()).toContainText("PENDING");
+  await expect(page.locator("#panel .stack")).toHaveCount(0);
+});
+
+test("dispatches load older events in pages back to the start of the war", async ({ page }) => {
+  await page.goto(PAGE);
+  const rows = page.locator("#disp .disp");
+  const more = page.locator("#disp-more");
+  await expect(rows).toHaveCount(6);
+  await expect(more).toBeVisible();
+  let prev = 6;
+  while (await more.isVisible()) {
+    await more.click();
+    const n = await rows.count();
+    expect(n - prev).toBeGreaterThanOrEqual(1);
+    expect(n - prev).toBeLessThanOrEqual(8);
+    prev = n;
+  }
+  await expect(rows.last()).toContainText("Feb. 28");
+  await expect(rows.last()).toContainText("Khamenei");
+});
+
+test("clicking the ticker pauses it and clicking again resumes it", async ({ page }) => {
+  await page.goto(PAGE);
+  const btn = page.locator("#ticker-toggle");
+  const state = () => page.locator("#ticker").evaluate((el) => getComputedStyle(el).animationPlayState);
+  expect(await state()).toBe("running");
+  await btn.click();
+  await expect(btn).toHaveAttribute("aria-pressed", "true");
+  expect(await state()).toBe("paused");
+  await page.mouse.move(0, 0);
+  await btn.click();
+  await expect(btn).toHaveAttribute("aria-pressed", "false");
+  expect(await state()).toBe("running");
 });
 
 test("dark mode uses the dark palette", async ({ page }) => {

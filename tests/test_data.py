@@ -32,7 +32,7 @@ SCHEMAS: dict[str, list[str]] = {
     ],
     "tripwires.csv": ["id", "condition", "effect", "status", "set_on", "fired_on", "evidence"],
     "deal_terms.csv": ["term", "p", "rubio"],
-    "blinks.csv": ["date", "end_date", "label", "type"],
+    "blinks.csv": ["date", "end_date", "label", "detail", "type"],
 }
 
 
@@ -156,6 +156,8 @@ def test_deal_terms() -> None:
 def test_blinks() -> None:
     for b in load("blinks.csv"):
         assert b["type"] in {"blink", "non_blink", "pending", "unscored"}
+        assert 1 <= len(b["label"].split()) <= 3, f"chart caption should be 1-3 words: {b['label']!r}"
+        assert b["detail"], f"{b['date']}: blink needs a detail line for the list"
         if b["end_date"]:
             assert is_date(b["end_date"])
             assert b["end_date"] >= b["date"]

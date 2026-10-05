@@ -527,8 +527,58 @@ main {
   line-height: 1.2;
 }
 
-.timeline .cap b {
+.timeline .cap.non-blink {
+  color: var(--war);
+  font-weight: 700;
+}
+
+.blist {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  font-family: var(--sans);
+}
+
+.blist li {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) auto;
+  gap: 4px 16px;
+  align-items: baseline;
+  padding: 10px 0;
+  border-top: 1px solid var(--rule);
+  font-size: 15px;
+}
+
+.blist .when {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.blist .what b {
   display: block;
+}
+
+.blist .what span {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.blist .tag {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+@media (width <= 560px) {
+  .blist li {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .blist .what {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
 }
 
 .timeline .mo {
@@ -543,10 +593,6 @@ main {
   .timeline .cap {
     font-size: 9px;
     width: 56px;
-  }
-
-  .timeline .cap span {
-    display: none;
   }
 
   .annos {
@@ -743,6 +789,24 @@ td.num {
   padding-top: 2px;
 }
 
+.more {
+  align-self: flex-start;
+  margin-top: 12px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--fg);
+  font: 600 15px var(--sans);
+  cursor: pointer;
+}
+
+.more:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
 footer.method {
   border-top: 1px solid var(--rule-strong);
   padding-top: 14px;
@@ -780,8 +844,20 @@ footer.method {
 
 .ticker .viewport {
   flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
-  padding-block: 10px;
+  padding: 10px 0;
+  border: 0;
+  margin: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ticker .viewport:focus-visible {
+  outline-offset: -3px;
 }
 
 .ticker .track {
@@ -790,7 +866,7 @@ footer.method {
   animation: tick 55s linear infinite;
 }
 
-.ticker:hover .track {
+.ticker.paused .track {
   animation-play-state: paused;
 }
 
