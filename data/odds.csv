@@ -18,8 +18,8 @@ date,horizon,scenario,p,note
 2026-10-04,ye2026,iran_folds,9,
 2026-10-05,nov3,war_limited,39,Iran holds strait-first; Pezeshkian calls talks meaningless
 2026-10-05,nov3,limbo,19,-1 Pezeshkian: negotiations meaningless
-2026-10-05,nov3,half_open,11,-1 Ghalibaf: strait stays closed until 7 conditions met
-2026-10-05,nov3,war_infra,12,+3 tw_saudi_infra fired: Khurais pumping station hit; flow restored so short of ~14
+2026-10-05,nov3,half_open,9,-1 Ghalibaf: strait stays closed until 7 conditions met; -2 tw_uae_third fired (Uhud)
+2026-10-05,nov3,war_infra,14,+3 tw_saudi_infra fired (Khurais; flow restored); +2 tw_uae_third fired (Emirates Shipping tanker Uhud hit Oct 2)
 2026-10-05,nov3,iran_folds,8,
 2026-10-05,nov3,war_sustained,7,
 2026-10-05,nov3,deal,4,-1 Pezeshkian: negotiations meaningless

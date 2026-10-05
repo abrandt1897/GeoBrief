@@ -22,12 +22,12 @@ surge_ye2026,2026-10-04,Real US surge by end-2026,45,2026-12-31,"1 if 3 carriers
 nuke_deal_2026,2026-10-04,Comprehensive nuclear deal in 2026,6,2026-12-31,1 if a deal includes verifiable enrichment cap / IAEA access at Pickaxe,,,<= deal_ye2026 x P(IAEA term)
 deal_ye2027,2026-10-04,War-ending deal by end-2027,34,2027-12-31,1 if a signed war-ending deal by Dec 31 2027,,,
 hormuz_20_ye2027,2026-10-04,Hormuz back to ~20 Mbd (all liquids monthly) by end-2027,20,2027-12-31,1 if a Kpler/Vortexa monthly figure >= 19.5 Mbd,,,
-war_nov3,2026-10-05,War scenario (any) by Nov 3,58,2026-11-03,"1 if a claimed kinetic round by either side (US strike on Iran, or IRGC-claimed hit on shipping/US/regional targets) occurs Oct 5–Nov 3",,,sum of three war rows; infra +3 after Khurais hit
+war_nov3,2026-10-05,War scenario (any) by Nov 3,60,2026-11-03,"1 if a claimed kinetic round by either side (US strike on Iran, or IRGC-claimed hit on shipping/US/regional targets) occurs Oct 5–Nov 3",,,sum of three war rows; infra +3 after Khurais hit; pm: +2 tw_uae_third (Uhud)
 deal_prenov3,2026-10-05,Signed US-Iran deal before Nov 3,4,2026-11-03,1 if a signed deal or agreed text is announced by Nov 3,,,Pezeshkian: talks meaningless
-gas_nat_450,2026-10-05,AAA national regular >= $4.50 on Nov 3,39,2026-11-03,AAA national regular as shown on Nov 3,,,derived from scenario rows x gas bands
-gas_nat_475,2026-10-05,AAA national regular >= $4.75 on Nov 3,12,2026-11-03,AAA national regular as shown on Nov 3,,,tw_saudi_infra fired; scaled below 16 as flow restored
+gas_nat_450,2026-10-05,AAA national regular >= $4.50 on Nov 3,41,2026-11-03,AAA national regular as shown on Nov 3,,,derived from scenario rows x gas bands; pm: +2 infra
+gas_nat_475,2026-10-05,AAA national regular >= $4.75 on Nov 3,14,2026-11-03,AAA national regular as shown on Nov 3,,,tw_saudi_infra fired; scaled below 16 as flow restored; pm: +2 infra (tw_uae_third)
 gas_nat_500,2026-10-05,AAA national regular >= $5.00 on Nov 3,5,2026-11-03,AAA national regular as shown on Nov 3,,,
-gas_nyc_475,2026-10-05,AAA NYC metro regular >= $4.75 on Nov 3,28,2026-11-03,AAA NYC metro regular as shown on Nov 3,,,
+gas_nyc_475,2026-10-05,AAA NYC metro regular >= $4.75 on Nov 3,30,2026-11-03,AAA NYC metro regular as shown on Nov 3,,,
 gas_nyc_500,2026-10-05,AAA NYC metro regular >= $5.00 on Nov 3,8,2026-11-03,AAA NYC metro regular as shown on Nov 3,,,
 deal_ye2026,2026-10-05,War-ending deal by end-2026,15,2026-12-31,1 if a signed war-ending deal by Dec 31 2026,,,= ye2026 deal in odds.csv
 war_ye2026,2026-10-05,War resumed by end-2026,49,2026-12-31,1 if a claimed kinetic round occurs by Dec 31 2026,,,

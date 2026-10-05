@@ -1,8 +1,8 @@
 {
   "updated": "2026-10-05",
   "headline": "Will the War Resume Before the Midterms? Latest Odds",
-  "status": "A Houthi strike damaged the Khurais pumping station on Saudi Arabia's East-West pipeline on Oct. 4; flow stopped briefly and is reported back to normal. Pezeshkian called talks with the US \"meaningless\" and Ghalibaf says the strait stays shut until Iran's seven conditions are met. Brent eased to about $100.",
-  "change_note": "Since Oct. 4: oil-infrastructure war +3 (Khurais hit), limbo −1, half-open −1, deal −1. War by Nov. 3 now 58%.",
+  "status": "Maritime security firm Vanguard identified a tanker hit in Hormuz on Oct. 2 as the Uhud, owned by Dubai's Emirates Shipping: the third UAE-linked ship struck. Another tanker was hit on Oct. 5 (unclaimed) and the IRGC turned a ship back. Earlier, a Houthi strike damaged the Khurais pumping station; Pezeshkian called talks \"meaningless.\" Brent about $100.",
+  "change_note": "Since Oct. 4: oil-infrastructure war +5 (Khurais hit; third UAE-linked tanker hit), half-open −3, limbo −1, deal −1. War by Nov. 3 now 60%.",
   "bets": [
     {
       "cond": "The IRGC claims a hit, lays mines or strikes infrastructure",
@@ -13,8 +13,8 @@
       "effect": "Year-end deal → ~23%"
     },
     {
-      "cond": "The East-West line or Yanbu is knocked offline for days, not hours",
-      "effect": "Gas ≥ $4.75 on Nov. 3 → ~16%"
+      "cond": "A strike hits the Fujairah/Sohar transfer zone, or the East-West line is offline for days",
+      "effect": "Gas ≥ $4.75 on Nov. 3 → ~17%"
     }
   ],
   "blink10": {
