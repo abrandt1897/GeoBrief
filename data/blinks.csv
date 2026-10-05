@@ -1,12 +1,12 @@
 date,end_date,label,detail,type
-2026-04-07,,Ultimatum,Ultimatum issued; the deadline lapsed without strikes.,blink
-2026-05-04,2026-05-06,Project Freedom,Project Freedom announced and then not carried out.,blink
-2026-05-18,,Strike off,A planned strike was called off.,blink
-2026-05-28,,Oman threat,Threat over Oman not followed through.,blink
-2026-06-11,,Kharg threat,Threat against Kharg Island not carried out.,blink
-2026-06-17,,MOU signed,The pressure campaign ended in the Islamabad MOU instead of strikes.,blink
-2026-06-28,,Stand-down,Stand-down after the first kinetic round over shipping routes.,blink
-2026-07-07,2026-07-18,Strikes,"About 11 nights of strikes on 300+ targets; oil waiver revoked. The only non-blink.",non_blink
-2026-07-18,2026-07-19,Troops killed,US troops killed in Jordan; no escalation followed.,blink
-2026-08-28,,Bank deadline,The major-bank deadline lapsed.,blink
-2026-09-22,2026-12-31,Blink #10?,"""Deal or annihilate."" Resolves Dec. 31.",pending
+2026-04-07,,Ultimatum,"Deadline to reopen Hormuz by 8 p.m. ET or face strikes on power plants and bridges (""a whole civilization will die tonight""), after extensions since Mar 21. Instead Trump announced a two-week pause in bombing, brokered by Pakistan.",blink
+2026-05-04,2026-05-06,Project Freedom,"Navy escort operation launched May 4 with destroyers, 100+ aircraft and 15,000 personnel to bring ships out of the Gulf. Paused May 5–6, citing ""great progress"" toward a deal.",blink
+2026-05-18,,Strike off,"Trump called off ""a very major attack"" planned for May 19 at the request of Qatar, Saudi Arabia and the UAE, putting it off ""hopefully, maybe forever.""",blink
+2026-05-28,,Oman threat,"At a May 27 cabinet meeting Trump said Oman would ""behave just like everybody else or we'll have to blow them up"" over Iran-Oman toll sharing. No action followed.",blink
+2026-06-11,,Kharg threat,"Trump posted that the US would hit Iran ""VERY HARD TONIGHT"" and take Kharg Island. Hours later he said Kharg was off the table and a deal was close.",blink
+2026-06-17,,MOU signed,"Instead of escalating, Trump signed the 14-point MOU at a Versailles dinner after the G7; Pezeshkian also signed. The blockade was lifted the next day.",blink
+2026-06-28,,Stand-down,"After strikes over a drone hit on a cargo ship, Trump warned Iran ""will no longer exist"" if forced to ""complete the job,"" then stood down.",blink
+2026-07-07,2026-07-18,Strikes,"The truce collapsed after Iran allegedly hit commercial ships. About 11 nights of US strikes on 300+ targets followed; the oil waiver was revoked and the blockade reinstated Jul 14. The only threat carried out.",non_blink
+2026-07-18,2026-07-19,Troops killed,"Two US soldiers (Lt. Tyler Freehan, Pvt. Isabella Gonzales) were killed and one went missing in Iranian attacks in Jordan. Trump said Iran ""will pay ... many times over,"" but there was no escalation beyond the ongoing strikes.",blink
+2026-08-28,,Bank deadline,"Billed as ""economic D-Day,"" the six-month sanctions deadline brought only narrow steps against Egypt's Banque Misr branches in the UAE; the toughest bank sanctions were held back.",blink
+2026-09-22,2026-12-31,Blink #10?,"At the UN, Trump said ""deal or annihilate"" and a deal would come ""right after the election."" It counts as a blink if a deal meets none of Rubio's three terms, or if Dec 31 passes with neither.",pending

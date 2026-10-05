@@ -4,19 +4,41 @@ Append-only, newest last. One line per event:
 `- YYYY-MM-DD | summary (source) [chart: short label]`
 The optional `[chart: …]` tag marks the event on the dashboard's odds chart. Ranges use the start date.
 
-- 2026-02-28 | US-Israel campaign begins; Khamenei killed, Mojtaba succeeds.
-- 2026-04-13 | Dual blockade imposed.
-- 2026-06-17 | MOU signed in Islamabad (14 points, 60 days; $300B fund para 6; HEU dilution only). [chart: MOU signed]
-- 2026-06-18 | Blockade lifted; oil waiver granted.
-- 2026-06-25 | First kinetic round over routing (Jun 25–28).
-- 2026-07-07 | First US non-blink: ~11 nights, 300+ targets, waiver revoked (Jul 7–24). Iran hits Qatar, Kuwait, Jordan, Bahrain. [chart: US strikes, 11 nights]
+- 2026-02-28 | US-Israeli strikes open the war: almost 900 strikes in the first 12 hours; Supreme Leader Ali Khamenei killed. Iran fires missiles at Israel and at US bases in Bahrain, Qatar, Kuwait and the UAE; one killed in Abu Dhabi. A girls' school in Minab is hit (reports: 201 students killed). (Wikipedia; NBC)
+- 2026-02-28 | Iran closes the Strait of Hormuz; IRGC radio tells ships "no ship is allowed to pass." (Wikipedia)
+- 2026-03-02 | IRGC: strait closed to "unfriendly nations," only Iran-approved ships (mostly tankers to China and India) pass. Trump vows to avenge 3 US soldiers killed. (Wikipedia; Al Jazeera)
+- 2026-03-04 | IRGC claims "complete control" of the strait and threatens to set fire to any other ship. (Wikipedia)
+- 2026-03-08 | Mojtaba Khamenei succeeds his father; the IRGC pledges "complete obedience." (Times of Israel)
+- 2026-03-12 | Trump says the Navy will begin escorting tankers through Hormuz "as soon as possible." (Wikipedia)
+- 2026-03-16 | Germany, the UK, Japan, Australia, South Korea, the EU and others refuse Trump's call to police Hormuz; Trump calls NATO "cowards." (Wikipedia)
+- 2026-03-17 | CENTCOM drops GBU-72 penetrators on coastal missile silos near the strait. (Wikipedia)
+- 2026-03-19 | US air campaign to reopen Hormuz begins: A-10s against fast boats, Apaches against drones. 22 countries pledge to help secure passage. (Wikipedia)
+- 2026-03-20 | 2,500 more Marines ordered to the region, prompting talk of seizing Kharg Island. (Wikipedia)
+- 2026-03-21 | Trump's 48-hour ultimatum: fully open Hormuz or Iran's power plants get hit, "the biggest one first." Iran threatens Gulf energy and desalination plants. (Wikipedia)
+- 2026-03-23 | Trump delays the strikes five days, citing "productive" talks; Iran denies any talks. (Fox News)
+- 2026-03-26 | Israel kills IRGC Navy commander Alireza Tangsiri, who ran the Hormuz closure. Trump extends the deadline to Apr 6. (Wikipedia; Fox News)
+- 2026-04-07 | Russia and China veto a UN resolution authorizing force in Hormuz. Trump's 8 p.m. deadline ("a whole civilization will die tonight") ends instead in a two-week ceasefire brokered by Pakistan. (Wikipedia; Al Jazeera)
+- 2026-04-11 | US destroyers enter Hormuz for the first time in the war, on mine clearance; Iran calls it a ceasefire violation. (WSJ via Wikipedia)
+- 2026-04-12 | Vance says the Islamabad talks failed after a day of negotiations. (Wikipedia)
+- 2026-04-13 | Dual blockade: the US blockades ships entering or leaving Iranian ports (transit to other ports allowed); full blockade confirmed Apr 15. (CENTCOM via Wikipedia)
+- 2026-04-23 | Trump orders the Navy to destroy any Iranian boats laying mines. (Wikipedia)
+- 2026-05-04 | Project Freedom: Navy escort operation with destroyers, 100+ aircraft and 15,000 personnel; paused May 5–6 citing "great progress" toward a deal. (CNBC; Bloomberg)
+- 2026-05-18 | Trump calls off "a very major attack" planned for May 19 at the request of Qatar, Saudi Arabia and the UAE. (NPR/AP)
+- 2026-05-27 | Trump: Oman "will behave just like everybody else or we'll have to blow them up," over Iran-Oman plans to share Hormuz tolls. (AFP via Al-Monitor)
+- 2026-06-11 | Trump threatens to hit Iran "VERY HARD TONIGHT" and take Kharg Island, then hours later says Kharg is off the table and a deal is close. IMO: 46 attacks on ships, 14 seafarers killed, ~1,000 ships and 20,000 crew stranded. (Reuters; Al-Monitor; IMO)
+- 2026-06-17 | MOU signed: Trump signs at a Versailles dinner after the G7, Pezeshkian also signs (14 points, 60 days; $300B fund para 6; HEU dilution only). [chart: MOU signed]
+- 2026-06-18 | Pakistan says Hormuz reopens and the US blockade ends immediately; blockade lifted, oil waiver granted.
+- 2026-06-25 | First kinetic round over shipping routes (Jun 25–28): US strikes after a drone hits a cargo ship; Trump warns Iran "will no longer exist" if forced to finish the job. (Al Jazeera)
+- 2026-07-07 | First US non-blink: the truce collapses after Iran allegedly hits commercial ships; ~11 nights of US strikes on 300+ targets, oil waiver revoked (Jul 7–24). Iran hits Qatar, Kuwait, Jordan, Bahrain. [chart: US strikes, 11 nights]
 - 2026-07-12 | PGSA closes the strait under a permit regime.
 - 2026-07-14 | Blockade reimposed; Houthis break the Saudi truce.
-- 2026-07-18 | US troops killed in Jordan (Jul 18–19); no escalation.
+- 2026-07-18 | Iranian missiles and drones kill two US soldiers in Jordan (Lt. Tyler Freehan, Pvt. Isabella Gonzales), one missing (Jul 18–19). Trump: Iran "will pay ... many times over"; no escalation beyond the ongoing strikes. (The National; NBC)
 - 2026-07-24 | Pause begins (interceptor shortages). PGSA tolls up to $2M per vessel, in yuan or crypto.
+- 2026-08-02 | Trump says the US and Israel will hold off new strikes if a deal is reached "rapidly," including a full reopening of Hormuz. (Al Jazeera)
 - 2026-08-16 | MOU 60-day term lapses (Aug 16–17).
 - 2026-08-24 | "Economic Outcast" sanctions.
-- 2026-08-25 | Iran-Oman corridor framework. UAE suspends trade and finance with Iran. [chart: Iran–Oman framework]
+- 2026-08-25 | US confirms the Navy cleared mines from the Hormuz traffic lanes (100+ suspected mines found by underwater drones). Iran-Oman corridor framework. UAE suspends trade and finance with Iran. [chart: Iran–Oman framework]
+- 2026-08-28 | Six-month mark: billed as "economic D-Day," the sanctions deadline brings only narrow steps (UAE branches of Egypt's Banque Misr cut off); the toughest bank sanctions are held back. (Washington Examiner; GV Wire)
 - 2026-08-30 | Larak strikes begin (Aug 30–Sep 10).
 - 2026-09-05 | US hits 3 Iranian tankers.
 - 2026-09-10 | Largest shipping exchange: US sinks 5 Iranian tankers; Iran hits 10 ships and a Jordan base. [chart: US sinks 5 tankers]
