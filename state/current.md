@@ -4,9 +4,9 @@ _Overwritten each update. Tabular data lives in `data/*.csv`; this file holds th
 
 ## Canonical Odds (Oct 5)
 
-Oct 5 pm: **UAE-third tripwire fired** — Vanguard IDs the Oct 2 hit as Uhud (Emirates Shipping, Dubai, bound for Fujairah), the 3rd UAE-linked hit after Cape Dao and Al Ruwais → infra +2, half-open −2. New unclaimed Hormuz hit Oct 5 16:37; IRGC hail turns a ship back. Nov 3 war 60%.
+Oct 5 pm: **UAE-third tripwire fired** — Vanguard IDs the Oct 2 hit as Uhud (46k DWT products tanker, managed by Emirates Shipping, UAE; bound for Fujairah — not an STS-loop/Saudi ship), the 3rd UAE-linked hit after Cape Dao and Al Ruwais → infra +2, half-open −2. New unclaimed Hormuz hit Oct 5 16:37; IRGC hail turns a ship back. Nov 3 war 60%.
 
-Changed vs Oct 4: **Saudi-infra tripwire fired** — Houthi strike damaged the Khurais pumping station (East-West line) Oct 4; flow halted briefly then restored (Reuters/Bloomberg: normal ops), so infra +3 rather than the full +5. Pezeshkian: talks "meaningless"; Ghalibaf: strait shut until 7 conditions met → deal −1, limbo −1, half-open −1. Fars "13 violators targeted" has no named-ship claim → IRGC-claim tripwire not fired. Net Nov 3: war +3 (58%).
+Changed vs Oct 4: **Saudi-infra tripwire fired** — Houthi strike damaged the Khurais pumping station (East-West line) Oct 4; flow halted briefly; Reuters/Bloomberg say flowing again, AFP source says stopped — **contested, leans flowing (~75%)**; satellite confirms a large fire (~50 km plume); rate unknown pending Kpler/Yanbu loadings (see log/physical-supply.md). Infra +3 rather than the full +5. Pezeshkian: talks "meaningless"; Ghalibaf: strait shut until 7 conditions met → deal −1, limbo −1, half-open −1. Fars "13 violators targeted" has no named-ship claim → IRGC-claim tripwire not fired. Net Nov 3: war +3 (58%).
 
 Prior (Oct 4) vs Sep 30: Iran soft-rejected the US counter (strait-first, no nuclear talks) — partial fire of the "rejects outright" tripwire, applied ~+2 war; leaked Nov bombing intent + TR/ARG deployment (weak signal per rules, but real forces → mostly a YE/post-election effect); 3 more unclaimed Hormuz hits; Houthi claims on Khurais/Riyadh + Riyadh refinery fire (unconfirmed cause) → infra +1; delegation expelled → deal −2. Net Nov 3: war +3, deal −2, half-open −1.
 
@@ -44,9 +44,9 @@ War total = 60% (Oct 5: Khurais hit +3 infra; pm: 3rd UAE-linked hit +2 infra). 
 - Iran formally accepts US sequencing / round 2 scheduled with text → YE deal ~23%, Nov 3 war ~51%.
 - Iran formally rejects counter / mediators declare talks suspended → Nov 3 war ~60%.
 - IRGC claims any hit, mine-laying, or infra strike → Nov 3 war ~60%.
-- ~~Proxy hit on Yanbu/East-West/Abqaiq confirmed~~ **fired Oct 5** (Khurais). Next: East-West/Yanbu offline for days → infra ~16%, Nov 3 ≥$4.75 ~16%.
+- ~~Proxy hit on Yanbu/East-West/Abqaiq confirmed~~ **fired Oct 5** (Khurais). Next: East-West/Yanbu offline for days (~25% given contested reports) → infra ~16%, Nov 3 ≥$4.75 ~16%.
 - Saudi shuttle or STS-loop ship hit → war 60%+.
-- ~~Third UAE-linked hit~~ **fired Oct 5** (Uhud, Emirates Shipping). Next: Fujairah/Sohar STS-zone strike → infra +2, Saudi-ship tripwire likelier.
+- ~~Third UAE-linked hit~~ **fired Oct 5** (Uhud, UAE-managed products tanker). Next: Fujairah/Sohar STS-zone strike → infra +2, Saudi-ship tripwire likelier.
 - Kpler monthly Hormuz crude >12 Mbd in Oct → half-open +5, Nov 3 ≥$4.50 ~32%.
 - B-1Bs reappear at Diego Garcia/Gulf, or B-2/B-52s forward-deploy → no-blink +10, Nov 3 sustained +3 (B-1 exit itself = force protection, not a blink).
 - GHWB returns to AOR while TR arrives (true 3 on station), or Diego Garcia bombers → no-blink +10, Nov 3 sustained +3.
