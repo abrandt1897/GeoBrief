@@ -1,157 +1,34 @@
 <title>GeoBrief War Tracker</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700;1,6..72,400&family=Libre+Franklin:wght@400;500;600;700;800&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700;1,6..72,400&family=Libre+Franklin:wght@400;500;600;700;800&display=swap"
+/>
 <style>
-/* Layout: one newspaper column (max 1100px); tabbed chart well up top, tables below, sticky ticker at the foot. */
-:root {
-  --bg: #FFFFFF; --fg: #121212; --muted: #5A5A5A; --rule: #DCDCDC; --rule-strong: #121212; --panel: #F5F5F2; --track: #EEEEEA;
-  --war: #B4532A; --war-dark: #7A3015; --war-light: #D9926B;
-  --limbo: #6E6E69; --calm: #3E7C66; --calm-light: #7FB09C; --calm-dark: #1F4D3D;
-  --on-accent: #FFFFFF; --tick-bg: #121212; --tick-fg: #FFFFFF; --tick-muted: #A8A8A8; --tick-up: #F08A5D; --tick-down: #7FC8A9;
-  --display: 'Newsreader', 'Georgia', 'Times New Roman', serif;
-  --sans: 'Libre Franklin', 'Franklin Gothic Medium', 'Helvetica Neue', Arial, sans-serif;
-}
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #121212; --fg: #ECECEA; --muted: #A3A3A0; --rule: #333331; --rule-strong: #ECECEA; --panel: #1C1C1B; --track: #262624;
-  --war: #E3804F; --war-dark: #A9472A; --war-light: #F3B48F; --limbo: #9A9A96; --calm: #5FA98C; --calm-light: #9CCBB7; --calm-dark: #2F7058;
-  --on-accent: #121212; --tick-bg: #000000; color-scheme: dark } }
-:root[data-theme="dark"] {
-  --bg: #121212; --fg: #ECECEA; --muted: #A3A3A0; --rule: #333331; --rule-strong: #ECECEA; --panel: #1C1C1B; --track: #262624;
-  --war: #E3804F; --war-dark: #A9472A; --war-light: #F3B48F; --limbo: #9A9A96; --calm: #5FA98C; --calm-light: #9CCBB7; --calm-dark: #2F7058;
-  --on-accent: #121212; --tick-bg: #000000; color-scheme: dark }
-* { box-sizing: border-box }
-body { background: var(--bg); color: var(--fg); font-family: var(--display); font-size: 18px; line-height: 1.5 }
-a { color: inherit }
-a:hover { color: var(--war) }
-:focus-visible { outline: 2px solid var(--war); outline-offset: 2px }
-.wrap { max-width: 1100px; margin: 0 auto; padding-inline: 20px }
-.sans { font-family: var(--sans) }
-.muted { color: var(--muted) }
-h1, h2 { text-wrap: balance; margin: 0; font-weight: 700; letter-spacing: -0.015em }
-h1 { font-size: clamp(34px, 6vw, 52px); line-height: 1.06 }
-h2 { font-size: 28px; line-height: 1.15 }
-hr { border: 0; border-top: 1px solid var(--rule); margin: 0 }
-
-header.top { border-bottom: 1px solid var(--rule); position: relative; background: var(--bg) }
-.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 12px }
-.icon-btn { width: 44px; height: 44px; border: 0; background: transparent; color: var(--fg); display: grid; place-items: center; cursor: pointer; border-radius: 3px }
-.brand { display: flex; align-items: center; gap: 12px; text-decoration: none }
-.brand b { font-family: var(--display); font-size: 28px; line-height: 1 }
-.brand span.div { width: 1px; height: 24px; background: var(--rule) }
-.brand span.name { font-family: var(--sans); font-weight: 700; font-size: 19px }
-.secnav { display: flex; gap: 28px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; font-family: var(--sans); font-size: 15px }
-.secnav::-webkit-scrollbar { display: none }
-.secnav a { text-decoration: none; padding: 10px 0 12px; flex: none }
-.drawer { position: absolute; left: 0; right: 0; top: 100%; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--rule-strong); box-shadow: 0 12px 24px rgba(0,0,0,.12) }
-.drawer ul { list-style: none; margin: 0; padding: 8px 0 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) }
-.drawer a { display: block; padding: 12px 0; font-family: var(--sans); font-weight: 600; font-size: 16px; text-decoration: none; border-bottom: 1px solid var(--rule) }
-.drawer small { display: block; font-weight: 400; color: var(--muted); font-size: 13px }
-
-main { padding-block: 32px 96px; display: flex; flex-direction: column; gap: 28px }
-.lede { display: flex; flex-direction: column; gap: 12px; max-width: 820px }
-.lede p { margin: 0; font-size: 19px; max-width: 68ch }
-.dateline { font-family: var(--sans); font-size: 15px; color: var(--muted) }
-
-.tabs { display: flex; gap: 24px; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid var(--rule); scrollbar-width: none; font-family: var(--sans) }
-.tabs::-webkit-scrollbar { display: none }
-.tabs button { flex: none; border: 0; background: transparent; cursor: pointer; padding: 12px 0 10px; margin-bottom: -1px; font: 500 15px var(--sans); color: var(--muted); border-bottom: 3px solid transparent }
-.tabs button[aria-selected="true"] { color: var(--fg); font-weight: 700; border-bottom-color: var(--rule-strong) }
-.panel-head { display: flex; flex-direction: column; gap: 8px }
-.panel-head p { margin: 0; font-family: var(--sans); font-size: 17px; color: var(--muted); max-width: 760px }
-.note { font-family: var(--sans); font-size: 13px; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 10px }
-
-.controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; font-family: var(--sans) }
-.seg { display: inline-flex; border: 1px solid var(--rule-strong); border-radius: 3px; overflow: hidden }
-.seg button { border: 0; padding: 10px 14px; min-height: 44px; cursor: pointer; font: 600 14px var(--sans); background: var(--bg); color: var(--fg) }
-.seg button + button { border-left: 1px solid var(--rule-strong) }
-.seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg) }
-.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-family: var(--sans); font-size: 13px }
-.legend span.sw { display: inline-block; width: 14px; height: 3px; vertical-align: middle; margin-right: 6px }
-
-.chart { position: relative; touch-action: pan-y }
-.chart svg { display: block; width: 100%; height: auto; font-family: var(--sans); overflow: visible }
-.chart svg:focus-visible { outline-offset: 4px }
-.tip { position: absolute; top: 0; pointer-events: none; background: var(--bg); border: 1px solid var(--rule-strong); padding: 8px 10px; font-family: var(--sans); font-size: 13px; line-height: 1.4; min-width: 150px; box-shadow: 0 4px 14px rgba(0,0,0,.12); z-index: 5 }
-.tip b { display: block; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 4px }
-.tip div { display: flex; justify-content: space-between; gap: 14px }
-.tip span.v { font-weight: 700; font-variant-numeric: tabular-nums }
-.tip span.k::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 6px; background: var(--c) }
-.annos { position: relative; height: 70px; font-family: var(--sans); font-size: 12px; line-height: 1.25 }
-.annos div { position: absolute; transform: translateX(-50%); width: 112px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px }
-.annos div::before { content: ""; width: 1px; height: 10px; background: var(--muted) }
-.datebadge { position: absolute; top: -24px; transform: translateX(-50%); font-family: var(--sans); font-size: 15px; white-space: nowrap }
-
-.figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; font-family: var(--sans); border-top: 1px solid var(--rule); padding-top: 12px }
-.figs small { display: block; font-size: 13px; color: var(--muted) }
-.figs strong { font-size: 24px; font-variant-numeric: tabular-nums }
-
-.timeline { position: relative; height: 210px; background: var(--panel); font-family: var(--sans); overflow: hidden }
-.timeline .axis { position: absolute; left: 0; right: 0; top: 104px; height: 1px; background: var(--fg) }
-.timeline .band { position: absolute; top: 78px; height: 52px; background: var(--war); opacity: .85 }
-.timeline .mark { position: absolute; top: 80px; width: 4px; height: 48px; margin-left: -2px; background: var(--limbo) }
-.timeline .cap { position: absolute; transform: translateX(-50%); width: 84px; text-align: center; font-size: 11px; line-height: 1.2 }
-.timeline .cap b { display: block }
-.timeline .mo { position: absolute; bottom: 4px; font-size: 10px; color: var(--muted); letter-spacing: .04em }
-@media (max-width: 560px) {
-  .timeline .cap { font-size: 9px; width: 56px }
-  .timeline .cap span { display: none }
-  .annos { font-size: 10.5px }
-  .annos div { width: 84px }
-}
-.stack { display: flex; height: 28px; font: 700 13px var(--sans); color: var(--on-accent) }
-.stack div { display: flex; align-items: center; padding-left: 8px; white-space: nowrap; overflow: hidden }
-
-.cols { column-width: 300px; column-gap: 32px; font-family: var(--sans) }
-.trip { break-inside: avoid; padding: 10px 0; border-top: 1px solid var(--rule) }
-.trip .st { font-size: 11px; font-weight: 800; letter-spacing: .08em }
-.trip .c { font-family: var(--display); font-size: 17px; line-height: 1.35 }
-.trip .e { font-size: 13px; font-weight: 600; color: var(--muted) }
-
-.bars { display: flex; flex-direction: column; gap: 6px; font-family: var(--sans); max-width: 820px }
-.bars .row { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr) 48px; gap: 12px; align-items: center; font-size: 14px }
-.bars .track { height: 14px; background: var(--track) }
-.bars .fill { height: 100% }
-.bars .pv { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums }
-@media (max-width: 560px) { .bars .row { grid-template-columns: minmax(0, 1fr) 48px } .bars .track { grid-column: 1 / -1; grid-row: 2 } }
-
-.two { display: flex; flex-wrap: wrap; gap: 40px }
-.two > .main { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 12px }
-.two > aside { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 12px }
-.tablewrap { overflow-x: auto }
-table { width: 100%; min-width: 600px; border-collapse: collapse; font-family: var(--sans); font-size: 15px }
-th { text-align: left; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--rule-strong) }
-td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--rule); vertical-align: top }
-td.num { text-align: right; white-space: nowrap }
-.pill { display: inline-block; min-width: 46px; padding: 2px 6px; text-align: center; font-weight: 700; color: var(--on-accent); font-variant-numeric: tabular-nums }
-.bet { padding: 12px 0; border-top: 1px solid var(--rule) }
-.bet .c { font-size: 18px; line-height: 1.35 }
-.bet .e { font-family: var(--sans); font-size: 14px; font-weight: 700; color: var(--war) }
-.disp { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 20px; padding: 12px 0; border-top: 1px solid var(--rule) }
-.disp .d { font-family: var(--sans); font-size: 14px; font-weight: 700; padding-top: 2px }
-footer.method { border-top: 1px solid var(--rule-strong); padding-top: 14px; font-family: var(--sans); font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 6px }
-
-.ticker { position: sticky; bottom: 0; z-index: 10; display: flex; background: var(--tick-bg); color: var(--tick-fg); font-family: var(--sans); font-size: 13px; border-top: 3px solid var(--war); padding-bottom: env(safe-area-inset-bottom, 0px) }
-.ticker .live { flex: none; background: var(--war); color: var(--on-accent); font-weight: 800; letter-spacing: .06em; padding: 10px 14px; display: flex; align-items: center }
-.ticker .viewport { flex: 1 1 auto; overflow: hidden; padding-block: 10px }
-.ticker .track { display: inline-flex; white-space: nowrap; animation: tick 55s linear infinite }
-.ticker:hover .track { animation-play-state: paused }
-.ticker .item { margin-right: 36px }
-.ticker .k { color: var(--tick-muted); font-weight: 600; letter-spacing: .04em }
-.ticker .v { font-weight: 700; font-variant-numeric: tabular-nums }
-@keyframes tick { from { transform: translateX(0) } to { transform: translateX(-50%) } }
-@media (prefers-reduced-motion: reduce) { .ticker .track { animation: none } .ticker .viewport { overflow-x: auto } }
+  /*__STYLES__*/
 </style>
+<!-- body -->
 
 <header class="top">
   <div class="wrap bar">
-    <button class="icon-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
-      <svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><path d="M0 2h22M0 8h22M0 14h22" stroke="currentColor" stroke-width="2.2" fill="none"/></svg>
+    <button
+      type="button"
+      class="icon-btn"
+      id="menu-btn"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="drawer"
+    >
+      <svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true">
+        <path d="M0 2h22M0 8h22M0 14h22" stroke="currentColor" stroke-width="2.2" fill="none" />
+      </svg>
     </button>
     <a class="brand" href="#top"><b>GB</b><span class="div"></span><span class="name">US–Iran War Tracker</span></a>
-    <span style="width:44px"></span>
+    <span style="width: 44px"></span>
   </div>
   <nav class="wrap secnav" aria-label="Sections">
-    <a href="#odds">Latest odds</a><a href="#scenarios">Scenarios</a><a href="#bet">Tripwires</a><a href="#dispatches">Dispatches</a><a href="#method"><b>Method</b></a>
+    <a href="#odds">Latest odds</a><a href="#scenarios">Scenarios</a><a href="#bet">Tripwires</a
+    ><a href="#dispatches">Dispatches</a><a href="#method"><b>Method</b></a>
   </nav>
   <div class="drawer" id="drawer" hidden>
     <ul class="wrap" id="drawer-list"></ul>
@@ -160,411 +37,68 @@ footer.method { border-top: 1px solid var(--rule-strong); padding-top: 14px; fon
 
 <main class="wrap" id="top">
   <div class="lede">
-    <h1 id="headline"></h1>
+    <h1 id="headline">Will the War Resume Before the Midterms? Latest Odds</h1>
     <div class="dateline" id="dateline"></div>
     <p id="status"></p>
   </div>
-  <hr>
-  <section id="odds" aria-labelledby="panel-title" style="display:flex;flex-direction:column;gap:14px">
+  <hr />
+  <section id="odds" aria-labelledby="panel-title" style="display: flex; flex-direction: column; gap: 14px">
     <div class="tabs" role="tablist" aria-label="Charts" id="tabs"></div>
-    <div class="panel-head"><h2 id="panel-title"></h2><p id="panel-dek"></p></div>
+    <div class="panel-head">
+      <h2 id="panel-title">The odds through Election Day</h2>
+      <p id="panel-dek"></p>
+    </div>
     <div id="panel" role="tabpanel" aria-labelledby="panel-title"></div>
   </section>
-  <hr>
+  <hr />
   <div class="two">
     <section class="main" id="scenarios" aria-labelledby="h-table">
       <h2 id="h-table">Latest scenario odds</h2>
-      <div class="sans muted" style="font-size:14px" id="change-note"></div>
-      <div class="tablewrap"><table><thead><tr><th>Scenario</th><th style="text-align:right">Nov. 3</th><th>Gas</th><th>Key driver</th></tr></thead><tbody id="scen-body"></tbody></table></div>
+      <div class="sans muted" style="font-size: 14px" id="change-note"></div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Scenario</th>
+              <th style="text-align: right">Nov. 3</th>
+              <th>Gas</th>
+              <th>Key driver</th>
+            </tr>
+          </thead>
+          <tbody id="scen-body"></tbody>
+        </table>
+      </div>
     </section>
     <aside id="bet" aria-labelledby="h-bet">
       <h2 id="h-bet">What would change the bet</h2>
       <div id="bets"></div>
     </aside>
   </div>
-  <section id="dispatches" aria-labelledby="h-disp" style="display:flex;flex-direction:column;gap:4px">
-    <h2 id="h-disp" style="margin-bottom:8px">Dispatches</h2>
+  <section id="dispatches" aria-labelledby="h-disp" style="display: flex; flex-direction: column; gap: 4px">
+    <h2 id="h-disp" style="margin-bottom: 8px">Dispatches</h2>
     <div id="disp"></div>
   </section>
   <footer class="method" id="method">
-    <div><b style="color:var(--fg)">Method.</b> Odds are re-derived after each material event and must pass the repo's consistency checks (scenarios sum to 100; P(nuclear deal) ≤ P(deal) × P(IAEA term); Blink #10 sums to 100). Every forecast is dated and scored once it resolves.</div>
-    <div>Supply figures are contested until Kpler, Windward or PortWatch confirms them. Gas prices: AAA. Updated twice daily, 6 a.m. and 6 p.m. Eastern.</div>
+    <div>
+      <b style="color: var(--fg)">Method.</b> Odds are re-derived after each material event and must pass the repo's
+      consistency checks (scenarios sum to 100; P(nuclear deal) ≤ P(deal) × P(IAEA term); Blink #10 sums to 100). Every
+      forecast is dated and scored once it resolves.
+    </div>
+    <div>
+      Supply figures are contested until Kpler, Windward or PortWatch confirms them. Gas prices: AAA. Updated twice
+      daily, 6 a.m. and 6 p.m. Eastern.
+    </div>
   </footer>
 </main>
 
-<div class="ticker" role="region" aria-label="Odds and market ticker">
+<section class="ticker" aria-label="Odds and market ticker">
   <div class="live">LIVE</div>
   <div class="viewport"><div class="track" id="ticker"></div></div>
-</div>
+</section>
 
-<script id="geobrief-data" type="application/json">__GEOBRIEF_DATA__</script>
+<script id="geobrief-data" type="application/json">
+  __GEOBRIEF_DATA__
+</script>
 <script>
-(function () {
-  var D = JSON.parse(document.getElementById('geobrief-data').textContent);
-  var NS = 'http://www.w3.org/2000/svg';
-  var $ = function (id) { return document.getElementById(id); };
-  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
-  var MONTHS = ['Jan.', 'Feb.', 'March', 'April', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
-  var MO_SHORT = ['JAN.', 'FEB.', 'MAR.', 'APR.', 'MAY', 'JUN.', 'JUL.', 'AUG.', 'SEPT.', 'OCT.', 'NOV.', 'DEC.'];
-  var day = function (s) { var p = s.slice(0, 10).split('-'); return Date.UTC(+p[0], p[1] - 1, +p[2]) / 864e5; };
-  var fmtDate = function (s) { var p = s.slice(0, 10).split('-'); return MONTHS[p[1] - 1] + ' ' + (+p[2]); };
-  var COLORS = { war_limited: '--war', war_infra: '--war-dark', war_sustained: '--war-light', war_total: '--war', war_resumed: '--war',
-    limbo: '--limbo', half_open: '--calm', iran_folds: '--calm-light', deal: '--calm-dark' };
-  var GROUP_COLORS = { war: '--war', limbo: '--limbo', calm: '--calm' };
-  var GROUP_NAMES = { war: 'War', limbo: 'Limbo', calm: 'De-escalation' };
-  var cv = function (tok) { return 'var(' + tok + ')'; };
-  var election = D.brief.election_day;
-
-  // ---------- data shaping ----------
-  var meta = {};
-  D.scenarios.forEach(function (s) { meta[s.horizon + ':' + s.scenario] = s; });
-  function byDate(horizon) {
-    var m = {};
-    D.odds.filter(function (r) { return r.horizon === horizon; }).forEach(function (r) { (m[r.date] = m[r.date] || {})[r.scenario] = r.p; });
-    return Object.keys(m).sort().map(function (d) { return { date: d, v: m[d] }; });
-  }
-  var nov = byDate('nov3'), ye = byDate('ye2026');
-  var latestNov = nov[nov.length - 1], prevNov = nov[nov.length - 2];
-  function groups(v) {
-    var g = { war: 0, limbo: 0, calm: 0 };
-    Object.keys(v).forEach(function (k) { var s = meta['nov3:' + k]; if (s) g[s.group] += v[k]; });
-    return g;
-  }
-  var latestF = {};
-  D.forecasts.forEach(function (f) { if (!latestF[f.id] || f.made_on >= latestF[f.id].made_on) latestF[f.id] = f; });
-  var gasRows = D.gas.slice().sort(function (a, b) { return a.date < b.date ? -1 : 1; });
-  var lastOf = function (rows, key) { for (var i = rows.length - 1; i >= 0; i--) if (rows[i][key] != null) return rows[i]; return null; };
-  var prevOf = function (rows, key) { var n = 0; for (var i = rows.length - 1; i >= 0; i--) if (rows[i][key] != null && ++n === 2) return rows[i]; return null; };
-
-  // ---------- generic line chart with hover ----------
-  function lineChart(host, o) {
-    var W = 1000, H = 400, L = 40, T = 20, B = 370, R = 900;
-    var x0 = day(o.start), x1 = day(o.end);
-    var X = function (d) { return L + (day(d) - x0) / (x1 - x0) * (R - L); };
-    var Y = function (v) { return T + (o.yMax - v) / (o.yMax - o.yMin) * (B - T); };
-    var svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + (H + 10));
-    svg.setAttribute('role', 'img');
-    svg.setAttribute('tabindex', '0');
-    svg.setAttribute('aria-label', o.label + '. Use left and right arrow keys to read values by date.');
-    var lastX = X(o.dates[o.dates.length - 1]);
-    var h = '';
-    h += '<rect x="' + L + '" y="' + T + '" width="' + (lastX - L) + '" height="' + (B - T) + '" style="fill:var(--panel)"/>';
-    o.yTicks.forEach(function (t) {
-      h += '<line x1="' + L + '" x2="' + R + '" y1="' + Y(t) + '" y2="' + Y(t) + '" style="stroke:var(--rule)"/>';
-      h += '<text x="' + (L + 4) + '" y="' + (Y(t) - 5) + '" font-size="13" style="fill:var(--muted)">' + o.yFmt(t) + '</text>';
-    });
-    // month ticks
-    var d0 = new Date(x0 * 864e5), y = d0.getUTCFullYear(), m = d0.getUTCMonth() + 1;
-    for (;;) {
-      if (m > 11) { m = 0; y++; }
-      var ms = y + '-' + String(m + 1).padStart(2, '0') + '-01';
-      if (day(ms) > x1) break;
-      h += '<line x1="' + X(ms) + '" x2="' + X(ms) + '" y1="' + T + '" y2="' + B + '" style="stroke:var(--bg)" stroke-width="1.5"/>';
-      h += '<text x="' + X(ms) + '" y="' + (B + 24) + '" font-size="13" text-anchor="middle" style="fill:var(--muted)">' + MO_SHORT[m] + '</text>';
-      m++;
-    }
-    h += '<line x1="' + R + '" x2="' + R + '" y1="' + T + '" y2="' + B + '" style="stroke:var(--fg)" stroke-dasharray="3 4"/>';
-    h += '<text x="' + (R - 4) + '" y="' + (T + 16) + '" font-size="13" font-weight="600" text-anchor="end" style="fill:var(--fg)">Election Day</text>';
-    (o.bands || []).forEach(function (b) {
-      h += '<rect x="' + (R + 8) + '" y="' + Y(b.hi) + '" width="' + b.w + '" height="' + (Y(b.lo) - Y(b.hi)) + '" style="fill:' + cv(b.color) + '" fill-opacity=".9"><title>' + esc(b.title) + '</title></rect>';
-    });
-    o.series.forEach(function (s) {
-      var pts = s.points.filter(function (p) { return p.v != null; });
-      if (pts.length > 1) h += '<polyline fill="none" stroke-width="' + (s.width || 3.5) + '" stroke-linejoin="round" stroke-linecap="round" style="stroke:' + cv(s.color) + '" points="' + pts.map(function (p) { return X(p.d).toFixed(1) + ',' + Y(p.v).toFixed(1); }).join(' ') + '"/>';
-      if (pts.length < 25) pts.forEach(function (p) { h += '<circle cx="' + X(p.d) + '" cy="' + Y(p.v) + '" r="3.5" style="fill:' + cv(s.color) + '"/>'; });
-    });
-    h += '<line x1="' + lastX + '" x2="' + lastX + '" y1="' + (T - 6) + '" y2="' + B + '" style="stroke:var(--fg)" stroke-width="1.5"/>';
-    h += '<polygon points="' + (lastX - 7) + ',' + (T - 14) + ' ' + (lastX + 7) + ',' + (T - 14) + ' ' + lastX + ',' + (T - 5) + '" style="fill:var(--fg)"/>';
-    // end labels with collision avoidance
-    var labs = (o.endLabels || []).map(function (l) { return Object.assign({ y: Y(l.v) }, l); }).sort(function (a, b) { return a.y - b.y; });
-    for (var i = 1; i < labs.length; i++) if (labs[i].y - labs[i - 1].y < 34) labs[i].y = labs[i - 1].y + 34;
-    labs.forEach(function (l) {
-      h += '<circle cx="' + lastX + '" cy="' + Y(l.v) + '" r="6" style="fill:' + cv(l.color) + '"/>';
-      h += '<rect x="' + (lastX + 12) + '" y="' + (l.y - 14) + '" width="' + l.boxW + '" height="28" style="fill:' + cv(l.color) + '"/>';
-      h += '<text x="' + (lastX + 12 + l.boxW / 2) + '" y="' + (l.y + 6) + '" font-size="17" font-weight="700" text-anchor="middle" style="fill:var(--on-accent)">' + esc(l.value) + '</text>';
-      h += '<text x="' + (lastX + 20 + l.boxW) + '" y="' + (l.y + 6) + '" font-size="18" font-weight="600" style="fill:' + cv(l.color) + '">' + esc(l.name) + '</text>';
-    });
-    h += '<g class="hover" style="display:none"><line y1="' + T + '" y2="' + B + '" style="stroke:var(--fg)" stroke-dasharray="2 3"/></g>';
-    h += '<rect class="hit" x="' + L + '" y="' + (T - 14) + '" width="' + (R - L) + '" height="' + (B - T + 14) + '" fill="transparent"/>';
-    svg.innerHTML = h;
-    host.appendChild(svg);
-    var badge = document.createElement('div');
-    badge.className = 'datebadge';
-    badge.style.left = (lastX / W * 100) + '%';
-    badge.textContent = fmtDate(o.dates[o.dates.length - 1]);
-    host.appendChild(badge);
-    var tip = document.createElement('div');
-    tip.className = 'tip'; tip.hidden = true;
-    host.appendChild(tip);
-    var hov = svg.querySelector('.hover'), hline = hov.querySelector('line');
-    var dots = o.series.map(function (s) {
-      var c = document.createElementNS(NS, 'circle');
-      c.setAttribute('r', '7'); c.setAttribute('style', 'fill:' + cv(s.color) + ';stroke:var(--bg);stroke-width:2');
-      hov.appendChild(c); return c;
-    });
-    var idx = o.dates.length - 1;
-    function show(i) {
-      idx = Math.max(0, Math.min(o.dates.length - 1, i));
-      var d = o.dates[idx], x = X(d);
-      hov.style.display = '';
-      hline.setAttribute('x1', x); hline.setAttribute('x2', x);
-      var rowsHtml = '';
-      o.series.forEach(function (s, k) {
-        var p = s.points.filter(function (q) { return q.d === d; })[0];
-        if (p && p.v != null) { dots[k].style.display = ''; dots[k].setAttribute('cx', x); dots[k].setAttribute('cy', Y(p.v)); rowsHtml += '<div><span class="k" style="--c:' + cv(s.color) + '">' + esc(s.name) + '</span><span class="v">' + o.yFmt(p.v, true) + '</span></div>'; }
-        else dots[k].style.display = 'none';
-      });
-      var extra = o.tipExtra ? o.tipExtra(d) : '';
-      tip.innerHTML = '<b>' + fmtDate(d) + '</b>' + (rowsHtml || '<div class="muted">No reading</div>') + extra;
-      tip.hidden = false;
-      var pct = x / W, hostW = host.clientWidth, px = pct * hostW;
-      var tw = tip.offsetWidth;
-      tip.style.left = Math.max(0, Math.min(hostW - tw, px > hostW * 0.6 ? px - tw - 14 : px + 14)) + 'px';
-    }
-    function hide() { hov.style.display = 'none'; tip.hidden = true; }
-    function nearest(evt) {
-      var r = svg.getBoundingClientRect(), vx = (evt.clientX - r.left) / r.width * W, best = 0, bd = 1e9;
-      o.dates.forEach(function (d, i) { var dd = Math.abs(X(d) - vx); if (dd < bd) { bd = dd; best = i; } });
-      return best;
-    }
-    var hit = svg.querySelector('.hit');
-    hit.addEventListener('pointermove', function (e) { show(nearest(e)); });
-    hit.addEventListener('pointerdown', function (e) { show(nearest(e)); });
-    hit.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') hide(); });
-    svg.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowLeft') { show(idx - 1); e.preventDefault(); }
-      else if (e.key === 'ArrowRight') { show(idx + 1); e.preventDefault(); }
-      else if (e.key === 'Escape') hide();
-    });
-    svg.addEventListener('focus', function () { show(idx); });
-    svg.addEventListener('blur', hide);
-    // event annotations below the axis
-    if (o.annotations && o.annotations.length) {
-      var an = document.createElement('div'); an.className = 'annos';
-      var lastLeft = -100, row = 0;
-      o.annotations.forEach(function (a) {
-        var left = X(a.date) / W * 100;
-        row = left - lastLeft < 13 ? (row + 1) % 2 : 0; lastLeft = left;
-        var el = document.createElement('div');
-        el.style.left = left + '%'; el.style.top = (row * 30) + 'px';
-        el.textContent = a.text; an.appendChild(el);
-      });
-      host.appendChild(an);
-    }
-  }
-
-  // ---------- panels ----------
-  var all = false;
-  function oddsPanel(el) {
-    var dates = nov.map(function (r) { return r.date; });
-    var start = new Date((Math.min(day(dates[0]), day(dates[dates.length - 1]) - 35)) * 864e5).toISOString().slice(0, 10);
-    var series, endLabels = [];
-    var g = groups(latestNov.v);
-    if (!all) {
-      series = ['war', 'calm', 'limbo'].map(function (k) {
-        return { name: GROUP_NAMES[k], color: GROUP_COLORS[k], points: nov.map(function (r) { return { d: r.date, v: groups(r.v)[k] }; }) };
-      });
-      endLabels = ['war', 'calm', 'limbo'].map(function (k) { return { v: g[k], value: Math.round(g[k]) + '%', name: GROUP_NAMES[k], color: GROUP_COLORS[k], boxW: 58 }; });
-    } else {
-      var keys = Object.keys(latestNov.v).sort(function (a, b) { return latestNov.v[b] - latestNov.v[a]; });
-      series = keys.map(function (k) {
-        return { name: meta['nov3:' + k].label, color: COLORS[k], width: 2.5, points: nov.map(function (r) { return { d: r.date, v: r.v[k] == null ? null : r.v[k] }; }) };
-      });
-    }
-    var maxV = Math.max.apply(null, series.map(function (s) { return Math.max.apply(null, s.points.map(function (p) { return p.v || 0; })); }));
-    var yMax = Math.max(70, Math.ceil((maxV + 5) / 10) * 10);
-    var ticks = []; for (var t = 0; t <= yMax - 10; t += 20) ticks.push(t);
-    var annos = D.events.filter(function (e) { return e.chart && day(e.date) >= day(start); }).map(function (e) { return { date: e.date, text: e.chart }; });
-    el.innerHTML = '<div class="controls"><div class="seg" role="group" aria-label="Lines shown"><button id="seg-grouped" aria-pressed="' + !all + '">War / limbo / de-escalation</button><button id="seg-all" aria-pressed="' + all + '">All seven scenarios</button></div><div style="font-size:13px" class="muted">Probability of each outcome by Nov. 3</div></div>' +
-      (all ? '<div class="legend" style="margin-top:10px">' + series.map(function (s) { return '<span><span class="sw" style="background:' + cv(s.color) + '"></span>' + esc(s.name) + ' <b>' + latestNov.v[Object.keys(latestNov.v).filter(function (k) { return meta['nov3:' + k].label === s.name; })[0]] + '%</b></span>'; }).join('') + '</div>' : '') +
-      '<div class="chart" style="margin-top:30px"></div>' +
-      '<div class="note">Each point is one update in odds.csv. Sept. 30 values are reconstructed from the Oct. 4 changes, and the war split wasn’t recorded that day, so "All seven" starts Oct. 4. Hover or tap the chart to read any date.</div>';
-    $('seg-grouped').onclick = function () { all = false; render(); };
-    $('seg-all').onclick = function () { all = true; render(); };
-    lineChart(el.querySelector('.chart'), {
-      label: 'Line chart of scenario probabilities by date through Election Day', start: start, end: election,
-      dates: dates, series: series, yMin: 0, yMax: yMax, yTicks: ticks, yFmt: function (v, tip) { return (tip ? Math.round(v) : v) + '%'; },
-      endLabels: endLabels, annotations: annos
-    });
-  }
-
-  function gasPanel(el) {
-    var dates = gasRows.filter(function (r) { return r.nat_regular != null || r.nyc_regular != null; }).map(function (r) { return r.date; });
-    var start = new Date((Math.min(day(dates[0]), day(dates[dates.length - 1]) - 30)) * 864e5).toISOString().slice(0, 10);
-    var nat = lastOf(gasRows, 'nat_regular'), nyc = lastOf(gasRows, 'nyc_regular');
-    var series = [
-      { name: 'National', color: '--fg', points: gasRows.map(function (r) { return { d: r.date, v: r.nat_regular }; }) },
-      { name: 'NYC metro', color: '--war', width: 2.5, points: gasRows.map(function (r) { return { d: r.date, v: r.nyc_regular }; }) }
-    ];
-    var bands = Object.keys(latestNov.v).map(function (k) {
-      var s = meta['nov3:' + k]; if (!s || !s.gas_band) return null;
-      var p = s.gas_band.split('-').map(Number);
-      return { lo: p[0], hi: p[1], w: Math.max(6, latestNov.v[k] * 2.2), color: COLORS[k], title: s.label + ': $' + p[0].toFixed(2) + '–' + p[1].toFixed(2) + ' (' + latestNov.v[k] + '%)' };
-    }).filter(Boolean);
-    var vals = []; gasRows.forEach(function (r) { if (r.nat_regular) vals.push(r.nat_regular); if (r.nyc_regular) vals.push(r.nyc_regular); });
-    bands.forEach(function (b) { vals.push(b.lo, b.hi); });
-    var yMin = Math.floor((Math.min.apply(null, vals) - 0.05) * 4) / 4, yMax = Math.ceil((Math.max.apply(null, vals) + 0.05) * 4) / 4;
-    var ticks = []; for (var t = yMin; t <= yMax - 0.24; t += 0.25) ticks.push(+t.toFixed(2));
-    var lines = ['gas_nat_450', 'gas_nat_475', 'gas_nat_500', 'gas_nat_lt400', 'gas_nyc_475', 'gas_diesel_650'].filter(function (k) { return latestF[k]; });
-    var dsl = lastOf(gasRows, 'nat_diesel');
-    el.innerHTML = '<div class="chart" style="margin-top:30px"></div>' +
-      '<div class="figs">' + lines.map(function (k) { var f = latestF[k]; return '<div><small>' + esc(f.question.replace('AAA ', '').replace(' on Nov 3', '')) + '</small><strong>' + f.p + '%</strong></div>'; }).join('') + '</div>' +
-      '<div class="note">Bars right of Election Day show each scenario’s Nov. 3 price range; bar width is proportional to its probability. Latest diesel: $' + (dsl ? dsl.nat_diesel.toFixed(2) : '—') + '. Hover or tap to read any day.</div>';
-    lineChart(el.querySelector('.chart'), {
-      label: 'AAA regular gas prices with Nov. 3 scenario price bands', start: start, end: election, dates: dates, series: series,
-      yMin: yMin, yMax: yMax, yTicks: ticks, yFmt: function (v) { return '$' + v.toFixed(2); }, bands: bands,
-      endLabels: [nat && { v: nat.nat_regular, value: '$' + nat.nat_regular.toFixed(2), name: 'National', color: '--fg', boxW: 66 },
-        nyc && nyc.date === nat.date && { v: nyc.nyc_regular, value: '$' + nyc.nyc_regular.toFixed(2), name: 'NYC', color: '--war', boxW: 66 }].filter(Boolean),
-      tipExtra: function (d) { var r = gasRows.filter(function (q) { return q.date === d; })[0]; return r && r.nat_diesel ? '<div><span>Diesel</span><span class="v">$' + r.nat_diesel.toFixed(2) + '</span></div>' : ''; }
-    });
-  }
-
-  function blinkPanel(el) {
-    var s = day('2026-04-01'), e = day(D.brief.updated) + 14;
-    var P = function (d) { return 2 + (Math.min(day(d), e) - s) / (e - s) * 96; };
-    var tops = [8, 150, 38, 176], h = '<div class="timeline" role="img" aria-label="Timeline of US threats since April: blinks, one non-blink, and Blink 10 pending"><div class="axis"></div>';
-    var i = 0;
-    D.blinks.forEach(function (b) {
-      if (b.type === 'non_blink') h += '<div class="band" style="left:' + P(b.date) + '%;width:' + (P(b.end_date) - P(b.date)) + '%"></div>';
-      else h += '<div class="mark" style="left:' + P(b.date) + '%;' + (b.type === 'pending' ? 'background:var(--war)' : '') + '"></div>';
-      var dl = fmtDate(b.date) + (b.end_date && b.type !== 'pending' ? '–' + (b.end_date.slice(5, 7) === b.date.slice(5, 7) ? +b.end_date.slice(8) : fmtDate(b.end_date)) : '');
-      h += '<div class="cap" style="left:' + P(b.date) + '%;top:' + tops[i++ % 4] + 'px"><b>' + esc(dl) + '</b><span>' + esc(b.label) + '</span></div>';
-    });
-    for (var m = 3; m <= 11; m++) { var ms = '2026-' + String(m + 1).padStart(2, '0') + '-01'; if (day(ms) <= e) h += '<div class="mo" style="left:' + P(ms) + '%">' + MO_SHORT[m] + '</div>'; }
-    h += '</div>';
-    var b10 = D.brief.blink10, nb = D.blinks.filter(function (b) { return b.type === 'blink'; }).length;
-    h += '<div style="display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center;margin-top:16px" class="sans"><div style="font-size:15px"><b>Blink #10, “deal or annihilate”</b> <span class="muted">· resolves Dec. 31</span></div>' +
-      '<div class="stack" style="flex:1 1 320px"><div style="width:' + b10.blink + '%;background:var(--limbo)">Blink ' + b10.blink + '%</div><div style="width:' + b10.no_blink + '%;background:var(--war)">No blink ' + b10.no_blink + '%</div><div style="width:' + b10.unresolved + '%;background:var(--track);color:var(--fg)">Open ' + b10.unresolved + '%</div></div></div>';
-    h += '<div class="note" style="margin-top:12px">Grey marks: ' + nb + ' US threats or deadlines that lapsed. Orange band: the one exception, when strikes were carried out. Rubio’s three terms met so far: ' + b10.rubio_met + '.</div>';
-    el.innerHTML = h;
-  }
-
-  function tripPanel(el) {
-    var order = { fired: 0, armed: 1, expired: 2 }, col = { fired: '--war', armed: '--calm', expired: '--muted' };
-    el.innerHTML = '<div class="cols">' + D.tripwires.slice().sort(function (a, b) { return order[a.status] - order[b.status]; }).map(function (t) {
-      return '<div class="trip"><div class="st" style="color:' + cv(col[t.status]) + '">' + t.status.toUpperCase() + (t.fired_on ? ' · ' + fmtDate(t.fired_on).toUpperCase() : '') + '</div>' +
-        '<div class="c"' + (t.status === 'expired' ? ' style="color:var(--muted)"' : '') + '>' + esc(t.condition) + '</div><div class="e">' + esc(t.effect) + '</div>' +
-        (t.evidence ? '<div class="e" style="font-weight:400">' + esc(t.evidence) + '</div>' : '') + '</div>';
-    }).join('') + '</div>';
-  }
-
-  function dealPanel(el) {
-    el.innerHTML = '<div class="bars">' + D.terms.map(function (t) {
-      return '<div class="row"><div>' + esc(t.term) + (t.rubio ? ' <b>(Rubio #' + t.rubio + ')</b>' : '') + '</div><div class="track"><div class="fill" style="width:' + t.p + '%;background:' + (t.rubio ? 'var(--calm)' : 'var(--limbo)') + '"></div></div><div class="pv">' + t.p + '%</div></div>';
-    }).join('') + '<div class="note" style="margin-top:8px">Probability that each term is in a deal, if there is one. P(deal) is ' + D.brief.deal_p.ye2026 + '% by end-2026 and ' + D.brief.deal_p.ye2027 + '% by end-2027. Green marks Rubio’s three terms.</div></div>';
-  }
-
-  function yePanel(el) {
-    var l = ye[ye.length - 1];
-    var keys = Object.keys(l.v).sort(function (a, b) { return l.v[b] - l.v[a]; });
-    var st = ['deal_ye2027', 'hormuz_20_ye2027', 'nuke_deal_2026', 'surge_ye2026'].filter(function (k) { return latestF[k]; });
-    el.innerHTML = '<div class="bars">' + keys.map(function (k) {
-      return '<div class="row"><div>' + esc(meta['ye2026:' + k].label) + '</div><div class="track" style="height:22px"><div class="fill" style="width:' + l.v[k] * 2 + '%;background:' + cv(COLORS[k]) + '"></div></div><div class="pv">' + l.v[k] + '%</div></div>';
-    }).join('') + '</div><div class="figs" style="margin-top:16px">' + st.map(function (k) { return '<div><small>' + esc(latestF[k].question) + '</small><strong>' + latestF[k].p + '%</strong></div>'; }).join('') + '</div>' +
-      '<div class="note" style="margin-top:12px">As of ' + fmtDate(l.date) + '. Bars are scaled to 50%.</div>';
-  }
-
-  function calPanel(el) {
-    var res = D.forecasts.filter(function (f) { return f.outcome === 0 || f.outcome === 1; });
-    var brier = res.length ? (res.reduce(function (a, f) { return a + Math.pow(f.p / 100 - f.outcome, 2); }, 0) / res.length).toFixed(3) : '—';
-    var buckets = {};
-    res.forEach(function (f) { var b = Math.min(9, Math.floor(f.p / 10)); (buckets[b] = buckets[b] || []).push(f.outcome); });
-    var dots = Object.keys(buckets).map(function (b) {
-      var xs = buckets[b], obs = xs.reduce(function (a, v) { return a + v; }, 0) / xs.length;
-      return '<circle cx="' + (30 + (+b + 0.5) * 18) + '" cy="' + (190 - obs * 180) + '" r="' + (3 + Math.sqrt(xs.length) * 2) + '" style="fill:var(--war)"/>';
-    }).join('');
-    var open = D.forecasts.length - res.length;
-    var next = D.forecasts.filter(function (f) { return f.outcome == null; }).map(function (f) { return f.resolves_on; }).sort()[0];
-    el.innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:32px;align-items:center" class="sans">' +
-      '<svg viewBox="0 0 220 220" width="260" role="img" aria-label="Reliability plot" style="max-width:100%"><rect x="30" y="10" width="180" height="180" style="fill:var(--panel)"/><line x1="30" y1="190" x2="210" y2="10" style="stroke:var(--muted)" stroke-dasharray="4 4"/>' + dots +
-      '<text x="120" y="212" font-size="11" text-anchor="middle" style="fill:var(--muted)">FORECAST</text><text x="14" y="100" font-size="11" text-anchor="middle" transform="rotate(-90 14 100)" style="fill:var(--muted)">OBSERVED</text></svg>' +
-      '<div style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;gap:32px"><div><small class="muted">Brier score</small><div style="font-size:32px;font-weight:700">' + brier + '</div></div><div><small class="muted">Resolved</small><div style="font-size:32px;font-weight:700">' + res.length + '</div></div><div><small class="muted">Open</small><div style="font-size:32px;font-weight:700">' + open + '</div></div></div>' +
-      '<div style="font-size:15px;max-width:380px">' + (res.length ? 'Each dot is a bucket of forecasts; the closer to the diagonal, the better calibrated.' : 'No forecasts have resolved yet. The next ones resolve on ' + (next ? fmtDate(next) : '—') + '.') + '</div></div></div>';
-  }
-
-  var TABS = [
-    ['odds', 'Scenario odds', 'The odds through Election Day', 'GeoBrief’s probability for each path to Nov. 3, re-derived after every material event. War scenarios are combined in orange; de-escalation (half-open, Iran folds, deal) in green.', oddsPanel],
-    ['gas', 'Gas prices', 'Gas prices against the scenarios', 'AAA regular, national and NYC metro, with the price range each scenario implies on Nov. 3. Prices rise 2–4¢ a day after a shock and fall 1–1.5¢ a day after it passes.', gasPanel],
-    ['blinks', 'Blink count', 'The blink count', 'Every US threat or deadline since April, and whether it was carried out. Announced threats are weak evidence; a quiet buildup of forces is the real warning sign.', blinkPanel],
-    ['tripwires', 'Tripwires', 'What would move the odds', 'Observable events that would change the forecast, and by how much. Armed tripwires are checked on every run.', tripPanel],
-    ['deal', 'Deal terms', 'What a deal would likely contain', 'If there is a deal, the probability that each term is in it.', dealPanel],
-    ['yearend', 'Year-end', 'Where things stand by Dec. 31', 'Probability of each outcome by the end of 2026, plus the longer structural odds.', yePanel],
-    ['calibration', 'Calibration', 'How good are these forecasts?', 'Every forecast is dated and scored once it resolves, using the Brier score (lower is better).', calPanel]
-  ];
-  var tab = 'odds';
-  var hashTab = (location.hash || '').slice(1);
-  if (TABS.some(function (t) { return t[0] === hashTab; })) tab = hashTab;
-  else { try { var saved = localStorage.getItem('gb-tab'); if (TABS.some(function (t) { return t[0] === saved; })) tab = saved; } catch (e) {} }
-
-  function render() {
-    var cur = TABS.filter(function (t) { return t[0] === tab; })[0];
-    $('tabs').innerHTML = TABS.map(function (t) { return '<button role="tab" id="tab-' + t[0] + '" aria-selected="' + (t[0] === tab) + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; }).join('');
-    $('panel-title').textContent = cur[2];
-    $('panel-dek').textContent = cur[3];
-    var p = $('panel'); p.innerHTML = ''; cur[4](p);
-  }
-  $('tabs').addEventListener('click', function (e) {
-    var b = e.target.closest('button[data-tab]'); if (!b) return;
-    tab = b.dataset.tab; try { localStorage.setItem('gb-tab', tab); } catch (err) {}
-    render();
-    b = $('tab-' + tab); if (b) { b.focus(); b.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
-  });
-  $('tabs').addEventListener('keydown', function (e) {
-    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-    var i = TABS.findIndex(function (t) { return t[0] === tab; }) + (e.key === 'ArrowRight' ? 1 : -1);
-    tab = TABS[(i + TABS.length) % TABS.length][0]; render(); $('tab-' + tab).focus(); e.preventDefault();
-  });
-
-  // ---------- menu ----------
-  var drawerItems = TABS.map(function (t) { return ['#odds', t[0], t[1], t[2]]; }).concat([['#scenarios', null, 'Scenario table', 'Every path to Nov. 3 with gas and drivers'], ['#dispatches', null, 'Dispatches', 'The latest events'], ['#method', null, 'Method', 'How the odds are made and checked']]);
-  $('drawer-list').innerHTML = drawerItems.map(function (d) { return '<li><a href="' + d[0] + '"' + (d[1] ? ' data-tab="' + d[1] + '"' : '') + '>' + esc(d[2]) + '<small>' + esc(d[3]) + '</small></a></li>'; }).join('');
-  function setMenu(open) { $('drawer').hidden = !open; $('menu-btn').setAttribute('aria-expanded', open); $('menu-btn').setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); }
-  $('menu-btn').addEventListener('click', function () { setMenu($('drawer').hidden); });
-  $('drawer').addEventListener('click', function (e) {
-    var a = e.target.closest('a'); if (!a) return;
-    if (a.dataset.tab) { tab = a.dataset.tab; render(); }
-    setMenu(false);
-  });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('drawer').hidden) { setMenu(false); $('menu-btn').focus(); } });
-  document.addEventListener('click', function (e) { if (!$('drawer').hidden && !e.target.closest('header.top')) setMenu(false); });
-
-  // ---------- static sections ----------
-  $('headline').textContent = D.brief.headline;
-  var daysLeft = day(election) - day(D.brief.updated);
-  $('dateline').textContent = 'Updated ' + fmtDate(D.brief.updated) + ', ' + D.brief.updated.slice(0, 4) + ' · ' + daysLeft + ' days to Election Day';
-  $('status').textContent = D.brief.status;
-  $('change-note').textContent = D.brief.change_note;
-  var lk = Object.keys(latestNov.v).sort(function (a, b) { return latestNov.v[b] - latestNov.v[a]; });
-  $('scen-body').innerHTML = lk.map(function (k) {
-    var s = meta['nov3:' + k], band = s.gas_band ? '$' + s.gas_band.split('-').map(function (v) { return (+v).toFixed(2); }).join('–') : '—';
-    return '<tr><td style="font-weight:600"><span style="display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:8px;background:' + cv(COLORS[k]) + '"></span>' + esc(s.label) + '</td><td class="num"><span class="pill" style="background:' + cv(COLORS[k]) + '">' + latestNov.v[k] + '%</span></td><td style="white-space:nowrap">' + band + '</td><td>' + esc(s.driver) + '</td></tr>';
-  }).join('');
-  $('bets').innerHTML = D.brief.bets.map(function (b) { return '<div class="bet"><div class="c">' + esc(b.cond) + '</div><div class="e">' + esc(b.effect) + '</div></div>'; }).join('');
-  $('disp').innerHTML = D.events.slice(-6).reverse().map(function (e) { return '<div class="disp"><div class="d">' + fmtDate(e.date) + '</div><div>' + esc(e.text) + '</div></div>'; }).join('');
-
-  // ---------- ticker ----------
-  var gNow = groups(latestNov.v), gPrev = prevNov ? groups(prevNov.v) : null;
-  var delta = function (a, b, dp, unit) { if (b == null) return ['', '']; var d = a - b; if (Math.abs(d) < 1e-9) return ['UNCH', 'var(--tick-muted)']; return [(d > 0 ? '▲' : '▼') + (unit || '') + Math.abs(d).toFixed(dp), d > 0 ? 'var(--tick-up)' : 'var(--tick-down)']; };
-  var nat = lastOf(gasRows, 'nat_regular'), natP = prevOf(gasRows, 'nat_regular'), nyc = lastOf(gasRows, 'nyc_regular'), dsl = lastOf(gasRows, 'nat_diesel');
-  var mk = D.markets.slice().sort(function (a, b) { return a.date < b.date ? -1 : 1; });
-  var br = lastOf(mk, 'brent_ice_front'), brP = prevOf(mk, 'brent_ice_front'), dated = lastOf(mk, 'dated_brent'), rial = lastOf(mk, 'rial_per_usd');
-  var tw = D.tripwires.reduce(function (a, t) { a[t.status] = (a[t.status] || 0) + 1; return a; }, {});
-  var items = [
-    ['WAR BY NOV. 3', Math.round(gNow.war) + '%', delta(gNow.war, gPrev && gPrev.war, 0)],
-    ['DEAL BY YE', D.brief.deal_p.ye2026 + '%', ['', '']],
-    br && ['BRENT', '$' + br.brent_ice_front.toFixed(2), delta(br.brent_ice_front, brP && brP.brent_ice_front, 2)],
-    dated && ['DATED BRENT', '>$' + dated.dated_brent.toFixed(0), ['SQUEEZE', 'var(--tick-up)']],
-    nat && ['AAA NATIONAL', '$' + nat.nat_regular.toFixed(2), delta(nat.nat_regular, natP && natP.nat_regular, 2)],
-    nyc && ['NYC METRO', '$' + nyc.nyc_regular.toFixed(2), ['', '']],
-    dsl && ['DIESEL', '$' + dsl.nat_diesel.toFixed(2), ['', '']],
-    rial && ['RIAL', (rial.rial_per_usd / 1e6).toFixed(2) + 'M/$', ['', '']],
-    ['BLINK #10', D.brief.blink10.blink + ' / ' + D.brief.blink10.no_blink + ' / ' + D.brief.blink10.unresolved, ['', '']],
-    ['TRIPWIRES', (tw.armed || 0) + ' ARMED', [(tw.fired || 0) + ' FIRED', 'var(--tick-up)']]
-  ].filter(Boolean);
-  var one = items.map(function (it) { return '<span class="item"><span class="k">' + it[0] + '</span> <span class="v">' + it[1] + '</span> <span class="v" style="color:' + (it[2][1] || 'inherit') + '">' + it[2][0] + '</span></span>'; }).join('');
-  $('ticker').innerHTML = one + '<span aria-hidden="true" style="display:inline-flex">' + one + '</span>';
-
-  render();
-})();
+  /*__APP__*/
 </script>

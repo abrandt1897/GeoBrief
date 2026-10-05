@@ -7,9 +7,9 @@ _Blink history is canonical in `data/blinks.csv`; Blink #10 odds in `state/brief
 **Lesson:** only US non-blink (Jul 7-18) lasted 11 days. **Live red lines:** direct hit on US ship/base (breached Aug 31, Sep 10 — no response); mine-laying.
 
 **Blink #10 — "Deal or Annihilate" (Sep 22).** Resolves Dec 31, 2026.
+
 - **Blink:** deal meeting none of Rubio's 3; OR Dec 31 with neither deal nor annihilation-scale campaign; OR unfreeze/blockade easing before a signed deal.
 - **No blink:** campaign ≥ Jul 8-18 scale hitting Pickaxe/Kharg/leadership; OR deal meeting ≥1 of Rubio's 3.
 - **Odds (Oct 4):** blink ~38% · no blink ~38% · unresolved ~24%.
 
 **Rezaei "4-5 days" (→ Sep 28-29):** no IRGC-claimed hit; Sep 28-29 four unclaimed hits (incl. ADNOC, PGSA-listed, dark Kuwaiti) + infrastructure threats = enforcement with deniability. Window passed without the claimed-escalation step.
-
