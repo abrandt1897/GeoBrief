@@ -750,7 +750,6 @@
     selectTab(b.dataset.tab);
     const nb = document.getElementById(`tab-${tab}`);
     nb?.focus();
-    nb?.scrollIntoView({ block: "nearest", inline: "nearest" });
   });
   $("tabs").addEventListener("keydown", (e) => {
     if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;

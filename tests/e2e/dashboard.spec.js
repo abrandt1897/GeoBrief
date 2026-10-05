@@ -188,6 +188,23 @@ test("clicking the ticker pauses it and clicking again resumes it", async ({ pag
   expect(await state()).toBe("running");
 });
 
+test("phone: tab bar and menu fit the screen without sideways scrolling", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(PAGE);
+  const tabs = await page.locator("#tabs").evaluate((el) => ({ sw: el.scrollWidth, cw: el.clientWidth }));
+  expect(tabs.sw).toBeLessThanOrEqual(tabs.cw);
+  for (const box of await page
+    .locator("#tabs button")
+    .evaluateAll((els) => els.map((e) => e.getBoundingClientRect()))) {
+    expect(box.left).toBeGreaterThanOrEqual(0);
+    expect(box.right).toBeLessThanOrEqual(390);
+  }
+  await expect(page.locator(".secnav")).toBeHidden();
+  await page.click("#menu-btn");
+  const lefts = await page.locator("#drawer a").evaluateAll((els) => els.map((e) => e.getBoundingClientRect().left));
+  for (const l of lefts) expect(l).toBeGreaterThanOrEqual(16);
+});
+
 test("dark mode uses the dark palette", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto(PAGE);

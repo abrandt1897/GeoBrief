@@ -180,20 +180,15 @@ header.top {
   font-family: var(--sans);
   font-weight: 700;
   font-size: 19px;
+  white-space: nowrap;
 }
 
 .secnav {
   display: flex;
-  gap: 28px;
-  overflow-x: auto;
-  white-space: nowrap;
-  scrollbar-width: none;
+  flex-wrap: wrap;
+  column-gap: 28px;
   font-family: var(--sans);
   font-size: 15px;
-}
-
-.secnav::-webkit-scrollbar {
-  display: none;
 }
 
 .secnav a {
@@ -216,9 +211,10 @@ header.top {
 .drawer ul {
   list-style: none;
   margin: 0;
-  padding: 8px 0 16px;
+  padding-block: 8px 16px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  column-gap: 32px;
 }
 
 .drawer a {
@@ -266,16 +262,10 @@ main {
 
 .tabs {
   display: flex;
-  gap: 24px;
-  overflow-x: auto;
-  white-space: nowrap;
+  flex-wrap: wrap;
+  column-gap: 24px;
   border-bottom: 1px solid var(--rule);
-  scrollbar-width: none;
   font-family: var(--sans);
-}
-
-.tabs::-webkit-scrollbar {
-  display: none;
 }
 
 .tabs button {
@@ -902,5 +892,36 @@ footer.method {
 
   .ticker .viewport {
     overflow-x: auto;
+  }
+}
+
+/* Phones: nothing in the header or tab bar scrolls sideways; tabs become wrapping chips. */
+@media (width <= 560px) {
+  .brand span.name {
+    font-size: 16px;
+  }
+
+  /* The menu button covers these links on phones. */
+  .secnav {
+    display: none;
+  }
+
+  .tabs {
+    gap: 8px;
+    border-bottom: 0;
+  }
+
+  .tabs button {
+    padding: 8px 12px;
+    margin-bottom: 0;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    font-size: 14px;
+  }
+
+  .tabs button[aria-selected="true"] {
+    background: var(--fg);
+    color: var(--bg);
+    border-color: var(--fg);
   }
 }
