@@ -1,0 +1,31 @@
+{
+  "updated": "2026-10-04",
+  "headline": "Will the War Resume Before the Midterms? Latest Odds",
+  "status": "Iran soft-rejected the US counter on Oct. 4: it wants the strait settled and US steps first, and won't discuss nuclear terms yet. Another tanker was hit in Hormuz, unclaimed, and every B-1B has left RAF Fairford. The deadlock is still sequencing.",
+  "change_note": "Since Sept. 30: war +2 (+3, then −1 after the B-1B exit), limbo +1, half-open −1, deal −2.",
+  "bets": [
+    {
+      "cond": "The IRGC claims a hit, lays mines or strikes infrastructure",
+      "effect": "War by Nov. 3 → ~60%"
+    },
+    {
+      "cond": "Iran accepts US sequencing, or round two is set with text",
+      "effect": "Year-end deal → ~23%"
+    },
+    {
+      "cond": "A confirmed hit on Yanbu, East-West or Abqaiq",
+      "effect": "Gas ≥ $4.75 on Nov. 3 → ~16%"
+    }
+  ],
+  "blink10": {
+    "blink": 38,
+    "no_blink": 38,
+    "unresolved": 24,
+    "rubio_met": 0
+  },
+  "deal_p": {
+    "ye2026": 16,
+    "ye2027": 34
+  },
+  "election_day": "2026-11-03"
+}

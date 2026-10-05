@@ -1,0 +1,18 @@
+date,horizon,scenario,p,note
+2026-09-30,nov3,war_total,53,reconstructed from Oct 4 deltas; war split not recorded
+2026-09-30,nov3,limbo,19,reconstructed from Oct 4 deltas
+2026-09-30,nov3,half_open,13,reconstructed from Oct 4 deltas
+2026-09-30,nov3,iran_folds,8,reconstructed from Oct 4 deltas
+2026-09-30,nov3,deal,7,reconstructed from Oct 4 deltas
+2026-10-04,nov3,war_limited,39,Iran holds strait-first; soft rejection of US counter
+2026-10-04,nov3,limbo,20,+1 late Oct 4 (B-1B exit)
+2026-10-04,nov3,half_open,12,
+2026-10-04,nov3,war_infra,9,Houthi claims on Khurais/Riyadh; refinery fire
+2026-10-04,nov3,iran_folds,8,
+2026-10-04,nov3,war_sustained,7,-1 late Oct 4 (B-1B exit = less Europe-based capacity)
+2026-10-04,nov3,deal,5,delegation expelled
+2026-10-04,ye2026,war_resumed,48,
+2026-10-04,ye2026,half_open,18,
+2026-10-04,ye2026,deal,16,
+2026-10-04,ye2026,limbo,9,
+2026-10-04,ye2026,iran_folds,9,

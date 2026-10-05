@@ -19,6 +19,7 @@ GeoBrief/
 ├── README.md              # how the pieces fit, how to run a manual update
 ├── state/
 │   ├── current.md         # canonical odds, tripwires, baselines (overwritten each update)
+│   ├── brief.json         # dashboard headline, status, bets, Blink #10, P(deal)
 │   ├── deal-tracker.md    # P(term | deal) table
 │   └── taco.md            # blinks, unscored items, Blink #10 definition + odds
 ├── log/
@@ -28,10 +29,15 @@ GeoBrief/
 │   ├── odds.csv           # time series of scenario probabilities
 │   ├── gas.csv            # daily AAA prices
 │   ├── forecasts.csv      # every resolvable forecast + outcome
-│   └── tripwires.csv      # tripwire registry and status
+│   ├── tripwires.csv      # tripwire registry and status
+│   ├── scenarios.csv      # scenario labels, groups, gas/Brent bands
+│   ├── markets.csv        # Brent, Dated Brent, rial
+│   ├── deal_terms.csv     # P(term | deal)
+│   └── blinks.csv         # TACO history
 ├── dashboard/
 │   ├── template.html      # static page; data injected at build
-│   └── build.md           # build steps Claude follows
+│   ├── build.py           # consistency checks + data injection → dist/index.html
+│   └── build.md           # build + scheduled-run steps Claude follows
 └── skill/
     └── SKILL.md           # slim geo-brief skill (method only), mirrored here for versioning
 ```
@@ -64,7 +70,7 @@ GeoBrief/
 
 **Manual brief (Adam asks):** skill → read `state/current.md` → search → answer in skill format → if odds change, update state + append odds.csv + forecasts.csv + events.md → one commit.
 
-**Daily scheduled run (weekdays):**
+**Scheduled run (daily, 6 a.m. and 6 p.m. ET; full steps in `dashboard/build.md`):**
 1. Search news since last run; pull AAA (national + NY) via Firecrawl.
 2. Append `gas.csv`; append new events to `log/events.md`.
 3. Check each armed tripwire; mark fired with evidence.
@@ -93,5 +99,5 @@ Single HTML artifact, republished to the same URL each run, data embedded at bui
 
 ## Open decisions
 - Notification threshold (default: tripwire fired or ≥3-pt move).
-- Daily run time (default: 7:45am ET weekdays).
+- ~~Daily run time~~ — decided: daily at 6 a.m. and 6 p.m. ET.
 - Whether to port to GitHub Actions + Pages later.

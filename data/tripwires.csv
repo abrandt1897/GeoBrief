@@ -1,0 +1,14 @@
+id,condition,effect,status,set_on,fired_on,evidence
+tw_reject,Iran formally rejects the counter or mediators declare talks suspended,Nov 3 war ~60%,fired,2026-09-30,2026-10-04,Partial: Baghaei soft rejection (strait first; no nuclear talks). Applied ~+2 war.
+tw_accept,"Iran formally accepts US sequencing, or round 2 is scheduled with text","YE deal ~23%, Nov 3 war ~51%",armed,2026-10-04,,
+tw_irgc_claim,"IRGC claims any hit, mine-laying or infrastructure strike",Nov 3 war ~60%,armed,2026-10-04,,
+tw_saudi_infra,Iranian or proxy hit on Yanbu/East-West/Abqaiq confirmed (not intercepted),"Infra hit ~14%; Nov 3 >= $4.75 ~16%",armed,2026-10-04,,
+tw_saudi_ship,Saudi shuttle or STS-loop ship hit,War 60%+,armed,2026-10-04,,
+tw_uae_third,Third UAE-linked hit or Fujairah/Sohar STS-zone strike,"Infra +2, half-open -2",armed,2026-10-04,,
+tw_kpler,Kpler monthly Hormuz crude >12 Mbd in Oct,"Half-open +5; Nov 3 >= $4.50 ~32%",armed,2026-10-04,,
+tw_bombers,"B-1Bs reappear at Diego Garcia/Gulf, or B-2/B-52s forward-deploy","No-blink +10, Nov 3 sustained +3",armed,2026-10-04,,
+tw_carriers,"GHWB returns to AOR while TR arrives (3 on station), or Diego Garcia bombers","No-blink +10, Nov 3 sustained +3",armed,2026-10-04,,
+tw_blockade,US blockade easing,Half-open/deal +8; before signing = blink #10,armed,2026-10-04,,
+tw_meeting,Trump–Pezeshkian meeting,"Deal +3, limbo +3",armed,2026-10-04,,
+tw_us_deaths,CENTCOM-confirmed US deaths or US strike on Pickaxe,War 60%+,armed,2026-10-04,,
+tw_rezaei,"Rezaei ""4-5 days"" window (to Sep 28-29)",IRGC-claimed escalation,expired,2026-09-23,,Window passed: four unclaimed hits but no claimed escalation step.
