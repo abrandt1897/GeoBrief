@@ -9,7 +9,7 @@ python3 dashboard/build.py          # consistency checks, then writes dashboard/
 python3 dashboard/build.py --check  # checks only
 ```
 
-`build.py` exits non-zero when a check fails. Fix the data, never the check. `dashboard/dist/` is not committed. `artifact.html` is the page published to the claude.ai artifact; `index.html` is the standalone document GitHub Pages serves at <https://abrandt1897.github.io/GeoBrief/> (deployed by `.github/workflows/pages.yml` on every push to `main`).
+`build.py` exits non-zero when a check fails. Fix the data, never the check. `dashboard/dist/` is not committed. `artifact.html` is the page published to the claude.ai artifact; `index.html` is the standalone document GitHub Pages serves at <https://abrandt1897.github.io/GeoBrief/> (deployed by `.github/workflows/pages.yml` after CI passes on `main`).
 
 ## Scheduled run (6 a.m. and 6 p.m. ET, daily)
 
