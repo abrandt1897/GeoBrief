@@ -1,8 +1,8 @@
 {
-  "updated": "2026-10-04",
+  "updated": "2026-10-05",
   "headline": "Will the War Resume Before the Midterms? Latest Odds",
-  "status": "Iran soft-rejected the US counter on Oct. 4: it wants the strait settled and US steps first, and won't discuss nuclear terms yet. Another tanker was hit in Hormuz, unclaimed, and every B-1B has left RAF Fairford. The deadlock is still sequencing.",
-  "change_note": "Since Sept. 30: war +2 (+3, then −1 after the B-1B exit), limbo +1, half-open −1, deal −2.",
+  "status": "A Houthi strike damaged the Khurais pumping station on Saudi Arabia's East-West pipeline on Oct. 4; flow stopped briefly and is reported back to normal. Pezeshkian called talks with the US \"meaningless\" and Ghalibaf says the strait stays shut until Iran's seven conditions are met. Brent eased to about $100.",
+  "change_note": "Since Oct. 4: oil-infrastructure war +3 (Khurais hit), limbo −1, half-open −1, deal −1. War by Nov. 3 now 58%.",
   "bets": [
     {
       "cond": "The IRGC claims a hit, lays mines or strikes infrastructure",
@@ -13,7 +13,7 @@
       "effect": "Year-end deal → ~23%"
     },
     {
-      "cond": "A confirmed hit on Yanbu, East-West or Abqaiq",
+      "cond": "The East-West line or Yanbu is knocked offline for days, not hours",
       "effect": "Gas ≥ $4.75 on Nov. 3 → ~16%"
     }
   ],
@@ -24,8 +24,8 @@
     "rubio_met": 0
   },
   "deal_p": {
-    "ye2026": 16,
-    "ye2027": 34
+    "ye2026": 15,
+    "ye2027": 33
   },
   "election_day": "2026-11-03"
 }

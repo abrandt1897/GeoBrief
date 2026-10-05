@@ -1,37 +1,39 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-10-04._
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-10-05._
 
-## Canonical Odds (Oct 4)
+## Canonical Odds (Oct 5)
 
-Changed vs Sep 30: Iran soft-rejected the US counter (strait-first, no nuclear talks) — partial fire of the "rejects outright" tripwire, applied ~+2 war; leaked Nov bombing intent + TR/ARG deployment (weak signal per rules, but real forces → mostly a YE/post-election effect); 3 more unclaimed Hormuz hits; Houthi claims on Khurais/Riyadh + Riyadh refinery fire (unconfirmed cause) → infra +1; delegation expelled → deal −2. Net Nov 3: war +3, deal −2, half-open −1.
+Changed vs Oct 4: **Saudi-infra tripwire fired** — Houthi strike damaged the Khurais pumping station (East-West line) Oct 4; flow halted briefly then restored (Reuters/Bloomberg: normal ops), so infra +3 rather than the full +5. Pezeshkian: talks "meaningless"; Ghalibaf: strait shut until 7 conditions met → deal −1, limbo −1, half-open −1. Fars "13 violators targeted" has no named-ship claim → IRGC-claim tripwire not fired. Net Nov 3: war +3 (58%).
+
+Prior (Oct 4) vs Sep 30: Iran soft-rejected the US counter (strait-first, no nuclear talks) — partial fire of the "rejects outright" tripwire, applied ~+2 war; leaked Nov bombing intent + TR/ARG deployment (weak signal per rules, but real forces → mostly a YE/post-election effect); 3 more unclaimed Hormuz hits; Houthi claims on Khurais/Riyadh + Riyadh refinery fire (unconfirmed cause) → infra +1; delegation expelled → deal −2. Net Nov 3: war +3, deal −2, half-open −1.
 
 ### Through Midterms (Nov 3)
 
 | Scenario                              | P   | Gas (AAA reg.) | Brent     | Key Driver                                          |
 | ------------------------------------- | --- | -------------- | --------- | --------------------------------------------------- |
 | War: limited round (Sep 10-style)     | 39% | $4.40-4.60     | $103-112  | Iran holds strait-first; claimed hit or US strike   |
-| Limbo / extensions                    | 20% | $4.20-4.40     | $95-105   | Mediator traffic continues, no text agreed          |
-| Half-open, Iran-influenced            | 12% | $4.00-4.25     | $86-96    | Escorted crude near prewar; Yanbu ramp; G7 release  |
-| War: oil-infrastructure hit           | 9%  | $4.75-5.10+    | $118-130+ | Yanbu/Abqaiq/Khurais, Sohar/Fujairah STS, Kharg     |
+| Limbo / extensions                    | 19% | $4.20-4.40     | $95-105   | Mediator traffic continues, no text agreed          |
+| Half-open, Iran-influenced            | 11% | $4.00-4.25     | $86-96    | Escorted crude near prewar; Yanbu ramp; G7 release  |
+| War: oil-infrastructure hit           | 12% | $4.75-5.10+    | $118-130+ | Yanbu/Abqaiq/Khurais, Sohar/Fujairah STS, Kharg     |
 | War: sustained campaign, no infra hit | 7%  | $4.55-4.75     | $110-118  | Interceptor-limited; early start of Nov buildup     |
 | Iran folds                            | 8%  | $3.90-4.10     | $80-90    | Rial ~2.7M, 70-90% inflation; accepts US sequencing |
-| Deal                                  | 5%  | $3.85-4.05     | $76-88    | Iran accepts US text as basis                       |
+| Deal                                  | 4%  | $3.85-4.05     | $76-88    | Iran accepts US text as basis                       |
 
-War total = 55% (Oct 4 late: B-1B withdrawal −1 sustained, +1 limbo). NY state ≈ +10¢, **NYC metro ≈ +19¢** over national (corrected Oct 4).
+War total = 58% (Oct 5: Khurais hit +3 infra). NY state ≈ +10¢, **NYC metro ≈ +19¢** over national (corrected Oct 4).
 
-**Gas baseline (AAA, Oct 4):** national regular $4.37 (yday $4.38, wk $4.48, mo $4.15); diesel $6.34 (record $6.53 9/22). NY state $4.47 / $6.52; NYC metro $4.56 / $6.74. Drifting down ~1¢/day. G7 diesel release caps diesel; China product-export halt and Dated Brent >$120 push the other way.
+**Gas baseline (AAA, Oct 5):** national regular $4.37 (yday $4.37, wk $4.48, mo $4.15); diesel $6.32 (record $6.53 9/22). NY state $4.47 / $6.52; NYC metro $4.56 / $6.75. Drifting down ~1¢/day. G7 diesel release caps diesel; China product-export halt and Dated Brent >$120 push the other way.
 **Gas mechanics:** rockets 2-4¢/day, feathers 1-1.5¢/day (~2.4¢ per $1/bbl); no-shock path → ~$4.10-4.25.
-**Nov 3 lines (AAA national regular):** ≥$4.50 ~38% · ≥$4.75 ~9% · ≥$5.00 ~4% · <$4.00 ~8%. NYC metro ≥$4.75 ~25%, ≥$5 ~7%. National diesel ≥$6.50 ~35%.
-**Market cross-check:** ICE Brent ~$102 prices less war than 56%; Dated >$120 says physical is tighter than futures. Futures have faded every lull; supply recovery + G7 release cap upside.
+**Nov 3 lines (AAA national regular):** ≥$4.50 ~39% · ≥$4.75 ~12% · ≥$5.00 ~5% · <$4.00 ~8%. NYC metro ≥$4.75 ~28%, ≥$5 ~8%. National diesel ≥$6.50 ~35%.
+**Market cross-check:** ICE Brent ~$100 (Oct 5) prices less war than 58%; Dated >$120 says physical is tighter than futures. Futures have faded every lull; supply recovery + G7 release cap upside.
 
 ### Through Year-End 2026
 
 | Scenario    | P   |
 | ----------- | --- |
-| War resumed | 48% |
+| War resumed | 49% |
 | Half-open   | 18% |
-| Deal        | 16% |
+| Deal        | 15% |
 | Limbo       | 9%  |
 | Iran folds  | 9%  |
 
@@ -40,7 +42,7 @@ War total = 55% (Oct 4 late: B-1B withdrawal −1 sustained, +1 limbo). NY state
 - Iran formally accepts US sequencing / round 2 scheduled with text → YE deal ~23%, Nov 3 war ~51%.
 - Iran formally rejects counter / mediators declare talks suspended → Nov 3 war ~60%.
 - IRGC claims any hit, mine-laying, or infra strike → Nov 3 war ~60%.
-- Iranian or proxy hit on Yanbu/East-West/Abqaiq confirmed (not intercepted) → infra-hit ~14%, Nov 3 ≥$4.75 ~16%.
+- ~~Proxy hit on Yanbu/East-West/Abqaiq confirmed~~ **fired Oct 5** (Khurais). Next: East-West/Yanbu offline for days → infra ~16%, Nov 3 ≥$4.75 ~16%.
 - Saudi shuttle or STS-loop ship hit → war 60%+.
 - Third UAE-linked hit or Fujairah/Sohar STS-zone strike → infra-hit +2, half-open −2.
 - Kpler monthly Hormuz crude >12 Mbd in Oct → half-open +5, Nov 3 ≥$4.50 ~32%.
@@ -53,12 +55,12 @@ War total = 55% (Oct 4 late: B-1B withdrawal −1 sustained, +1 limbo). NY state
 ### Structural
 
 - Hormuz back to ~20 mb/d (all liquids, monthly) by end-2027: ~20%
-- War-ending deal: 16% by end-2026; 34% by end-2027
-- Comprehensive nuclear deal in 2026: ~6% (16% × 40%)
+- War-ending deal: 15% by end-2026; 33% by end-2027
+- Comprehensive nuclear deal in 2026: ~6% (15% × 40%)
 
 ## Houthis / Bab el-Mandeb
 
-Hold Yemen's Red Sea coast; open war with Riyadh (Riyadh/Yanbu/Taif/Khamis Mushait targeted; UN displaced 230k). Iranian advisers present. US has a Saudi-only-targeting pledge. **By Nov 3:** Houthi hit (not intercepted) on Yanbu/East-West ~40%; non-Saudi shipping hit ~20%; US joins vs Houthis ~10%.
+Hold Yemen's Red Sea coast; open war with Riyadh (Riyadh/Yanbu/Taif/Khamis Mushait targeted; UN displaced 230k). Iranian advisers present. US has a Saudi-only-targeting pledge. **By Nov 3:** Houthi hit (not intercepted) on Yanbu/East-West — resolved YES (Khurais, Oct 4); Yemeni gov't claims Bab el-Mandeb/Mokha retaken Oct 5 (disputed); non-Saudi shipping hit ~20%; US joins vs Houthis ~10%.
 
 ## US Capacity & Political Clock
 
