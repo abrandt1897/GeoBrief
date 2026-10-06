@@ -144,12 +144,14 @@ test("gas chart: year to date by default, last 45 days shows end labels", async 
   await expect(page.locator("#seg-ytd")).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("#panel svg")).toContainText("JAN.");
   await expect(page.locator("#panel svg")).toContainText("War begins");
-  await expect(page.locator(".legend > span")).toHaveCount(1);
+  await expect(page.locator(".legend > span")).toHaveCount(2);
+  await expect(page.locator(".legend")).toContainText("Diesel");
   await expect(page.locator("#panel")).not.toContainText("NYC");
   await page.click("#seg-recent");
   await expect(page.locator("#seg-recent")).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("#panel svg")).not.toContainText("JAN.");
   await expect(page.locator('#panel svg text[font-weight="700"][text-anchor="middle"]').first()).toContainText("$");
+  await expect(page.locator("#panel svg")).toContainText("Diesel");
   expect(errors).toEqual([]);
 });
 

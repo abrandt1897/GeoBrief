@@ -508,17 +508,27 @@
 
   /** @param {HTMLElement} el */
   function gasPanel(el) {
-    const allDates = gasRows.filter((r) => r.nat_regular != null).map((r) => r.date);
-    const lastDate = allDates[allDates.length - 1] ?? latest.date;
+    const allDates = gasRows.filter((r) => r.nat_regular != null || r.nat_diesel != null).map((r) => r.date);
+    const regDates = gasRows.filter((r) => r.nat_regular != null).map((r) => r.date);
+    const lastDate = regDates[regDates.length - 1] ?? latest.date;
     const start = gasRange === "ytd" ? `${lastDate.slice(0, 4)}-01-01` : isoOf(day(lastDate) - 45);
     const shown = gasRows.filter((r) => r.date >= start);
     const natR = readings(shown, (r) => r.nat_regular);
-    const dslR = readings(gasRows, (r) => r.nat_diesel);
-    const dates = allDates.filter((d) => d >= start);
+    const dslR = readings(shown, (r) => r.nat_diesel);
+    const dates = allDates.filter((d) => d >= start && d <= lastDate);
     const nat = nth(natR);
     const dsl = nth(dslR);
     /** @type {Series[]} */
-    const series = [{ name: "National", color: "--fg", points: shown.map((r) => ({ d: r.date, v: r.nat_regular })) }];
+    const series = [
+      { name: "Regular", color: "--fg", points: shown.map((r) => ({ d: r.date, v: r.nat_regular })) },
+      {
+        name: "Diesel",
+        color: "--fg",
+        dash: "7 6",
+        width: 3,
+        points: shown.map((r) => ({ d: r.date, v: r.nat_diesel })),
+      },
+    ];
     const bands = Object.keys(latest.v).flatMap((k) => {
       const s = meta.get(`nov3:${k}`);
       const p = latest.v[k] ?? 0;
@@ -534,27 +544,29 @@
         },
       ];
     });
-    const vals = [...natR.map((r) => r.v), ...bands.flatMap((b) => [b.lo, b.hi])];
-    const yMin = Math.floor((Math.min(...vals) - 0.05) * 4) / 4;
-    const yMax = Math.ceil((Math.max(...vals) + 0.05) * 4) / 4;
+    const vals = [...natR.map((r) => r.v), ...dslR.map((r) => r.v), ...bands.flatMap((b) => [b.lo, b.hi])];
+    // Diesel stretches the scale, so ticks step by 50 cents once the range passes $2.
+    const step = Math.max(...vals) - Math.min(...vals) > 2 ? 0.5 : 0.25;
+    const yMin = Math.floor((Math.min(...vals) - 0.05) / step) * step;
+    const yMax = Math.ceil((Math.max(...vals) + 0.05) / step) * step;
     /** @type {number[]} */
     const ticks = [];
-    for (let t = yMin; t <= yMax - 0.24; t += 0.25) ticks.push(Number(t.toFixed(2)));
+    for (let t = yMin; t <= yMax - step + 0.01; t += step) ticks.push(Number(t.toFixed(2)));
     const lines = ["gas_nat_450", "gas_nat_475", "gas_nat_500", "gas_nat_lt400", "gas_diesel_650"].flatMap((k) => {
       const f = latestF.get(k);
       return f ? [f] : [];
     });
-    /** @param {string} name @param {string} color @param {Reading | null} r */
-    const legendItem = (name, color, r) =>
+    /** @param {string} name @param {string} color @param {Reading | null} r @param {boolean} [dashed] */
+    const legendItem = (name, color, r, dashed = false) =>
       r
-        ? `<span><span class="sw" style="background:${cv(color)}"></span>${esc(name)} <b>$${r.v.toFixed(2)}</b> <span class="muted">(${fmtDate(r.date)})</span></span>`
+        ? `<span><span class="sw${dashed ? " dashed" : ""}" style="--c:${cv(color)}"></span>${esc(name)} <b>$${r.v.toFixed(2)}</b> <span class="muted">(${fmtDate(r.date)})</span></span>`
         : "";
     const legend =
       gasRange === "ytd"
-        ? `<div class="legend" style="margin-top:10px">${legendItem("National", "--fg", nat)}</div>`
+        ? `<div class="legend" style="margin-top:10px">${legendItem("Regular", "--fg", nat)}${legendItem("Diesel", "--fg", dsl, true)}</div>`
         : "";
     el.innerHTML =
-      `<div class="controls"><div class="seg" role="group" aria-label="Date range"><button type="button" id="seg-ytd" aria-pressed="${gasRange === "ytd"}">Year to date</button><button type="button" id="seg-recent" aria-pressed="${gasRange === "recent"}">Last 45 days</button></div><div style="font-size:13px" class="muted">AAA regular, $ per gallon</div></div>` +
+      `<div class="controls"><div class="seg" role="group" aria-label="Date range"><button type="button" id="seg-ytd" aria-pressed="${gasRange === "ytd"}">Year to date</button><button type="button" id="seg-recent" aria-pressed="${gasRange === "recent"}">Last 45 days</button></div><div style="font-size:13px" class="muted">AAA national average, $ per gallon</div></div>` +
       legend +
       '<div class="chart" style="margin-top:30px"></div>' +
       `<div class="figs">${lines
@@ -563,7 +575,7 @@
             `<div><small>${esc(f.question.replace("AAA ", "").replace(" on Nov 3", ""))}</small><strong>${f.p}%</strong></div>`,
         )
         .join("")}</div>` +
-      `<div class="note">Bars right of Election Day show each scenario’s Nov. 3 price range; bar width is proportional to its probability. Latest diesel: $${dsl ? dsl.v.toFixed(2) : "—"}. Before Oct. 4 the series is backfilled from AAA’s weekly posts and news reports quoting AAA (about twice a week). Hover or tap to read any day.</div>`;
+      `<div class="note">Bars right of Election Day show each scenario’s Nov. 3 price range; bar width is proportional to its probability; they price regular gas, not diesel. Before Oct. 4 both series are backfilled from AAA’s weekly posts and news reports quoting AAA (about twice a week for regular, weekly for diesel). Hover or tap to read any day.</div>`;
     $("seg-ytd").onclick = () => {
       gasRange = "ytd";
       render();
@@ -576,10 +588,13 @@
     const endLabels = [];
     // Year to date leaves too little room right of "today" for end labels; the legend carries the values instead.
     if (gasRange === "recent" && nat) {
-      endLabels.push({ v: nat.v, value: `$${nat.v.toFixed(2)}`, name: "National", color: "--fg", boxW: 66 });
+      endLabels.push({ v: nat.v, value: `$${nat.v.toFixed(2)}`, name: "Regular", color: "--fg", boxW: 66 });
+    }
+    if (gasRange === "recent" && dsl) {
+      endLabels.push({ v: dsl.v, value: `$${dsl.v.toFixed(2)}`, name: "Diesel", color: "--fg", boxW: 66 });
     }
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
-      label: "AAA regular gas prices with Nov. 3 scenario price bands",
+      label: "AAA regular gas and diesel prices with Nov. 3 scenario price bands",
       start,
       end: election,
       dates,
@@ -592,10 +607,6 @@
       endLabels,
       ...(day(start) < day(WAR_START) ? { vlines: [{ date: WAR_START, text: "War begins" }] } : {}),
       maxGap: 21,
-      tipExtra: (d) => {
-        const r = dslR.find((q2) => q2.date === d);
-        return r ? `<div><span>Diesel</span><span class="v">$${r.v.toFixed(2)}</span></div>` : "";
-      },
     });
   }
 

@@ -359,6 +359,14 @@ main {
   margin-right: 6px;
 }
 
+.legend span.sw[style*="--c"] {
+  background: var(--c);
+}
+
+.legend span.sw.dashed {
+  background: repeating-linear-gradient(90deg, var(--c) 0 5px, transparent 5px 8px);
+}
+
 .chart {
   position: relative;
   touch-action: pan-y;
