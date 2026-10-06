@@ -83,6 +83,25 @@ def test_load_events_parses_chart_tags() -> None:
 # ---------- consistency checks ----------
 
 
+def test_md_inline_escapes_html_and_renders_bold() -> None:
+    assert build.md_inline("**a** <b>&") == "<b>a</b> &lt;b&gt;&amp;"
+
+
+def test_latest_supply_note_renders_last_section(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    (tmp_path / "log").mkdir()
+    (tmp_path / "log" / "physical-supply.md").write_text(
+        "# Log\n\n## Old\n\n- old\n\n## New status\n\n**Bottom:** x\n\n- one\n- <two>\n\ntail\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(build, "ROOT", tmp_path)
+    note = build.latest_supply_note()
+    assert note == {
+        "title": "New status",
+        "lead": "<p><b>Bottom:</b> x</p>",
+        "more": "<ul><li>one</li><li>&lt;two&gt;</li></ul><p>tail</p>",
+    }
+
+
 def test_good_data_passes() -> None:
     fc = [forecast("war_nov3", 55), forecast("deal_ye2026", 16), forecast("nuke_deal_2026", 6)]
     assert build.check(GOOD_ODDS, fc, TERMS, brief()) == []

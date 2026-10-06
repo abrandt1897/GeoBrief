@@ -12,6 +12,9 @@
 /** @typedef {{ date: string, end_date: string, label: string, detail: string, type: "blink" | "non_blink" | "pending" | "unscored" }} Blink */
 /** @typedef {{ date: string, text: string, chart: string | null }} GBEvent */
 /** @typedef {{ cond: string, effect: string }} Bet */
+/** @typedef {{ date: string, series: string, mbd: number | null, kind: string, source: string, note: string }} SupplyRow */
+/** @typedef {{ date: string, label: string }} SupplyEvent */
+/** @typedef {{ title: string, lead: string, more: string }} SupplyNote */
 /**
  * @typedef {object} Brief
  * @property {string} updated
@@ -35,10 +38,13 @@
  * @property {Term[]} terms
  * @property {Blink[]} blinks
  * @property {GBEvent[]} events
+ * @property {SupplyRow[]} supply
+ * @property {SupplyEvent[]} supply_events
+ * @property {SupplyNote | null} supply_note
  */
 /** @typedef {{ date: string, v: Record<string, number> }} DateRow */
 /** @typedef {{ d: string, v: number | null }} Pt */
-/** @typedef {{ name: string, color: string, width?: number, points: Pt[] }} Series */
+/** @typedef {{ name: string, color: string, width?: number, dash?: string, points: Pt[] }} Series */
 /** @typedef {{ v: number, value: string, name: string, color: string, boxW: number }} EndLabel */
 /** @typedef {{ lo: number, hi: number, w: number, color: string, title: string }} Band */
 /** @typedef {{ date: string, text: string }} Annotation */
@@ -57,6 +63,9 @@
  * @property {Band[]} [bands]
  * @property {Annotation[]} [annotations]
  * @property {(d: string) => string} [tipExtra]
+ * @property {string | null} [endMark] label for the dashed line at the right edge (default "Election Day"; null for none)
+ * @property {Annotation[]} [vlines] labelled vertical markers drawn inside the plot
+ * @property {number} [annoRows] rows the annotation captions cycle through (default 2)
  */
 /** @typedef {{ id: string, label: string, title: string, dek: string, render: (el: HTMLElement) => void }} Tab */
 /** @typedef {{ date: string, v: number }} Reading */
@@ -214,7 +223,7 @@
     }
     const d0 = new Date(x0 * 864e5);
     let y = d0.getUTCFullYear();
-    let m = d0.getUTCMonth() + 1;
+    let m = d0.getUTCMonth() + (d0.getUTCDate() === 1 ? 0 : 1);
     for (;;) {
       if (m > 11) {
         m = 0;
@@ -226,8 +235,15 @@
       h += `<text x="${X(ms)}" y="${B + 24}" font-size="13" text-anchor="middle" style="fill:var(--muted)">${MO_SHORT[m] ?? ""}</text>`;
       m++;
     }
-    h += `<line x1="${R}" x2="${R}" y1="${T}" y2="${B}" style="stroke:var(--fg)" stroke-dasharray="3 4"/>`;
-    h += `<text x="${R - 4}" y="${T + 16}" font-size="13" font-weight="600" text-anchor="end" style="fill:var(--fg)">Election Day</text>`;
+    const endMark = o.endMark === undefined ? "Election Day" : o.endMark;
+    if (endMark) {
+      h += `<line x1="${R}" x2="${R}" y1="${T}" y2="${B}" style="stroke:var(--fg)" stroke-dasharray="3 4"/>`;
+      h += `<text x="${R - 4}" y="${T + 16}" font-size="13" font-weight="600" text-anchor="end" style="fill:var(--fg)">${esc(endMark)}</text>`;
+    }
+    for (const v of o.vlines ?? []) {
+      h += `<line x1="${X(v.date)}" x2="${X(v.date)}" y1="${T}" y2="${B}" style="stroke:var(--war)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+      h += `<text x="${X(v.date) + 6}" y="${T + 16}" font-size="13" font-weight="700" style="fill:var(--war)">${esc(v.text)}</text>`;
+    }
     for (const b of o.bands ?? []) {
       h += `<rect x="${R + 8}" y="${Y(b.hi)}" width="${b.w}" height="${Y(b.lo) - Y(b.hi)}" style="fill:${cv(b.color)}" fill-opacity=".9"><title>${esc(b.title)}</title></rect>`;
     }
@@ -235,7 +251,7 @@
       const pts = s.points.flatMap((p) => (p.v == null ? [] : [{ d: p.d, v: p.v }]));
       if (pts.length > 1) {
         const line = pts.map((p) => `${X(p.d).toFixed(1)},${Y(p.v).toFixed(1)}`).join(" ");
-        h += `<polyline fill="none" stroke-width="${s.width ?? 3.5}" stroke-linejoin="round" stroke-linecap="round" style="stroke:${cv(s.color)}" points="${line}"/>`;
+        h += `<polyline fill="none"${s.dash ? ` stroke-dasharray="${s.dash}"` : ""} stroke-width="${s.width ?? 3.5}" stroke-linejoin="round" stroke-linecap="round" style="stroke:${cv(s.color)}" points="${line}"/>`;
       }
       if (pts.length < 25) {
         for (const p of pts) h += `<circle cx="${X(p.d)}" cy="${Y(p.v)}" r="3.5" style="fill:${cv(s.color)}"/>`;
@@ -348,18 +364,25 @@
     if (o.annotations?.length) {
       const an = document.createElement("div");
       an.className = "annos";
-      let lastLeft = -100;
-      let row = 0;
+      // Greedy rows: each caption takes the first row where it clears its neighbour by real pixel width.
+      const hostW = host.clientWidth || W;
+      const capW = matchMedia("(width <= 560px)").matches ? 84 : 112; // matches .annos div in styles.css
+      const rightEdge = Array.from({ length: o.annoRows ?? 2 }, () => -Infinity);
+      let used = 1;
       for (const a of o.annotations) {
         const left = (X(a.date) / W) * 100;
-        row = left - lastLeft < 13 ? (row + 1) % 2 : 0;
-        lastLeft = left;
+        const px = (left / 100) * hostW;
+        let row = rightEdge.findIndex((r) => px - capW / 2 >= r + 4);
+        if (row < 0) row = rightEdge.indexOf(Math.min(...rightEdge));
+        rightEdge[row] = px + capW / 2;
+        used = Math.max(used, row + 1);
         const el = document.createElement("div");
         el.style.left = `${left}%`;
         el.style.top = `${row * 30}px`;
         el.textContent = a.text;
         an.appendChild(el);
       }
+      an.style.height = `${used * 30 + 10}px`;
       host.appendChild(an);
     }
   }
@@ -527,6 +550,74 @@
     });
   }
 
+  /** Physical-supply series in draw order; the colour follows the series, never its rank. */
+  const SUPPLY_SERIES = [
+    { key: "mideast_exports", name: "Mideast crude exports", color: "--fg", width: 3.5 },
+    { key: "hormuz", name: "Through Hormuz", color: "--war", width: 2.5 },
+    { key: "eastwest", name: "East-West pipeline", color: "--calm", width: 2.5, dash: "7 4" },
+  ];
+  const WAR_START = "2026-02-28";
+
+  /** @param {HTMLElement} el */
+  function supplyPanel(el) {
+    const rowsS = D.supply.filter((r) => r.mbd != null).sort((a, b) => (a.date < b.date ? -1 : 1));
+    const dates = [...new Set(rowsS.map((r) => r.date))];
+    const lastDate = dates[dates.length - 1] ?? D.brief.updated;
+    /** @type {Series[]} */
+    const series = SUPPLY_SERIES.map((c) => ({
+      name: c.name,
+      color: c.color,
+      width: c.width,
+      ...(c.dash ? { dash: c.dash } : {}),
+      points: rowsS.filter((r) => r.series === c.key).map((r) => ({ d: r.date, v: r.mbd })),
+    }));
+    const maxV = Math.max(20, ...rowsS.map((r) => r.mbd ?? 0));
+    const yMax = Math.ceil((maxV + 1) / 5) * 5;
+    /** @type {number[]} */
+    const ticks = [];
+    for (let t = 0; t < yMax; t += 5) ticks.push(t);
+    const latestOf = SUPPLY_SERIES.flatMap((c) => {
+      const r = rowsS.filter((x) => x.series === c.key).pop();
+      return r && r.mbd != null ? [{ c, r, v: r.mbd }] : [];
+    });
+    const legend = `<div class="legend" style="margin-top:10px">${latestOf
+      .map(
+        ({ c, r, v }) =>
+          `<span><span class="sw" style="${c.dash ? `background:repeating-linear-gradient(90deg,${cv(c.color)} 0 5px,transparent 5px 8px)` : `background:${cv(c.color)}`}"></span>${esc(c.name)} <b>${v.toFixed(1)}</b> <span class="muted">(${fmtDate(r.date)})</span></span>`,
+      )
+      .join("")}</div>`;
+    const sn = D.supply_note;
+    const note = sn
+      ? `<div class="supply-note"><h3>${esc(sn.title)}</h3>${sn.lead}${sn.more ? `<details><summary>Full note</summary>${sn.more}</details>` : ""}</div>`
+      : "";
+    el.innerHTML =
+      `<div class="controls"><div style="font-size:13px" class="muted">Million barrels a day. Monthly averages are plotted mid-month; dots are individual readings.</div></div>` +
+      legend +
+      '<div class="chart" style="margin-top:30px"></div>' +
+      '<div class="note">Every point carries its source and vintage; hover or tap to read them. Preliminary Kpler figures are often revised (Sept. went from 12.8 to 16.3 mb/d), and supply claims count as contested until a tracker confirms them. "Through Hormuz" is crude passing the strait; the East-West pipeline carries Saudi crude to Yanbu on the Red Sea, bypassing it.</div>' +
+      note;
+    lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
+      label: "Line chart of Gulf crude exports, Hormuz flows and Saudi East-West pipeline throughput since January",
+      start: "2026-01-01",
+      end: isoOf(day(lastDate) + 30),
+      dates,
+      series,
+      yMin: 0,
+      yMax,
+      yTicks: ticks,
+      yFmt: (v, tip) => (tip ? `${v.toFixed(1)} mb/d` : v === ticks[ticks.length - 1] ? `${v} mb/d` : `${v}`),
+      endMark: null,
+      vlines: [{ date: WAR_START, text: "War begins" }],
+      annotations: D.supply_events.filter((e) => e.date !== WAR_START).map((e) => ({ date: e.date, text: e.label })),
+      annoRows: 4,
+      tipExtra: (d) =>
+        rowsS
+          .filter((r) => r.date === d)
+          .map((r) => `<div class="src">${esc(r.source)}${r.note ? ` · ${esc(r.note)}` : ""}</div>`)
+          .join(""),
+    });
+  }
+
   /** @param {Blink} b @returns {string} */
   const blinkDates = (b) => {
     if (!b.end_date || b.type === "pending") return fmtDate(b.date);
@@ -670,6 +761,13 @@
       title: "Gas prices against the scenarios",
       dek: "AAA regular, national and NYC metro, with the price range each scenario implies on Nov. 3. Prices rise 2–4¢ a day after a shock and fall 1–1.5¢ a day after it passes.",
       render: gasPanel,
+    },
+    {
+      id: "supply",
+      label: "Physical supply",
+      title: "How much oil is getting out",
+      dek: "Gulf crude exports, flows through the Strait of Hormuz and Saudi Arabia's East-West bypass pipeline, from January through the war. Ship counts aren't barrels, and a daily snapshot isn't a monthly average.",
+      render: supplyPanel,
     },
     {
       id: "blinks",

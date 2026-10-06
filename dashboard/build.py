@@ -83,6 +83,41 @@ def load_events() -> list[Event]:
     return out
 
 
+def md_inline(s: str) -> str:
+    """Escape text, then render **bold** spans."""
+    s = s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    return re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
+
+
+def latest_supply_note() -> dict[str, str] | None:
+    """Last `## ` section of log/physical-supply.md as {title, lead, more}: paragraphs and one level of bullets."""
+    text = (ROOT / "log" / "physical-supply.md").read_text(encoding="utf-8")
+    sections = re.split(r"^## ", text, flags=re.M)[1:]
+    if not sections:
+        return None
+    title, _, body = sections[-1].partition("\n")
+    html: list[str] = []
+    in_list = False
+    for raw in body.splitlines():
+        line = raw.strip()
+        if line.startswith("- "):
+            if not in_list:
+                html.append("<ul>")
+                in_list = True
+            html.append(f"<li>{md_inline(line[2:])}</li>")
+            continue
+        if in_list:
+            html.append("</ul>")
+            in_list = False
+        if line:
+            html.append(f"<p>{md_inline(line)}</p>")
+    if in_list:
+        html.append("</ul>")
+    # The first paragraph is the bottom line; the dashboard folds the rest behind "Full note".
+    lead = html[0] if html and html[0].startswith("<p>") else ""
+    return {"title": title.strip(), "lead": lead, "more": "".join(html[1:] if lead else html)}
+
+
 def latest_forecasts(forecasts: list[Row]) -> dict[str, Row]:
     latest: dict[str, Row] = {}
     for r in forecasts:
@@ -177,6 +212,9 @@ def render(brief: Brief, odds: list[Row], forecasts: list[Row], terms: list[Row]
         "terms": [{**t, "p": float(t["p"])} for t in terms],
         "blinks": rows("blinks.csv"),
         "events": load_events(),
+        "supply": numeric(rows("supply.csv"), ("date", "series", "kind", "source", "note")),
+        "supply_events": rows("supply_events.csv"),
+        "supply_note": latest_supply_note(),
     }
     blob = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     html = (DASH / "template.html").read_text(encoding="utf-8")

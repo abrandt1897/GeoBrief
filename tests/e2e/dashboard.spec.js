@@ -82,6 +82,7 @@ test("all-seven toggle shows a legend for every scenario", async ({ page }) => {
 const TABS = [
   ["odds", "The odds through Election Day"],
   ["gas", "Gas prices against the scenarios"],
+  ["supply", "How much oil is getting out"],
   ["blinks", "The blink count"],
   ["tripwires", "What would move the odds"],
   ["deal", "What a deal would likely contain"],
@@ -100,6 +101,23 @@ for (const [id, title] of TABS) {
     expect(errors).toEqual([]);
   });
 }
+
+test("physical supply chart shows three series, the war start and the latest supply note", async ({ page }) => {
+  const errors = collectErrors(page);
+  await page.goto(`${PAGE}#supply`);
+  await expect(page.locator("#panel-title")).toHaveText("How much oil is getting out");
+  await expect(page.locator(".legend > span")).toHaveCount(3);
+  await expect(page.locator("#panel svg")).toContainText("War begins");
+  await expect(page.locator(".annos > div").first()).toBeVisible();
+  await expect(page.locator(".supply-note h3")).not.toBeEmpty();
+  await expect(page.locator(".supply-note details")).not.toHaveAttribute("open");
+  await page.click(".supply-note summary");
+  await expect(page.locator(".supply-note details li").first()).toBeVisible();
+  const svg = page.locator("#panel svg");
+  await svg.focus();
+  await expect(page.locator(".tip")).toContainText("mb/d");
+  expect(errors).toEqual([]);
+});
 
 test("tab deep link via #hash", async ({ page }) => {
   await page.goto(`${PAGE}#tripwires`);

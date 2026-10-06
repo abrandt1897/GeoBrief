@@ -33,6 +33,8 @@ SCHEMAS: dict[str, list[str]] = {
     "tripwires.csv": ["id", "condition", "effect", "status", "set_on", "fired_on", "evidence"],
     "deal_terms.csv": ["term", "p", "rubio"],
     "blinks.csv": ["date", "end_date", "label", "detail", "type"],
+    "supply.csv": ["date", "series", "mbd", "kind", "source", "note"],
+    "supply_events.csv": ["date", "label"],
 }
 
 
@@ -76,6 +78,8 @@ def test_no_ragged_rows(name: str) -> None:
         ("forecasts.csv", ["made_on", "resolves_on"]),
         ("tripwires.csv", ["set_on"]),
         ("blinks.csv", ["date"]),
+        ("supply.csv", ["date"]),
+        ("supply_events.csv", ["date"]),
     ],
 )
 def test_dates_are_valid(name: str, cols: list[str]) -> None:
@@ -185,3 +189,26 @@ def test_brief_json_shape() -> None:
     assert all({"cond", "effect"} <= set(x) for x in b["bets"])
     latest_odds = max(r["date"] for r in load("odds.csv"))
     assert b["updated"] >= latest_odds, "brief.json 'updated' is older than the latest odds row"
+
+
+def test_supply_series_are_sourced_plausible_and_unique() -> None:
+    rows = load("supply.csv")
+    assert rows, "supply.csv is empty"
+    dates = [r["date"] for r in rows]
+    assert dates == sorted(dates), "supply.csv must be in date order"
+    seen: set[tuple[str, str]] = set()
+    for r in rows:
+        assert r["series"] in {"mideast_exports", "hormuz", "eastwest"}, f"unknown series {r['series']!r}"
+        assert r["kind"] in {"baseline", "monthly", "daily", "7d", "estimate"}, f"bad kind {r['kind']!r}"
+        assert 0 <= float(r["mbd"]) <= 25, f"{r['date']} {r['series']}: implausible {r['mbd']} mb/d"
+        assert r["source"], f"{r['date']} {r['series']}: every reading needs a source"
+        key = (r["date"], r["series"])
+        assert key not in seen, f"two readings for {key}; keep the latest vintage and note the revision"
+        seen.add(key)
+
+
+def test_supply_events_have_short_captions() -> None:
+    rows = load("supply_events.csv")
+    assert [r["date"] for r in rows] == sorted(r["date"] for r in rows)
+    for r in rows:
+        assert 1 <= len(r["label"].split()) <= 3, f"chart caption should be 1-3 words: {r['label']!r}"

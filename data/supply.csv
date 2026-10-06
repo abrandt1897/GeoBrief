@@ -1,0 +1,8 @@
+date,series,mbd,kind,source,note
+2026-02-15,mideast_exports,19.0,baseline,Kpler (via Reuters),Feb prewar baseline 18.8–19.5; midpoint
+2026-09-15,hormuz,9.7,monthly,Kpler (via Reuters),Sept prelim; first vintage 7.4
+2026-09-15,mideast_exports,16.3,monthly,Kpler (via Reuters),Sept prelim; first vintage 12.8
+2026-09-30,eastwest,2.65,estimate,Kpler,throughput estimate after Sept 22 restart
+2026-09-30,mideast_exports,18.3,daily,Kpler/Vortexa (via Reuters),prelim daily snapshot
+2026-10-01,mideast_exports,18.5,7d,Kpler (via Reuters/Seatrade),7-day moving average; incl. Red Sea and STS
+2026-10-02,eastwest,6.0,estimate,Bloomberg (one unnamed source),">80% of 7 mb/d nameplate"
