@@ -279,3 +279,27 @@ test("dark mode uses the dark palette", async ({ page }) => {
   const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   expect(bg).toBe("rgb(18, 18, 18)");
 });
+
+test("phone: year-end captions do not overlap and cards show the top four outcomes", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(PAGE);
+  await page.click("#tab-yearend");
+  const boxes = await page
+    .locator("#panel .annos > div")
+    .evaluateAll((els) =>
+      els.map((e) => e.getBoundingClientRect()).map((r) => ({ l: r.left, r: r.right, t: r.top, b: r.bottom })),
+    );
+  expect(boxes.length).toBeGreaterThan(1);
+  boxes.forEach(({ l: l1, r: r1, t: t1, b: b1 }, i) =>
+    boxes.slice(i + 1).forEach(({ l: l2, r: r2, t: t2, b: b2 }, k) => {
+      const overlap = l1 < r2 && l2 < r1 && t1 < b2 && t2 < b1;
+      expect(overlap, `captions ${i} and ${i + 1 + k} overlap`).toBe(false);
+    }),
+  );
+  const cards = page.locator("#panel .figs:not(.struct) > div");
+  await expect(cards).toHaveCount(4);
+  const ps = await cards.locator("strong").allTextContents();
+  const nums = ps.map((t) => parseFloat(t));
+  expect([...nums].sort((x, y) => y - x)).toEqual(nums);
+  await expect(page.locator("#panel .figs.struct")).toContainText("War-ending deal by end-2026");
+});

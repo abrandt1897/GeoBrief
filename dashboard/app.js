@@ -380,26 +380,37 @@
     if (o.annotations?.length) {
       const an = document.createElement("div");
       an.className = "annos";
-      // Greedy rows: each caption takes the first row where it clears its neighbour by real pixel width.
+      // Greedy rows: each caption takes the first row where it clears its neighbour by real pixel width;
+      // a caption that fits no existing row opens a new one, so captions never overlap.
+      host.appendChild(an);
       const hostW = host.clientWidth || W;
       const capW = matchMedia("(width <= 560px)").matches ? 84 : 112; // matches .annos div in styles.css
       const rightEdge = Array.from({ length: o.annoRows ?? 2 }, () => -Infinity);
-      let used = 1;
-      for (const a of o.annotations) {
+      /** @type {HTMLDivElement[][]} */
+      const rows = rightEdge.map(() => []);
+      for (const a of [...o.annotations].sort((x, y) => day(x.date) - day(y.date))) {
         const left = (X(a.date) / W) * 100;
         const px = (left / 100) * hostW;
         let row = rightEdge.findIndex((r) => px - capW / 2 >= r + 4);
-        if (row < 0) row = rightEdge.indexOf(Math.min(...rightEdge));
+        if (row < 0) {
+          row = rightEdge.length;
+          rightEdge.push(-Infinity);
+          rows.push([]);
+        }
         rightEdge[row] = px + capW / 2;
-        used = Math.max(used, row + 1);
         const el = document.createElement("div");
         el.style.left = `${left}%`;
-        el.style.top = `${row * 30}px`;
         el.textContent = a.text;
         an.appendChild(el);
+        rows[row]?.push(el);
       }
-      an.style.height = `${used * 30 + 10}px`;
-      host.appendChild(an);
+      // Stack rows by their tallest caption, since captions wrap to two lines on phones.
+      let top = 0;
+      for (const els of rows.filter((r) => r.length)) {
+        for (const el of els) el.style.top = `${top}px`;
+        top += Math.max(...els.map((el) => el.offsetHeight || 30)) + 6;
+      }
+      an.style.height = `${Math.max(30, top + 4)}px`;
     }
   }
 
@@ -752,9 +763,12 @@
       byLabel: "Dec. 31",
       note: "Each point is one update in odds.csv. Year-end odds start Oct. 4. Hover or tap the chart to read any date.",
     });
+    const top4 = keysByP(latestYeRow.v).slice(0, 4);
     el.insertAdjacentHTML(
       "beforeend",
-      `<div class="figs" style="margin-top:16px">${st.map((f) => `<div><small>${esc(f.question)}</small><strong>${f.p}%</strong></div>`).join("")}</div>`,
+      `<div class="figs" style="margin-top:16px" aria-label="Four most likely outcomes by Dec. 31">${top4.map((k) => `<div><small>${esc(scen("ye2026", k).label)}</small><strong>${latestYeRow.v[k] ?? 0}%</strong></div>`).join("")}</div>` +
+        `<h3 class="sans" style="font-size:15px;margin:20px 0 0">Structural odds</h3>` +
+        `<div class="figs struct" style="margin-top:8px">${st.map((f) => `<div><small>${esc(f.question)}</small><strong>${f.p}%</strong></div>`).join("")}</div>`,
     );
   }
 
