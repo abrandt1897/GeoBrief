@@ -190,6 +190,16 @@ test("phone width: no horizontal scroll, blink captions shrink", async ({ page }
   await expect(page.locator(".timeline .cap").first()).toHaveText("Ultimatum");
 });
 
+test("TACO tab and menu entry carry the Trump Always Chickens Out subtext", async ({ page }) => {
+  await page.goto(`${PAGE}#blinks`);
+  await expect(page.locator("#panel-sub")).toHaveText("Trump Always Chickens Out Tracker");
+  await page.click("#menu-btn");
+  await expect(page.locator('#drawer a[data-tab="blinks"] small')).toHaveText("Trump Always Chickens Out Tracker");
+  await page.keyboard.press("Escape");
+  await page.click("#tab-gas");
+  await expect(page.locator("#panel-sub")).toBeHidden();
+});
+
 test("blink tab: short captions on the chart and a full list below it", async ({ page }) => {
   await page.goto(`${PAGE}#blinks`);
   const caps = await page.locator(".timeline .cap").allTextContents();

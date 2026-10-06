@@ -292,6 +292,13 @@ main {
   gap: 8px;
 }
 
+.panel-sub {
+  margin-top: -4px;
+  font: 600 15px var(--sans);
+  letter-spacing: 0.02em;
+  color: var(--war);
+}
+
 .panel-head p {
   margin: 0;
   font-family: var(--sans);

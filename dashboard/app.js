@@ -68,7 +68,7 @@
  * @property {number} [annoRows] rows the annotation captions cycle through (default 2)
  * @property {number} [maxGap] break a line where consecutive readings are more than this many days apart
  */
-/** @typedef {{ id: string, label: string, title: string, dek: string, render: (el: HTMLElement) => void }} Tab */
+/** @typedef {{ id: string, label: string, title: string, sub?: string, dek: string, render: (el: HTMLElement) => void }} Tab */
 /** @typedef {{ date: string, v: number }} Reading */
 
 (() => {
@@ -788,6 +788,7 @@
       id: "blinks",
       label: "TACO Tracker",
       title: "The TACO Tracker",
+      sub: "Trump Always Chickens Out Tracker",
       dek: "Every US threat or deadline since April, and whether it was carried out. Announced threats are weak evidence; a quiet buildup of forces is the real warning sign.",
       render: blinkPanel,
     },
@@ -842,6 +843,8 @@
         `<button type="button" role="tab" id="tab-${t.id}" aria-selected="${t.id === tab}" data-tab="${t.id}">${t.label}</button>`,
     ).join("");
     $("panel-title").textContent = cur.title;
+    $("panel-sub").textContent = cur.sub ?? "";
+    $("panel-sub").hidden = !cur.sub;
     $("panel-dek").textContent = cur.dek;
     const p = $("panel");
     p.innerHTML = "";
@@ -886,7 +889,7 @@
 
   // ---------- menu ----------
   const drawerItems = [
-    ...TABS.map((t) => ({ href: "#odds", tab: t.id, name: t.label, sub: t.title })),
+    ...TABS.map((t) => ({ href: "#odds", tab: t.id, name: t.label, sub: t.sub ?? t.title })),
     { href: "#scenarios", tab: "odds", name: "Scenario Table", sub: "Every path to Nov. 3 with gas and drivers" },
     { href: "#dispatches", tab: "", name: "Dispatches", sub: "The latest events" },
     { href: "#method", tab: "", name: "Method", sub: "How the odds are made and checked" },
