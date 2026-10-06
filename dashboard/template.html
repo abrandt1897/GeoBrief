@@ -97,6 +97,7 @@
     <button type="button" class="more" id="disp-more" hidden>Load older dispatches</button>
   </section>
   <footer class="method" id="method">
+    <button type="button" class="more" id="ticker-on" hidden>Show ticker</button>
     <div>
       <b style="color: var(--fg)">Method.</b> Odds are re-derived after each material event and must pass the repo's
       consistency checks (scenarios sum to 100; P(nuclear deal) ≤ P(deal) × P(IAEA term); Blink #10 sums to 100). Every
@@ -115,6 +116,9 @@
     <span class="track" id="ticker"></span>
   </button>
 </section>
+<div class="tick-menu" id="ticker-menu" role="menu" hidden>
+  <button type="button" role="menuitem" id="ticker-off">Disable ticker</button>
+</div>
 
 <script id="geobrief-data" type="application/json">
   __GEOBRIEF_DATA__

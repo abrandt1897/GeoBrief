@@ -240,6 +240,19 @@ test("clicking the ticker pauses it and clicking again resumes it", async ({ pag
   expect(await state()).toBe("running");
 });
 
+test("right-clicking the ticker disables it; footer button restores it and the choice persists", async ({ page }) => {
+  await page.goto(PAGE);
+  const ticker = page.locator(".ticker");
+  await page.locator("#ticker-toggle").click({ button: "right" });
+  await page.click("#ticker-off");
+  await expect(ticker).toBeHidden();
+  await expect(page.locator("#ticker-on")).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem("gb-ticker"))).toBe("off");
+  await page.click("#ticker-on");
+  await expect(ticker).toBeVisible();
+  await expect(page.locator("#ticker-on")).toBeHidden();
+});
+
 test("phone: tab bar and menu fit the screen without sideways scrolling", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(PAGE);

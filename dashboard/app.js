@@ -1074,5 +1074,74 @@
     tickerBtn.closest(".ticker")?.classList.toggle("paused", paused);
   });
 
+  // Right-click (desktop) or long-press (touch) on the ticker opens a menu to disable it;
+  // a "Show ticker" button in the footer brings it back. The choice persists.
+  const tickerSec = /** @type {HTMLElement} */ (tickerBtn.closest(".ticker"));
+  const tickMenu = $("ticker-menu");
+  const tickerOn = $("ticker-on");
+  /** @param {boolean} off */
+  const setTickerOff = (off) => {
+    tickerSec.hidden = off;
+    tickerOn.hidden = !off;
+    tickMenu.hidden = true;
+    try {
+      if (off) localStorage.setItem("gb-ticker", "off");
+      else localStorage.removeItem("gb-ticker");
+    } catch {
+      // Storage can be blocked; the toggle still applies for this visit.
+    }
+  };
+  try {
+    if (localStorage.getItem("gb-ticker") === "off") setTickerOff(true);
+  } catch {
+    // Storage can be blocked; show the ticker.
+  }
+  /** @param {number} x @param {number} y */
+  const openTickMenu = (x, y) => {
+    tickMenu.hidden = false;
+    const r = tickMenu.getBoundingClientRect();
+    tickMenu.style.left = `${Math.max(8, Math.min(x, innerWidth - r.width - 8))}px`;
+    tickMenu.style.top = `${Math.max(8, Math.min(y - r.height, innerHeight - r.height - 8))}px`;
+    $("ticker-off").focus();
+  };
+  tickerSec.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    openTickMenu(e.clientX, e.clientY);
+  });
+  /** @type {ReturnType<typeof setTimeout> | undefined} */
+  let pressTimer;
+  let longPressed = false;
+  tickerSec.addEventListener(
+    "touchstart",
+    (e) => {
+      const t = e.touches[0];
+      if (!t) return;
+      longPressed = false;
+      clearTimeout(pressTimer);
+      pressTimer = setTimeout(() => {
+        longPressed = true;
+        openTickMenu(t.clientX, t.clientY);
+      }, 550);
+    },
+    { passive: true },
+  );
+  const cancelPress = () => clearTimeout(pressTimer);
+  tickerSec.addEventListener("touchmove", cancelPress, { passive: true });
+  tickerSec.addEventListener("touchcancel", cancelPress);
+  tickerSec.addEventListener("touchend", (e) => {
+    cancelPress();
+    // Swallow the tap that ends a long-press so it doesn't also pause the ticker.
+    if (longPressed) e.preventDefault();
+  });
+  $("ticker-off").addEventListener("click", () => setTickerOff(true));
+  tickerOn.addEventListener("click", () => setTickerOff(false));
+  document.addEventListener("pointerdown", (e) => {
+    if (!tickMenu.hidden && !tickMenu.contains(/** @type {Node} */ (e.target))) tickMenu.hidden = true;
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") tickMenu.hidden = true;
+  });
+  addEventListener("scroll", () => (tickMenu.hidden = true), { passive: true });
+
   render();
 })();

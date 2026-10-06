@@ -869,6 +869,35 @@ footer.method {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
+.ticker[hidden] {
+  display: none;
+}
+
+.tick-menu {
+  position: fixed;
+  z-index: 30;
+  background: var(--bg);
+  border: 1px solid var(--rule-strong);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 18%);
+  padding: 4px 0;
+}
+
+.tick-menu button {
+  display: block;
+  padding: 10px 16px;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tick-menu button:hover {
+  background: var(--rule);
+}
+
 .ticker .live {
   flex: none;
   background: var(--war);
@@ -892,6 +921,8 @@ footer.method {
   font: inherit;
   text-align: left;
   cursor: pointer;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .ticker .viewport:focus-visible {
