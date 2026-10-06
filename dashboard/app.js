@@ -462,9 +462,6 @@
     /** @type {number[]} */
     const ticks = [];
     for (let t = 0; t <= yMax - 10; t += 20) ticks.push(t);
-    const annos = D.events.flatMap((e) =>
-      e.chart && day(e.date) >= day(start) ? [{ date: e.date, text: e.chart }] : [],
-    );
     const legend = all
       ? `<div class="legend" style="margin-top:10px">${keysByP(cur.v)
           .map(
@@ -497,7 +494,6 @@
       yTicks: ticks,
       yFmt: (v, tip) => `${tip ? Math.round(v) : v}%`,
       endLabels,
-      annotations: annos,
       endMark: o.endMark,
     });
   }
@@ -751,10 +747,6 @@
 
   /** @param {HTMLElement} el */
   function yePanel(el) {
-    const st = ["deal_ye2026", "hormuz_20_ye2026", "nuke_deal_2026", "surge_ye2026"].flatMap((k) => {
-      const f = latestF.get(k);
-      return f ? [f] : [];
-    });
     scenarioChart(el, {
       horizon: "ye2026",
       rows: ye,
@@ -763,13 +755,6 @@
       byLabel: "Dec. 31",
       note: "Each point is one update in odds.csv. Year-end odds start Oct. 4. Hover or tap the chart to read any date.",
     });
-    const top4 = keysByP(latestYeRow.v).slice(0, 4);
-    el.insertAdjacentHTML(
-      "beforeend",
-      `<div class="figs" style="margin-top:16px" aria-label="Four most likely outcomes by Dec. 31">${top4.map((k) => `<div><small>${esc(scen("ye2026", k).label)}</small><strong>${latestYeRow.v[k] ?? 0}%</strong></div>`).join("")}</div>` +
-        `<h3 class="sans" style="font-size:15px;margin:20px 0 0">Structural odds</h3>` +
-        `<div class="figs struct" style="margin-top:8px">${st.map((f) => `<div><small>${esc(f.question)}</small><strong>${f.p}%</strong></div>`).join("")}</div>`,
-    );
   }
 
   /** @param {HTMLElement} el */
@@ -851,7 +836,7 @@
       id: "yearend",
       label: "Year-End",
       title: "Where Things Stand By Dec. 31",
-      dek: "Probability of each outcome by the end of 2026, plus the longer structural odds.",
+      dek: "Probability of each outcome by the end of 2026.",
       render: yePanel,
     },
     {
