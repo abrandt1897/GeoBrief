@@ -814,8 +814,8 @@
     },
     {
       id: "blinks",
-      label: "Blink Count",
-      title: "The Blink Count",
+      label: "TACO Tracker",
+      title: "The TACO Tracker",
       dek: "Every US threat or deadline since April, and whether it was carried out. Announced threats are weak evidence; a quiet buildup of forces is the real warning sign.",
       render: blinkPanel,
     },

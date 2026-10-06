@@ -102,7 +102,7 @@ const TABS = [
   ["odds", "The Odds Through Election Day"],
   ["gas", "Gas Prices Against The Scenarios"],
   ["supply", "How Much Oil Is Getting Out"],
-  ["blinks", "The Blink Count"],
+  ["blinks", "The TACO Tracker"],
   ["tripwires", "What Would Move The Odds"],
   ["deal", "What A Deal Would Likely Contain"],
   ["yearend", "Where Things Stand By Dec. 31"],
