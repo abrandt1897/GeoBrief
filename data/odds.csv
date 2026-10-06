@@ -28,3 +28,11 @@ date,horizon,scenario,p,note
 2026-10-05,ye2026,deal,15,
 2026-10-05,ye2026,limbo,9,
 2026-10-05,ye2026,iran_folds,9,
+2026-10-06,nov3,limited_war,67,new four-scenario set: war_limited 39 + limbo 19 + half_open 9
+2026-10-06,nov3,escalated_war,21,war_infra 14 + war_sustained 7
+2026-10-06,nov3,mou_deal,11,iran_folds 8 + 3 of deal 4
+2026-10-06,nov3,comprehensive_deal,1,1 of deal 4 (signed; Iran concedes a Rubio term)
+2026-10-06,ye2026,limited_war,56,new four-scenario set: ~60% of war_resumed 49 (29) + half_open 18 + limbo 9
+2026-10-06,ye2026,escalated_war,20,~40% of war_resumed 49; Nov bombing intent and ~45% real surge by YE
+2026-10-06,ye2026,mou_deal,18,9 of deal 15 (enhanced-MOU style) + iran_folds 9
+2026-10-06,ye2026,comprehensive_deal,6,= nuke_deal_2026; signed deal conceding a Rubio term

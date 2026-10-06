@@ -158,35 +158,45 @@ def check_blink10(latest_f: dict[str, Row], brief: Brief) -> list[str]:
     return errors
 
 
+def latest_odds(odds: list[Row], horizon: str) -> dict[str, float]:
+    rs = [r for r in odds if r["horizon"] == horizon]
+    if not rs:
+        return {}
+    last = max(r["date"] for r in rs)
+    return {r["scenario"]: float(r["p"]) for r in rs if r["date"] == last}
+
+
 def check_deal(odds: list[Row], latest_f: dict[str, Row], terms: list[Row], brief: Brief) -> list[str]:
-    ye = [r for r in odds if r["horizon"] == "ye2026"]
-    if not ye:
+    """Year-end: comprehensive <= P(signed deal) <= MOU-style + comprehensive; nuclear deal fits inside both."""
+    ye = latest_odds(odds, "ye2026")
+    if "comprehensive_deal" not in ye or "mou_deal" not in ye:
         return []
-    last = max(r["date"] for r in ye)
-    ye_deal = next((float(r["p"]) for r in ye if r["date"] == last and r["scenario"] == "deal"), None)
-    if ye_deal is None:
-        return []
+    comp, mou = ye["comprehensive_deal"], ye["mou_deal"]
+    deal = float(brief["deal_p"]["ye2026"])
     errors: list[str] = []
-    if "deal_ye2026" in latest_f and float(latest_f["deal_ye2026"]["p"]) != ye_deal:
-        errors.append(f"YE deal mismatch: odds.csv {ye_deal:g} vs forecasts.csv {latest_f['deal_ye2026']['p']}")
-    if brief["deal_p"]["ye2026"] != ye_deal:
-        errors.append(f"YE deal mismatch: odds.csv {ye_deal:g} vs brief.json {brief['deal_p']['ye2026']}")
-    iaea = next((float(t["p"]) for t in terms if t["rubio"] == "1"), None)
-    if "nuke_deal_2026" in latest_f and iaea is not None:
-        cap = ye_deal * iaea / 100
-        if float(latest_f["nuke_deal_2026"]["p"]) > cap + 0.5:
-            errors.append(f"P(nuclear deal) {latest_f['nuke_deal_2026']['p']} > P(deal) x P(IAEA term) = {cap:.1f}")
+    if "deal_ye2026" in latest_f and float(latest_f["deal_ye2026"]["p"]) != deal:
+        errors.append(f"YE deal mismatch: forecasts.csv {latest_f['deal_ye2026']['p']} vs brief.json {deal:g}")
+    if not comp - 0.5 <= deal <= comp + mou + 0.5:
+        errors.append(f"P(signed deal by YE) {deal:g} outside comprehensive {comp:g} .. MOU + comp. {comp + mou:g}")
+    if "nuke_deal_2026" in latest_f:
+        nuke = float(latest_f["nuke_deal_2026"]["p"])
+        if nuke > comp + 0.5:
+            errors.append(f"P(nuclear deal) {nuke:g} > YE comprehensive deal {comp:g}")
+        iaea = next((float(t["p"]) for t in terms if t["rubio"] == "1"), None)
+        if iaea is not None and nuke > deal * iaea / 100 + 0.5:
+            errors.append(f"P(nuclear deal) {nuke:g} > P(deal) x P(IAEA term) = {deal * iaea / 100:.1f}")
     return errors
 
 
 def check_war(odds: list[Row], latest_f: dict[str, Row]) -> list[str]:
-    nov = [r for r in odds if r["horizon"] == "nov3"]
-    if not nov or "war_nov3" not in latest_f:
+    """war_nov3 (a claimed kinetic round) covers every escalated path and fits inside limited + escalated war."""
+    nov = latest_odds(odds, "nov3")
+    if "escalated_war" not in nov or "war_nov3" not in latest_f:
         return []
-    last = max(r["date"] for r in nov)
-    war = sum(float(r["p"]) for r in nov if r["date"] == last and r["scenario"].startswith("war_"))
-    if abs(war - float(latest_f["war_nov3"]["p"])) > 0.5:
-        return [f"war_nov3 forecast {latest_f['war_nov3']['p']} != sum of war rows {war:g} on {last}"]
+    esc, war = nov["escalated_war"], nov["escalated_war"] + nov.get("limited_war", 0)
+    p = float(latest_f["war_nov3"]["p"])
+    if not esc - 0.5 <= p <= war + 0.5:
+        return [f"war_nov3 forecast {p:g} outside escalated war {esc:g} .. limited + escalated {war:g}"]
     return []
 
 

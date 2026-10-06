@@ -38,7 +38,7 @@ GeoBrief is a flat-file repo. Text and CSV files are the database, one Python sc
 | ------------------------------------------------ | -------------- | ----------------------------------------------------------------------------------------------------- |
 | `state/brief.json`                               | yes            | Top-of-page text and headline numbers; typed as `Brief` in `build.py`                                 |
 | `data/odds.csv`                                  | yes            | Scenario probabilities per update date and horizon (`nov3`, `ye2026`)                                 |
-| `data/scenarios.csv`                             | yes            | Scenario labels, groups, gas and Brent bands                                                          |
+| `data/scenarios.csv`                             | yes            | Scenario labels, groups, gas and Brent bands; `group` maps pre-Oct 6 scenarios onto the current four  |
 | `data/forecasts.csv`                             | yes            | Every resolvable forecast; latest row per `id` wins; outcomes feed calibration                        |
 | `data/deal_terms.csv`                            | yes            | P(term \| deal), with Rubio-term flags                                                                |
 | `data/gas.csv`, `data/markets.csv`               | yes            | AAA prices; Brent, Dated Brent, rial                                                                  |
@@ -51,7 +51,7 @@ GeoBrief is a flat-file repo. Text and CSV files are the database, one Python sc
 
 ## Build (`dashboard/build.py`)
 
-1. **Checks.** `check()` returns a list of errors; any error aborts the build. It enforces that each date+horizon in `odds.csv` sums to ~100, Blink #10 odds sum to 100 and match the latest forecasts, year-end P(deal) agrees across `odds.csv`, `forecasts.csv` and `brief.json`, P(nuclear deal) stays at or below P(deal) × P(IAEA term) from `deal_terms.csv`, and the `war_nov3` forecast equals the sum of the latest `war_*` scenarios.
+1. **Checks.** `check()` returns a list of errors; any error aborts the build. It enforces that each date+horizon in `odds.csv` sums to ~100, Blink #10 odds sum to 100 and match the latest forecasts, year-end P(signed deal) agrees between `forecasts.csv` and `brief.json` and sits between the comprehensive-deal odds and MOU-style + comprehensive, P(nuclear deal) stays at or below both the comprehensive-deal odds and P(deal) × P(IAEA term) from `deal_terms.csv`, and the `war_nov3` forecast sits between escalated war and limited + escalated war.
 2. **Payload.** `render()` reads every input above into one dict (numbers parsed, events and supply note pre-parsed) and serialises it as JSON, escaping `</` so it can sit inside a `<script>` tag.
 3. **Template.** `template.html` has three placeholders: `/*__STYLES__*/` (replaced with `styles.css`), `__GEOBRIEF_DATA__` (the JSON, inside `<script id="geobrief-data" type="application/json">`) and `/*__APP__*/` (`app.js`). Everything above the `<!-- body -->` marker is head content.
 4. **Outputs.** `artifact.html` is the filled template as-is, because the claude.ai artifact host supplies the document skeleton. `full_document()` wraps it into a standalone `index.html` for Pages.

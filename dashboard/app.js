@@ -1,9 +1,9 @@
 // @ts-check
 "use strict";
 
-/** @typedef {"war" | "limbo" | "calm"} Group */
+/** @typedef {"limited_war" | "escalated_war" | "mou_deal" | "comprehensive_deal"} Group */
 /** @typedef {{ date: string, horizon: string, scenario: string, p: number, note: string }} OddsRow */
-/** @typedef {{ horizon: string, scenario: string, label: string, group: Group, gas_band: string, diesel_band: string, brent_band: string, driver: string }} Scenario */
+/** @typedef {{ horizon: string, scenario: string, label: string, group: Group | "", gas_band: string, diesel_band: string, brent_band: string, driver: string }} Scenario */
 /** @typedef {{ date: string, source: string, nat_regular: number | null, nat_diesel: number | null, ny_regular: number | null, ny_diesel: number | null, nyc_regular: number | null, nyc_diesel: number | null }} GasRow */
 /** @typedef {{ date: string, source: string, brent_ice_front: number | null, dated_brent: number | null, rial_per_usd: number | null }} MarketRow */
 /** @typedef {{ id: string, made_on: string, question: string, p: number, resolves_on: string, resolution_rule: string, outcome: number | null, resolved_on: string, notes: string }} Forecast */
@@ -113,27 +113,24 @@
   /** @param {string} tok @returns {string} */
   const cv = (tok) => `var(${tok})`;
 
-  const N_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-  /** @type {Record<string, string>} */
-  const COLORS = {
-    war_limited: "--war",
-    war_infra: "--war-dark",
-    war_sustained: "--war-light",
-    war_total: "--war",
-    war_resumed: "--war",
-    limbo: "--limbo",
-    half_open: "--calm",
-    iran_folds: "--calm-light",
-    deal: "--calm-dark",
+  /** @type {Record<Group, string>} */
+  const GROUP_COLORS = {
+    limited_war: "--war",
+    escalated_war: "--war-dark",
+    mou_deal: "--calm",
+    comprehensive_deal: "--calm-dark",
   };
   /** @param {string} k @returns {string} */
-  const colorOf = (k) => COLORS[k] ?? "--muted";
+  const colorOf = (k) => GROUP_COLORS[/** @type {Group} */ (k)] ?? "--muted";
   /** @type {Record<Group, string>} */
-  const GROUP_COLORS = { war: "--war", limbo: "--limbo", calm: "--calm" };
-  /** @type {Record<Group, string>} */
-  const GROUP_NAMES = { war: "War", limbo: "Limbo", calm: "De-escalation" };
+  const GROUP_NAMES = {
+    limited_war: "Limited war",
+    escalated_war: "Escalated war",
+    mou_deal: "MOU-style deal",
+    comprehensive_deal: "Comprehensive deal",
+  };
   /** @type {Group[]} */
-  const GROUP_ORDER = ["war", "calm", "limbo"];
+  const GROUP_ORDER = ["limited_war", "escalated_war", "mou_deal", "comprehensive_deal"];
   const election = D.brief.election_day;
   const WAR_START = "2026-02-28";
 
@@ -161,13 +158,18 @@
   const latestYe = ye[ye.length - 1];
   if (!latestNov || !latestYe) throw new Error("odds.csv has no nov3 or ye2026 rows");
   const prevNov = nov[nov.length - 2];
-  /** @param {Record<string, number>} v @param {string} [horizon] @returns {Record<Group, number>} */
+  /**
+   * One update's odds summed into the four scenarios. Older updates used finer scenarios that each map to one
+   * of the four; an update holding a row that maps to none (e.g. an unsplit war total) gives null throughout.
+   * @param {Record<string, number>} v @param {string} [horizon] @returns {Record<Group, number | null>}
+   */
   const groups = (v, horizon = "nov3") => {
     /** @type {Record<Group, number>} */
-    const g = { war: 0, limbo: 0, calm: 0 };
+    const g = { limited_war: 0, escalated_war: 0, mou_deal: 0, comprehensive_deal: 0 };
     for (const [k, p] of Object.entries(v)) {
-      const s = meta.get(`${horizon}:${k}`);
-      if (s) g[s.group] += p;
+      const grp = meta.get(`${horizon}:${k}`)?.group;
+      if (!grp) return { limited_war: null, escalated_war: null, mou_deal: null, comprehensive_deal: null };
+      g[grp] += p;
     }
     return g;
   };
@@ -415,12 +417,11 @@
   }
 
   // ---------- panels ----------
-  let all = false;
   const latest = latestNov;
   const latestYeRow = latestYe;
 
   /**
-   * Scenario-odds line chart for one horizon, with a grouped / all-scenarios toggle.
+   * Scenario-odds line chart for one horizon: one line per scenario.
    * @param {HTMLElement} el
    * @param {{ horizon: string, rows: DateRow[], end: string, endMark: string, byLabel: string, note: string }} o
    */
@@ -430,59 +431,31 @@
     const dates = o.rows.map((r) => r.date);
     const first = dates[0] ?? cur.date;
     const start = isoOf(Math.min(day(first), day(cur.date) - 35));
-    const n = Object.keys(cur.v).length;
-    /** @type {Series[]} */
-    let series;
-    /** @type {EndLabel[]} */
-    let endLabels = [];
     const g = groups(cur.v, o.horizon);
-    if (!all) {
-      series = GROUP_ORDER.map((k) => ({
-        name: GROUP_NAMES[k],
-        color: GROUP_COLORS[k],
-        points: o.rows.map((r) => ({ d: r.date, v: groups(r.v, o.horizon)[k] })),
-      }));
-      endLabels = GROUP_ORDER.map((k) => ({
-        v: g[k],
-        value: `${Math.round(g[k])}%`,
-        name: GROUP_NAMES[k],
-        color: GROUP_COLORS[k],
-        boxW: 58,
-      }));
-    } else {
-      series = keysByP(cur.v).map((k) => ({
-        name: scen(o.horizon, k).label,
-        color: colorOf(k),
-        width: 2.5,
-        points: o.rows.map((r) => ({ d: r.date, v: r.v[k] ?? null })),
-      }));
-    }
+    /** @type {Series[]} */
+    const series = GROUP_ORDER.map((k) => ({
+      name: GROUP_NAMES[k],
+      color: GROUP_COLORS[k],
+      width: 2.5,
+      points: o.rows.map((r) => ({ d: r.date, v: groups(r.v, o.horizon)[k] })),
+    }));
+    /** @type {EndLabel[]} */
+    const endLabels = GROUP_ORDER.map((k) => ({
+      v: g[k] ?? 0,
+      value: `${Math.round(g[k] ?? 0)}%`,
+      name: GROUP_NAMES[k],
+      color: GROUP_COLORS[k],
+      boxW: 58,
+    }));
     const maxV = Math.max(...series.flatMap((s) => s.points.map((p) => p.v ?? 0)));
     const yMax = Math.max(70, Math.ceil((maxV + 5) / 10) * 10);
     /** @type {number[]} */
     const ticks = [];
     for (let t = 0; t <= yMax - 10; t += 20) ticks.push(t);
-    const legend = all
-      ? `<div class="legend" style="margin-top:10px">${keysByP(cur.v)
-          .map(
-            (k) =>
-              `<span><span class="sw" style="background:${cv(colorOf(k))}"></span>${esc(scen(o.horizon, k).label)} <b>${cur.v[k] ?? 0}%</b></span>`,
-          )
-          .join("")}</div>`
-      : "";
     el.innerHTML =
-      `<div class="controls"><div class="seg" role="group" aria-label="Lines shown"><button type="button" id="seg-grouped" aria-pressed="${!all}">War / limbo / de-escalation</button><button type="button" id="seg-all" aria-pressed="${all}">All ${N_WORDS[n] ?? n} scenarios</button></div><div style="font-size:13px" class="muted">Probability of each outcome by ${esc(o.byLabel)}</div></div>` +
-      legend +
+      `<div class="controls"><div style="font-size:13px" class="muted">Probability of each outcome by ${esc(o.byLabel)}</div></div>` +
       '<div class="chart" style="margin-top:30px"></div>' +
       `<div class="note">${o.note}</div>`;
-    $("seg-grouped").onclick = () => {
-      all = false;
-      render();
-    };
-    $("seg-all").onclick = () => {
-      all = true;
-      render();
-    };
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
       label: `Line chart of scenario probabilities by date through ${o.byLabel}`,
       start,
@@ -506,7 +479,7 @@
       end: election,
       endMark: "Election Day",
       byLabel: "Nov. 3",
-      note: 'Each point is one update in odds.csv. Sept. 30 values are reconstructed from the Oct. 4 changes, and the war split wasn’t recorded that day, so "All seven" starts Oct. 4. Hover or tap the chart to read any date.',
+      note: "Each point is one update in odds.csv. Before Oct. 6 the odds used finer scenarios, summed here into the four; that split puts earlier deal odds under MOU-style. Lines start Oct. 4 because the Sept. 30 war split wasn’t recorded. Hover or tap the chart to read any date.",
     });
   }
 
@@ -753,7 +726,7 @@
       end: `${latestYeRow.date.slice(0, 4)}-12-31`,
       endMark: "Dec. 31",
       byLabel: "Dec. 31",
-      note: "Each point is one update in odds.csv. Year-end odds start Oct. 4. Hover or tap the chart to read any date.",
+      note: "Each point is one update in odds.csv. The four year-end scenarios start Oct. 6; the earlier set had no limited/escalated war split. Hover or tap the chart to read any date.",
     });
   }
 
@@ -794,7 +767,7 @@
       id: "odds",
       label: "Scenario Odds",
       title: "The Odds Through Election Day",
-      dek: "GeoBrief’s probability for each path to Nov. 3, re-derived after every material event. War scenarios are combined in orange; de-escalation (half-open, Iran folds, deal) in green.",
+      dek: "GeoBrief’s probability for each path to Nov. 3, re-derived after every material event. Four scenarios: limited and escalated war in orange, MOU-style and comprehensive deals in green.",
       render: oddsPanel,
     },
     {
@@ -975,7 +948,7 @@
       const p = latestYe.v[k] ?? 0;
       const was = prevYe?.v[k];
       const d = was == null ? "—" : p === was ? "Unch." : `${p > was ? "+" : "−"}${Math.abs(p - was)}`;
-      return `<tr><td style="font-weight:600"><span style="display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:8px;background:${cv(colorOf(k))}"></span>${esc(s.label)}</td><td class="num"><span class="pill" style="background:${cv(colorOf(k))}">${p}%</span></td><td class="num" style="white-space:nowrap">${d}</td><td>${GROUP_NAMES[s.group]}</td></tr>`;
+      return `<tr><td style="font-weight:600"><span style="display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:8px;background:${cv(colorOf(k))}"></span>${esc(s.label)}</td><td class="num"><span class="pill" style="background:${cv(colorOf(k))}">${p}%</span></td><td class="num" style="white-space:nowrap">${d}</td><td>${esc(s.driver)}</td></tr>`;
     })
     .join("");
   $("ye-note").textContent =
@@ -1012,6 +985,7 @@
   // ---------- ticker ----------
   const gNow = groups(latest.v);
   const gPrev = prevNov ? groups(prevNov.v) : null;
+  const escNow = gNow.escalated_war ?? 0;
   /** @param {number} a @param {number | null | undefined} b @param {number} dp @returns {[string, string]} */
   const delta = (a, b, dp) => {
     if (b == null) return ["", ""];
@@ -1033,7 +1007,7 @@
   for (const t of D.tripwires) tw[t.status]++;
   /** @type {[string, string, [string, string]][]} */
   const items = [
-    ["WAR BY NOV. 3", `${Math.round(gNow.war)}%`, delta(gNow.war, gPrev?.war, 0)],
+    ["ESCALATED WAR BY NOV. 3", `${Math.round(escNow)}%`, delta(escNow, gPrev?.escalated_war, 0)],
     ["DEAL BY YE", `${D.brief.deal_p.ye2026}%`, ["", ""]],
   ];
   if (br) items.push(["BRENT", `$${br.v.toFixed(2)}`, delta(br.v, brP?.v, 2)]);

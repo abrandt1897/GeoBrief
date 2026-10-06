@@ -34,10 +34,10 @@ test("renders headline, scenario table, dispatches and ticker without errors", a
   await page.goto(PAGE);
   await expect(page.locator("h1")).toHaveText(/Will the War Resume/);
   await expect(page.locator("#dateline")).toContainText("days to Election Day");
-  await expect(page.locator("#scen-body tr")).toHaveCount(7);
-  await expect(page.locator("#scen-body tr").first()).toContainText("39%");
+  await expect(page.locator("#scen-body tr")).toHaveCount(4);
+  await expect(page.locator("#scen-body tr").first()).toContainText("67%");
   await expect(page.locator("#disp .disp")).toHaveCount(6);
-  await expect(page.locator("#ticker")).toContainText("WAR BY NOV. 3");
+  await expect(page.locator("#ticker")).toContainText("ESCALATED WAR BY NOV. 3");
   await expect(page.locator("#ticker")).toContainText("AAA NATIONAL");
   expect(errors).toEqual([]);
 });
@@ -54,11 +54,9 @@ test("scenario tables follow the selected tab", async ({ page }) => {
   await page.click("#tab-yearend");
   await expect(page.locator("#scenarios")).toBeHidden();
   await expect(page.locator("#ye-scenarios")).toBeVisible();
-  await expect(page.locator("#ye-body tr")).toHaveCount(5);
+  await expect(page.locator("#ye-body tr")).toHaveCount(4);
   await expect(page.locator("#bet")).toBeVisible();
   await expect(page.locator("#panel svg")).toContainText("Dec. 31");
-  await page.click("#seg-all");
-  await expect(page.locator(".legend > span")).toHaveCount(5);
 });
 
 test("grouped odds chart labels sum to 100", async ({ page }) => {
@@ -66,7 +64,7 @@ test("grouped odds chart labels sum to 100", async ({ page }) => {
   // End-label values are the bold, centred texts inside the coloured pills.
   const labels = await page.locator('#panel svg text[font-weight="700"][text-anchor="middle"]').allTextContents();
   const pcts = labels.map((t) => parseInt(t));
-  expect(pcts).toHaveLength(3);
+  expect(pcts).toHaveLength(4);
   expect(pcts.reduce((a, b) => a + b, 0)).toBe(100);
 });
 
@@ -79,7 +77,7 @@ test("hover shows a readout and arrow keys step through dates", async ({ page })
   await page.mouse.move(box.x + box.width * 0.62, box.y + box.height * 0.5);
   const tip = page.locator(".tip");
   await expect(tip).toBeVisible();
-  await expect(tip).toContainText("War");
+  await expect(tip).toContainText("Limited war");
   const first = await tip.locator("b").textContent();
   await svg.focus();
   await page.keyboard.press("ArrowLeft");
@@ -88,13 +86,10 @@ test("hover shows a readout and arrow keys step through dates", async ({ page })
   await expect(tip).toBeHidden();
 });
 
-test("all-seven toggle shows a legend for every scenario", async ({ page }) => {
+test("odds chart shows one line per scenario and no toggle", async ({ page }) => {
   await page.goto(PAGE);
-  await page.click("#seg-all");
-  await expect(page.locator("#seg-all")).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator(".legend > span")).toHaveCount(7);
-  await page.click("#seg-grouped");
-  await expect(page.locator(".legend")).toHaveCount(0);
+  await expect(page.locator("#seg-all")).toHaveCount(0);
+  await expect(page.locator("#seg-grouped")).toHaveCount(0);
 });
 
 /** @type {[string, string][]} */

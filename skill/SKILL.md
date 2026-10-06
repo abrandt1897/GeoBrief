@@ -9,12 +9,20 @@ description: 'Geopolitical situation briefings and probabilistic scenario analys
 
 - Probabilistic, bottom line up front, explicit percentages. Peer-level; don't re-explain basics. "Would you bet on it?" → odds + what changes them.
 - TACO (Trump Always Chickens Out) is the baseline for US escalation credibility.
-- He catches inconsistencies — **always read this file before quoting numbers.** Scenario tables, Deal Tracker, Blink #10 and Structural must agree (e.g., P(nuclear deal) ≤ P(deal) × P(nuclear terms); year-end "deal" = P(deal by end-2026); Nov 3 gas lines derive from scenario rows).
+- He catches inconsistencies — **always read this file before quoting numbers.** Scenario tables, Deal Tracker, Blink #10 and Structural must agree (e.g., P(nuclear deal) ≤ P(deal) × P(nuclear terms); comprehensive ≤ P(signed deal by end-2026) ≤ MOU-style + comprehensive; Nov 3 gas lines derive from scenario rows).
 
 ## Format
 
 **Status:** 2–3 sentences → key developments (48–72h) → ≤2 sentences context.
-**Scenarios:** table sorted by P — Scenario | P | Gas (AAA reg., Nov 3) | Key Driver; sums to ~100%, ≥1 tail. Always include the gas column (Adam asked for it Sep 26); note today's baseline and NY metro ≈ +10¢.
+**Scenarios:** the four below, sorted by P — Scenario | P | Gas (AAA reg., Nov 3) | Key Driver; sums to 100%. Always include the gas column (Adam asked for it Sep 26); note today's baseline and NY metro ≈ +10¢.
+**Scenario set (Adam, Oct 6):** the same four for both horizons, each outcome in exactly one.
+
+- **Limited war:** no settlement; strait shut or Iran-controlled (incl. half-open), tanker/proxy hits, occasional US–Iran rounds, limbo.
+- **Escalated war:** sustained US campaign (strikes on 5+ consecutive days) or Gulf export infrastructure (Abqaiq, Yanbu, Kharg, Fujairah) offline 7+ days.
+- **MOU-style deal:** interim truce / enhanced MOU like the MOU week, or unsigned Iranian concessions; no signed comprehensive deal.
+- **Comprehensive deal:** a _signed_ deal in which Iran concedes at least one of Rubio's three terms. Must stay below MOU-style.
+- **Precedence:** a signed deal by the horizon date wins; otherwise the worst war level reached.
+
 **Close:** "What Would Change My Bet" — 2–3 observable tripwires: "If [X] → [scenario] ~Y%."
 
 ## Rules
@@ -131,17 +139,14 @@ Changed vs Sep 30: Iran soft-rejected the US counter (strait-first, no nuclear t
 
 ### Through Midterms (Nov 3)
 
-| Scenario                              | P   | Gas (AAA reg.) | Brent     | Key Driver                                          |
-| ------------------------------------- | --- | -------------- | --------- | --------------------------------------------------- |
-| War: limited round (Sep 10-style)     | 39% | $4.40-4.60     | $103-112  | Iran holds strait-first; claimed hit or US strike   |
-| Limbo / extensions                    | 20% | $4.20-4.40     | $95-105   | Mediator traffic continues, no text agreed          |
-| Half-open, Iran-influenced            | 12% | $4.00-4.25     | $86-96    | Escorted crude near prewar; Yanbu ramp; G7 release  |
-| War: oil-infrastructure hit           | 9%  | $4.75-5.10+    | $118-130+ | Yanbu/Abqaiq/Khurais, Sohar/Fujairah STS, Kharg     |
-| War: sustained campaign, no infra hit | 7%  | $4.55-4.75     | $110-118  | Interceptor-limited; early start of Nov buildup     |
-| Iran folds                            | 8%  | $3.90-4.10     | $80-90    | Rial ~2.7M, 70-90% inflation; accepts US sequencing |
-| Deal                                  | 5%  | $3.85-4.05     | $76-88    | Iran accepts US text as basis                       |
+| Scenario           | P   | Gas (AAA reg.) | Brent    | Key Driver                                                       |
+| ------------------ | --- | -------------- | -------- | ---------------------------------------------------------------- |
+| Limited war        | 67% | $4.20-4.60     | $95-112  | No settlement; Iran holds strait-first; claimed hits, limbo      |
+| Escalated war      | 21% | $4.55-5.10+    | $110-130 | Oil-infrastructure hit (14) or sustained US campaign (7)         |
+| MOU-style deal     | 11% | $3.90-4.25     | $80-96   | Iran folds on sequencing or interim text; nothing signed in full |
+| Comprehensive deal | 1%  | $3.85-4.05     | $76-88   | Signed deal conceding a Rubio term before the election           |
 
-War total = 55% (Oct 4 late: B-1B withdrawal −1 sustained, +1 limbo). NY state ≈ +10¢, **NYC metro ≈ +19¢** over national (corrected Oct 4).
+Mapped Oct 6 from the old seven: limited = limited round 39 + limbo 19 + half-open 9; escalated = infra 14 + sustained 7; MOU = Iran folds 8 + 3 of deal 4; comprehensive = 1 of deal 4. War by Nov 3 (claimed kinetic round, `war_nov3`) = 60%, between escalated (21) and all war (88). NY state ≈ +10¢, **NYC metro ≈ +19¢** over national (corrected Oct 4).
 
 **Gas baseline (AAA, Oct 4):** national regular $4.37 (yday $4.38, wk $4.48, mo $4.15); diesel $6.34 (record $6.53 9/22). NY state $4.47 / $6.52; NYC metro $4.56 / $6.74. Drifting down ~1¢/day. G7 diesel release caps diesel; China product-export halt and Dated Brent >$120 push the other way.
 **Gas mechanics:** rockets 2-4¢/day, feathers 1-1.5¢/day (~2.4¢ per $1/bbl); no-shock path → ~$4.10-4.25.
@@ -150,13 +155,14 @@ War total = 55% (Oct 4 late: B-1B withdrawal −1 sustained, +1 limbo). NY state
 
 ### Through Year-End 2026
 
-| Scenario    | P   |
-| ----------- | --- |
-| War resumed | 48% |
-| Half-open   | 18% |
-| Deal        | 16% |
-| Limbo       | 9%  |
-| Iran folds  | 9%  |
+| Scenario           | P   |
+| ------------------ | --- |
+| Limited war        | 56% |
+| Escalated war      | 20% |
+| MOU-style deal     | 18% |
+| Comprehensive deal | 6%  |
+
+Mapped Oct 6: old war resumed 49 split ~60/40 limited/escalated (Nov bombing intent, ~45% real surge by YE); limited also takes half-open 18 + limbo 9; MOU = 9 of deal 15 + Iran folds 9; comprehensive = 6 (= nuclear-deal forecast). P(signed deal by YE) 15% sits between comprehensive and MOU + comprehensive.
 
 ### Live Tripwires
 

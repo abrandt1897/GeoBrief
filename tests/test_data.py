@@ -105,7 +105,7 @@ def test_odds_have_no_duplicate_scenarios_per_update() -> None:
 
 def test_scenarios_have_valid_groups_and_gas_bands() -> None:
     for s in load("scenarios.csv"):
-        assert s["group"] in {"war", "limbo", "calm"}
+        assert s["group"] in {"limited_war", "escalated_war", "mou_deal", "comprehensive_deal", ""}
         if s["gas_band"]:
             lo, hi = (float(x) for x in s["gas_band"].split("-"))
             assert 2 < lo < hi < 8, f"implausible gas band {s['gas_band']}"
