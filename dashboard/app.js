@@ -886,6 +886,7 @@
     cur.render(p);
     $("scenarios").hidden = tab !== "odds";
     $("ye-scenarios").hidden = tab !== "yearend";
+    $("bet").hidden = tab !== "odds" && tab !== "yearend";
   }
   /** @param {string} id */
   const selectTab = (id) => {

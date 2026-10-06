@@ -738,7 +738,8 @@ main {
   gap: 12px;
 }
 
-.two > .main[hidden] {
+.two > .main[hidden],
+.two > aside[hidden] {
   display: none;
 }
 
