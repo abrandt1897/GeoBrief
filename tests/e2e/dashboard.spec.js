@@ -80,14 +80,14 @@ test("all-seven toggle shows a legend for every scenario", async ({ page }) => {
 
 /** @type {[string, string][]} */
 const TABS = [
-  ["odds", "The odds through Election Day"],
-  ["gas", "Gas prices against the scenarios"],
-  ["supply", "How much oil is getting out"],
-  ["blinks", "The blink count"],
-  ["tripwires", "What would move the odds"],
-  ["deal", "What a deal would likely contain"],
-  ["yearend", "Where things stand by Dec. 31"],
-  ["calibration", "How good are these forecasts?"],
+  ["odds", "The Odds Through Election Day"],
+  ["gas", "Gas Prices Against The Scenarios"],
+  ["supply", "How Much Oil Is Getting Out"],
+  ["blinks", "The Blink Count"],
+  ["tripwires", "What Would Move The Odds"],
+  ["deal", "What A Deal Would Likely Contain"],
+  ["yearend", "Where Things Stand By Dec. 31"],
+  ["calibration", "How Good Are These Forecasts?"],
 ];
 
 for (const [id, title] of TABS) {
@@ -105,7 +105,7 @@ for (const [id, title] of TABS) {
 test("physical supply chart shows five series, the war start and the latest supply note", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto(`${PAGE}#supply`);
-  await expect(page.locator("#panel-title")).toHaveText("How much oil is getting out");
+  await expect(page.locator("#panel-title")).toHaveText("How Much Oil Is Getting Out");
   await expect(page.locator(".legend > span")).toHaveCount(5);
   await expect(page.locator("#panel svg")).toContainText("War begins");
   await expect(page.locator(".annos > div").first()).toBeVisible();
@@ -125,7 +125,8 @@ test("gas chart: year to date by default, last 45 days shows end labels", async 
   await expect(page.locator("#seg-ytd")).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("#panel svg")).toContainText("JAN.");
   await expect(page.locator("#panel svg")).toContainText("War begins");
-  await expect(page.locator(".legend > span")).toHaveCount(2);
+  await expect(page.locator(".legend > span")).toHaveCount(1);
+  await expect(page.locator("#panel")).not.toContainText("NYC");
   await page.click("#seg-recent");
   await expect(page.locator("#seg-recent")).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("#panel svg")).not.toContainText("JAN.");
@@ -135,7 +136,7 @@ test("gas chart: year to date by default, last 45 days shows end labels", async 
 
 test("tab deep link via #hash", async ({ page }) => {
   await page.goto(`${PAGE}#tripwires`);
-  await expect(page.locator("#panel-title")).toHaveText("What would move the odds");
+  await expect(page.locator("#panel-title")).toHaveText("What Would Move The Odds");
   await expect(page.locator(".trip")).toHaveCount(13);
   await expect(page.locator(".trip").first()).toContainText("FIRED");
 });
@@ -150,7 +151,7 @@ test("menu opens, switches tab, and closes on Escape and outside click", async (
   await expect(btn).toHaveAttribute("aria-expanded", "true");
   await page.click('#drawer a[data-tab="deal"]');
   await expect(drawer).toBeHidden();
-  await expect(page.locator("#panel-title")).toHaveText("What a deal would likely contain");
+  await expect(page.locator("#panel-title")).toHaveText("What A Deal Would Likely Contain");
   await btn.click();
   await page.keyboard.press("Escape");
   await expect(drawer).toBeHidden();

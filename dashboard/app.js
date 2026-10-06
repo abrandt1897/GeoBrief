@@ -487,22 +487,17 @@
 
   /** @param {HTMLElement} el */
   function gasPanel(el) {
-    const allDates = gasRows.filter((r) => r.nat_regular != null || r.nyc_regular != null).map((r) => r.date);
+    const allDates = gasRows.filter((r) => r.nat_regular != null).map((r) => r.date);
     const lastDate = allDates[allDates.length - 1] ?? latest.date;
     const start = gasRange === "ytd" ? `${lastDate.slice(0, 4)}-01-01` : isoOf(day(lastDate) - 45);
     const shown = gasRows.filter((r) => r.date >= start);
     const natR = readings(shown, (r) => r.nat_regular);
-    const nycR = readings(shown, (r) => r.nyc_regular);
     const dslR = readings(gasRows, (r) => r.nat_diesel);
     const dates = allDates.filter((d) => d >= start);
     const nat = nth(natR);
-    const nyc = nth(nycR);
     const dsl = nth(dslR);
     /** @type {Series[]} */
-    const series = [
-      { name: "National", color: "--fg", points: shown.map((r) => ({ d: r.date, v: r.nat_regular })) },
-      { name: "NYC metro", color: "--war", width: 2.5, points: shown.map((r) => ({ d: r.date, v: r.nyc_regular })) },
-    ];
+    const series = [{ name: "National", color: "--fg", points: shown.map((r) => ({ d: r.date, v: r.nat_regular })) }];
     const bands = Object.keys(latest.v).flatMap((k) => {
       const s = meta.get(`nov3:${k}`);
       const p = latest.v[k] ?? 0;
@@ -518,20 +513,13 @@
         },
       ];
     });
-    const vals = [...natR.map((r) => r.v), ...nycR.map((r) => r.v), ...bands.flatMap((b) => [b.lo, b.hi])];
+    const vals = [...natR.map((r) => r.v), ...bands.flatMap((b) => [b.lo, b.hi])];
     const yMin = Math.floor((Math.min(...vals) - 0.05) * 4) / 4;
     const yMax = Math.ceil((Math.max(...vals) + 0.05) * 4) / 4;
     /** @type {number[]} */
     const ticks = [];
     for (let t = yMin; t <= yMax - 0.24; t += 0.25) ticks.push(Number(t.toFixed(2)));
-    const lines = [
-      "gas_nat_450",
-      "gas_nat_475",
-      "gas_nat_500",
-      "gas_nat_lt400",
-      "gas_nyc_475",
-      "gas_diesel_650",
-    ].flatMap((k) => {
+    const lines = ["gas_nat_450", "gas_nat_475", "gas_nat_500", "gas_nat_lt400", "gas_diesel_650"].flatMap((k) => {
       const f = latestF.get(k);
       return f ? [f] : [];
     });
@@ -542,7 +530,7 @@
         : "";
     const legend =
       gasRange === "ytd"
-        ? `<div class="legend" style="margin-top:10px">${legendItem("National", "--fg", nat)}${legendItem("NYC metro", "--war", nyc)}</div>`
+        ? `<div class="legend" style="margin-top:10px">${legendItem("National", "--fg", nat)}</div>`
         : "";
     el.innerHTML =
       `<div class="controls"><div class="seg" role="group" aria-label="Date range"><button type="button" id="seg-ytd" aria-pressed="${gasRange === "ytd"}">Year to date</button><button type="button" id="seg-recent" aria-pressed="${gasRange === "recent"}">Last 45 days</button></div><div style="font-size:13px" class="muted">AAA regular, $ per gallon</div></div>` +
@@ -554,7 +542,7 @@
             `<div><small>${esc(f.question.replace("AAA ", "").replace(" on Nov 3", ""))}</small><strong>${f.p}%</strong></div>`,
         )
         .join("")}</div>` +
-      `<div class="note">Bars right of Election Day show each scenario’s Nov. 3 price range; bar width is proportional to its probability. Latest diesel: $${dsl ? dsl.v.toFixed(2) : "—"}. Before Oct. 4 the series is backfilled from AAA’s weekly posts and news reports quoting AAA (about twice a week); NYC metro readings are sparse, so its line breaks where there are none for three weeks. Hover or tap to read any day.</div>`;
+      `<div class="note">Bars right of Election Day show each scenario’s Nov. 3 price range; bar width is proportional to its probability. Latest diesel: $${dsl ? dsl.v.toFixed(2) : "—"}. Before Oct. 4 the series is backfilled from AAA’s weekly posts and news reports quoting AAA (about twice a week). Hover or tap to read any day.</div>`;
     $("seg-ytd").onclick = () => {
       gasRange = "ytd";
       render();
@@ -568,9 +556,6 @@
     // Year to date leaves too little room right of "today" for end labels; the legend carries the values instead.
     if (gasRange === "recent" && nat) {
       endLabels.push({ v: nat.v, value: `$${nat.v.toFixed(2)}`, name: "National", color: "--fg", boxW: 66 });
-      if (nyc && nyc.date === nat.date) {
-        endLabels.push({ v: nyc.v, value: `$${nyc.v.toFixed(2)}`, name: "NYC", color: "--war", boxW: 66 });
-      }
     }
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
       label: "AAA regular gas prices with Nov. 3 scenario price bands",
@@ -639,7 +624,7 @@
       `<div class="controls"><div style="font-size:13px" class="muted">Million barrels a day. Monthly averages are plotted mid-month; dots are individual readings.</div></div>` +
       legend +
       '<div class="chart" style="margin-top:30px"></div>' +
-      '<div class="note">Two bases, never mixed on one line: IEA counts total oil (crude, NGLs and products), Kpler counts crude only, so IEA runs higher. "Gulf exports" covers every route; "Hormuz" is only what passes the strait; the East-West pipeline carries Saudi crude to Yanbu on the Red Sea, bypassing it. Every point carries its source and vintage (hover or tap); revised figures replace preliminary ones (Kpler Sept. went from 12.8 to 16.3). A break in a line means no reading for more than 45 days on that basis. The Oct. 4 Khurais strike is not plotted because its effect on flow is contested.</div>' +
+      '<div class="note">Two bases, never mixed on one line: IEA counts total oil (crude, NGLs and products), Kpler counts crude only, so IEA runs higher. "Gulf exports" covers every route; "Hormuz" is only what passes the strait; the East-West pipeline carries Saudi crude to Yanbu on the Red Sea, bypassing it. Every point carries its source and vintage (hover or tap); revised figures replace preliminary ones (Kpler Sept. went from 12.8 to 16.3). Dots are readings; the lines between them are straight connections, not data, so a long stretch between dots (Hormuz May–July, the pipeline May–August) has no reading behind it. The Oct. 4 Khurais strike is not plotted because its effect on flow is contested.</div>' +
       note;
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
       label: "Line chart of Gulf crude exports, Hormuz flows and Saudi East-West pipeline throughput since January",
@@ -655,7 +640,6 @@
       vlines: [{ date: WAR_START, text: "War begins" }],
       annotations: D.supply_events.filter((e) => e.date !== WAR_START).map((e) => ({ date: e.date, text: e.label })),
       annoRows: 4,
-      maxGap: 45,
       tipExtra: (d) =>
         rowsS
           .filter((r) => r.date === d)
@@ -796,57 +780,57 @@
   const TABS = [
     {
       id: "odds",
-      label: "Scenario odds",
-      title: "The odds through Election Day",
+      label: "Scenario Odds",
+      title: "The Odds Through Election Day",
       dek: "GeoBrief’s probability for each path to Nov. 3, re-derived after every material event. War scenarios are combined in orange; de-escalation (half-open, Iran folds, deal) in green.",
       render: oddsPanel,
     },
     {
       id: "gas",
-      label: "Gas prices",
-      title: "Gas prices against the scenarios",
-      dek: "AAA regular, national and NYC metro, with the price range each scenario implies on Nov. 3. Prices rise 2–4¢ a day after a shock and fall 1–1.5¢ a day after it passes.",
+      label: "Gas Prices",
+      title: "Gas Prices Against The Scenarios",
+      dek: "AAA national average regular, with the price range each scenario implies on Nov. 3. Prices rise 2–4¢ a day after a shock and fall 1–1.5¢ a day after it passes.",
       render: gasPanel,
     },
     {
       id: "supply",
-      label: "Physical supply",
-      title: "How much oil is getting out",
+      label: "Physical Supply",
+      title: "How Much Oil Is Getting Out",
       dek: "Gulf crude exports, flows through the Strait of Hormuz and Saudi Arabia's East-West bypass pipeline, from January through the war. Ship counts aren't barrels, and a daily snapshot isn't a monthly average.",
       render: supplyPanel,
     },
     {
       id: "blinks",
-      label: "Blink count",
-      title: "The blink count",
+      label: "Blink Count",
+      title: "The Blink Count",
       dek: "Every US threat or deadline since April, and whether it was carried out. Announced threats are weak evidence; a quiet buildup of forces is the real warning sign.",
       render: blinkPanel,
     },
     {
       id: "tripwires",
       label: "Tripwires",
-      title: "What would move the odds",
+      title: "What Would Move The Odds",
       dek: "Observable events that would change the forecast, and by how much. Armed tripwires are checked on every run.",
       render: tripPanel,
     },
     {
       id: "deal",
-      label: "Deal terms",
-      title: "What a deal would likely contain",
+      label: "Deal Terms",
+      title: "What A Deal Would Likely Contain",
       dek: "If there is a deal, the probability that each term is in it.",
       render: dealPanel,
     },
     {
       id: "yearend",
-      label: "Year-end",
-      title: "Where things stand by Dec. 31",
+      label: "Year-End",
+      title: "Where Things Stand By Dec. 31",
       dek: "Probability of each outcome by the end of 2026, plus the longer structural odds.",
       render: yePanel,
     },
     {
       id: "calibration",
       label: "Calibration",
-      title: "How good are these forecasts?",
+      title: "How Good Are These Forecasts?",
       dek: "Every forecast is dated and scored once it resolves, using the Brier score (lower is better).",
       render: calPanel,
     },
@@ -908,7 +892,7 @@
   // ---------- menu ----------
   const drawerItems = [
     ...TABS.map((t) => ({ href: "#odds", tab: t.id, name: t.label, sub: t.title })),
-    { href: "#scenarios", tab: "", name: "Scenario table", sub: "Every path to Nov. 3 with gas and drivers" },
+    { href: "#scenarios", tab: "", name: "Scenario Table", sub: "Every path to Nov. 3 with gas and drivers" },
     { href: "#dispatches", tab: "", name: "Dispatches", sub: "The latest events" },
     { href: "#method", tab: "", name: "Method", sub: "How the odds are made and checked" },
   ];
