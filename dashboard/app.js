@@ -3,7 +3,7 @@
 
 /** @typedef {"war" | "limbo" | "calm"} Group */
 /** @typedef {{ date: string, horizon: string, scenario: string, p: number, note: string }} OddsRow */
-/** @typedef {{ horizon: string, scenario: string, label: string, group: Group, gas_band: string, brent_band: string, driver: string }} Scenario */
+/** @typedef {{ horizon: string, scenario: string, label: string, group: Group, gas_band: string, diesel_band: string, brent_band: string, driver: string }} Scenario */
 /** @typedef {{ date: string, source: string, nat_regular: number | null, nat_diesel: number | null, ny_regular: number | null, ny_diesel: number | null, nyc_regular: number | null, nyc_diesel: number | null }} GasRow */
 /** @typedef {{ date: string, source: string, brent_ice_front: number | null, dated_brent: number | null, rial_per_usd: number | null }} MarketRow */
 /** @typedef {{ id: string, made_on: string, question: string, p: number, resolves_on: string, resolution_rule: string, outcome: number | null, resolved_on: string, notes: string }} Forecast */
@@ -503,37 +503,30 @@
     });
   }
 
-  /** @type {"ytd" | "recent"} */
-  let gasRange = "ytd";
+  /** @type {"gas" | "diesel"} */
+  let gasFuel = "gas";
 
   /** @param {HTMLElement} el */
   function gasPanel(el) {
-    const allDates = gasRows.filter((r) => r.nat_regular != null || r.nat_diesel != null).map((r) => r.date);
-    const regDates = gasRows.filter((r) => r.nat_regular != null).map((r) => r.date);
-    const lastDate = regDates[regDates.length - 1] ?? latest.date;
-    const start = gasRange === "ytd" ? `${lastDate.slice(0, 4)}-01-01` : isoOf(day(lastDate) - 45);
+    const isDsl = gasFuel === "diesel";
+    /** @param {GasRow} r */
+    const get = (r) => (isDsl ? r.nat_diesel : r.nat_regular);
+    const name = isDsl ? "Diesel" : "Regular";
+    const allDates = gasRows.filter((r) => get(r) != null).map((r) => r.date);
+    const lastDate = allDates[allDates.length - 1] ?? latest.date;
+    const start = `${lastDate.slice(0, 4)}-01-01`;
     const shown = gasRows.filter((r) => r.date >= start);
-    const natR = readings(shown, (r) => r.nat_regular);
-    const dslR = readings(shown, (r) => r.nat_diesel);
-    const dates = allDates.filter((d) => d >= start && d <= lastDate);
-    const nat = nth(natR);
-    const dsl = nth(dslR);
+    const priceR = readings(shown, get);
+    const dates = allDates.filter((d) => d >= start);
+    const cur = nth(priceR);
     /** @type {Series[]} */
-    const series = [
-      { name: "Regular", color: "--fg", points: shown.map((r) => ({ d: r.date, v: r.nat_regular })) },
-      {
-        name: "Diesel",
-        color: "--fg",
-        dash: "7 6",
-        width: 3,
-        points: shown.map((r) => ({ d: r.date, v: r.nat_diesel })),
-      },
-    ];
+    const series = [{ name, color: "--fg", points: shown.map((r) => ({ d: r.date, v: get(r) })) }];
     const bands = Object.keys(latest.v).flatMap((k) => {
       const s = meta.get(`nov3:${k}`);
       const p = latest.v[k] ?? 0;
-      if (!s?.gas_band) return [];
-      const [lo = 0, hi = 0] = s.gas_band.split("-").map(Number);
+      const band = isDsl ? s?.diesel_band : s?.gas_band;
+      if (!s || !band) return [];
+      const [lo = 0, hi = 0] = band.split("-").map(Number);
       return [
         {
           lo,
@@ -544,29 +537,25 @@
         },
       ];
     });
-    const vals = [...natR.map((r) => r.v), ...dslR.map((r) => r.v), ...bands.flatMap((b) => [b.lo, b.hi])];
-    // Diesel stretches the scale, so ticks step by 50 cents once the range passes $2.
-    const step = Math.max(...vals) - Math.min(...vals) > 2 ? 0.5 : 0.25;
+    const vals = [...priceR.map((r) => r.v), ...bands.flatMap((b) => [b.lo, b.hi])];
+    const step = Math.max(...vals) - Math.min(...vals) > 2.5 ? 0.5 : 0.25;
     const yMin = Math.floor((Math.min(...vals) - 0.05) / step) * step;
     const yMax = Math.ceil((Math.max(...vals) + 0.05) / step) * step;
     /** @type {number[]} */
     const ticks = [];
     for (let t = yMin; t <= yMax - step + 0.01; t += step) ticks.push(Number(t.toFixed(2)));
-    const lines = ["gas_nat_450", "gas_nat_475", "gas_nat_500", "gas_nat_lt400", "gas_diesel_650"].flatMap((k) => {
+    const ids = isDsl
+      ? ["gas_diesel_650", "gas_diesel_675", "gas_diesel_700", "gas_diesel_lt600"]
+      : ["gas_nat_450", "gas_nat_475", "gas_nat_500", "gas_nat_lt400"];
+    const lines = ids.flatMap((k) => {
       const f = latestF.get(k);
       return f ? [f] : [];
     });
-    /** @param {string} name @param {string} color @param {Reading | null} r @param {boolean} [dashed] */
-    const legendItem = (name, color, r, dashed = false) =>
-      r
-        ? `<span><span class="sw${dashed ? " dashed" : ""}" style="--c:${cv(color)}"></span>${esc(name)} <b>$${r.v.toFixed(2)}</b> <span class="muted">(${fmtDate(r.date)})</span></span>`
-        : "";
-    const legend =
-      gasRange === "ytd"
-        ? `<div class="legend" style="margin-top:10px">${legendItem("Regular", "--fg", nat)}${legendItem("Diesel", "--fg", dsl, true)}</div>`
-        : "";
+    const legend = cur
+      ? `<div class="legend" style="margin-top:10px"><span><span class="sw" style="background:var(--fg)"></span>${name} <b>$${cur.v.toFixed(2)}</b> <span class="muted">(${fmtDate(cur.date)})</span></span></div>`
+      : "";
     el.innerHTML =
-      `<div class="controls"><div class="seg" role="group" aria-label="Date range"><button type="button" id="seg-ytd" aria-pressed="${gasRange === "ytd"}">Year to date</button><button type="button" id="seg-recent" aria-pressed="${gasRange === "recent"}">Last 45 days</button></div><div style="font-size:13px" class="muted">AAA national average, $ per gallon</div></div>` +
+      `<div class="controls"><div class="seg" role="group" aria-label="Fuel"><button type="button" id="seg-gas" aria-pressed="${!isDsl}">Gas</button><button type="button" id="seg-diesel" aria-pressed="${isDsl}">Diesel</button></div><div style="font-size:13px" class="muted">AAA national ${isDsl ? "diesel" : "regular"}, $ per gallon</div></div>` +
       legend +
       '<div class="chart" style="margin-top:30px"></div>' +
       `<div class="figs">${lines
@@ -575,26 +564,17 @@
             `<div><small>${esc(f.question.replace("AAA ", "").replace(" on Nov 3", ""))}</small><strong>${f.p}%</strong></div>`,
         )
         .join("")}</div>` +
-      `<div class="note">Bars right of Election Day show each scenario’s Nov. 3 price range; bar width is proportional to its probability; they price regular gas, not diesel. Before Oct. 4 both series are backfilled from AAA’s weekly posts and news reports quoting AAA (about twice a week for regular, weekly for diesel). Hover or tap to read any day.</div>`;
-    $("seg-ytd").onclick = () => {
-      gasRange = "ytd";
+      `<div class="note">Bars right of Election Day show each scenario’s Nov. 3 ${isDsl ? "diesel" : "regular"} price range; bar width is proportional to its probability. Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.</div>`;
+    $("seg-gas").onclick = () => {
+      gasFuel = "gas";
       render();
     };
-    $("seg-recent").onclick = () => {
-      gasRange = "recent";
+    $("seg-diesel").onclick = () => {
+      gasFuel = "diesel";
       render();
     };
-    /** @type {EndLabel[]} */
-    const endLabels = [];
-    // Year to date leaves too little room right of "today" for end labels; the legend carries the values instead.
-    if (gasRange === "recent" && nat) {
-      endLabels.push({ v: nat.v, value: `$${nat.v.toFixed(2)}`, name: "Regular", color: "--fg", boxW: 66 });
-    }
-    if (gasRange === "recent" && dsl) {
-      endLabels.push({ v: dsl.v, value: `$${dsl.v.toFixed(2)}`, name: "Diesel", color: "--fg", boxW: 66 });
-    }
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
-      label: "AAA regular gas and diesel prices with Nov. 3 scenario price bands",
+      label: `AAA national ${isDsl ? "diesel" : "regular gas"} prices with Nov. 3 scenario price bands`,
       start,
       end: election,
       dates,
@@ -604,7 +584,6 @@
       yTicks: ticks,
       yFmt: (v) => `$${v.toFixed(2)}`,
       bands,
-      endLabels,
       ...(day(start) < day(WAR_START) ? { vlines: [{ date: WAR_START, text: "War begins" }] } : {}),
       maxGap: 21,
     });

@@ -1,14 +1,14 @@
-horizon,scenario,label,group,gas_band,brent_band,driver
-nov3,war_limited,Limited war round,war,4.40-4.60,103-112,Iran holds strait-first; claimed hit or US strike
-nov3,war_infra,Oil-infrastructure hit,war,4.75-5.10,118-130,"Yanbu, Abqaiq, Khurais, Sohar/Fujairah STS or Kharg"
-nov3,war_sustained,Sustained campaign,war,4.55-4.75,110-118,Interceptor-limited; early start to Nov buildup
-nov3,war_total,War (all),war,,,Aggregate used when the war split was not recorded
-nov3,limbo,Limbo / extensions,limbo,4.20-4.40,95-105,Mediators keep shuttling; no agreed text
-nov3,half_open,Half-open strait,calm,4.00-4.25,86-96,Escorted crude near prewar; Yanbu ramp; G7 release
-nov3,iran_folds,Iran folds,calm,3.90-4.10,80-90,"Rial ~2.7M, 70-90% inflation; accepts US sequencing"
-nov3,deal,Deal,calm,3.85-4.05,76-88,Iran accepts the US text as a basis
-ye2026,war_resumed,War resumed,war,,,
-ye2026,half_open,Half-open,calm,,,
-ye2026,deal,Deal,calm,,,
-ye2026,limbo,Limbo,limbo,,,
-ye2026,iran_folds,Iran folds,calm,,,
+horizon,scenario,label,group,gas_band,diesel_band,brent_band,driver
+nov3,war_limited,Limited war round,war,4.40-4.60,6.35-6.65,103-112,Iran holds strait-first; claimed hit or US strike
+nov3,war_infra,Oil-infrastructure hit,war,4.75-5.10,6.90-7.40,118-130,"Yanbu, Abqaiq, Khurais, Sohar/Fujairah STS or Kharg"
+nov3,war_sustained,Sustained campaign,war,4.55-4.75,6.60-6.90,110-118,Interceptor-limited; early start to Nov buildup
+nov3,war_total,War (all),war,,,,Aggregate used when the war split was not recorded
+nov3,limbo,Limbo / extensions,limbo,4.20-4.40,6.05-6.35,95-105,Mediators keep shuttling; no agreed text
+nov3,half_open,Half-open strait,calm,4.00-4.25,5.75-6.15,86-96,Escorted crude near prewar; Yanbu ramp; G7 release
+nov3,iran_folds,Iran folds,calm,3.90-4.10,5.60-5.90,80-90,"Rial ~2.7M, 70-90% inflation; accepts US sequencing"
+nov3,deal,Deal,calm,3.85-4.05,5.55-5.85,76-88,Iran accepts the US text as a basis
+ye2026,war_resumed,War resumed,war,,,,
+ye2026,half_open,Half-open,calm,,,,
+ye2026,deal,Deal,calm,,,,
+ye2026,limbo,Limbo,limbo,,,,
+ye2026,iran_folds,Iran folds,calm,,,,

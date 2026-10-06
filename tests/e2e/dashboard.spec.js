@@ -138,20 +138,21 @@ test("physical supply chart shows five series, the war start and the latest supp
   expect(errors).toEqual([]);
 });
 
-test("gas chart: year to date by default, last 45 days shows end labels", async ({ page }) => {
+test("gas chart: Gas by default, Diesel button swaps the series, bands and odds", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto(`${PAGE}#gas`);
-  await expect(page.locator("#seg-ytd")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("#seg-gas")).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("#panel svg")).toContainText("JAN.");
   await expect(page.locator("#panel svg")).toContainText("War begins");
-  await expect(page.locator(".legend > span")).toHaveCount(2);
-  await expect(page.locator(".legend")).toContainText("Diesel");
+  await expect(page.locator(".legend")).toContainText("Regular");
+  await expect(page.locator(".figs")).toContainText("regular >= $4.50");
   await expect(page.locator("#panel")).not.toContainText("NYC");
-  await page.click("#seg-recent");
-  await expect(page.locator("#seg-recent")).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator("#panel svg")).not.toContainText("JAN.");
-  await expect(page.locator('#panel svg text[font-weight="700"][text-anchor="middle"]').first()).toContainText("$");
-  await expect(page.locator("#panel svg")).toContainText("Diesel");
+  await page.click("#seg-diesel");
+  await expect(page.locator("#seg-diesel")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".legend")).toContainText("Diesel");
+  await expect(page.locator(".figs > div")).toHaveCount(4);
+  await expect(page.locator(".figs")).toContainText("diesel >= $7.00");
+  await expect(page.locator("#panel svg polyline").first()).not.toHaveAttribute("stroke-dasharray", /.*/);
   expect(errors).toEqual([]);
 });
 

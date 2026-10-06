@@ -32,3 +32,7 @@ gas_nyc_500,2026-10-05,AAA NYC metro regular >= $5.00 on Nov 3,8,2026-11-03,AAA 
 deal_ye2026,2026-10-05,War-ending deal by end-2026,15,2026-12-31,1 if a signed war-ending deal by Dec 31 2026,,,= ye2026 deal in odds.csv
 war_ye2026,2026-10-05,War resumed by end-2026,49,2026-12-31,1 if a claimed kinetic round occurs by Dec 31 2026,,,
 deal_ye2027,2026-10-05,War-ending deal by end-2027,33,2027-12-31,1 if a signed war-ending deal by Dec 31 2027,,,
+gas_diesel_650,2026-10-06,AAA national diesel >= $6.50 on Nov 3,41,2026-11-03,AAA national diesel as shown on Nov 3,,,re-derived from scenario rows x new diesel bands (scenarios.csv diesel_band); was 35 before bands existed
+gas_diesel_675,2026-10-06,AAA national diesel >= $6.75 on Nov 3,18,2026-11-03,AAA national diesel as shown on Nov 3,,,derived from scenario rows x diesel bands
+gas_diesel_700,2026-10-06,AAA national diesel >= $7.00 on Nov 3,11,2026-11-03,AAA national diesel as shown on Nov 3,,,derived from scenario rows x diesel bands
+gas_diesel_lt600,2026-10-06,AAA national diesel < $6.00 on Nov 3,18,2026-11-03,AAA national diesel as shown on Nov 3,,,derived from scenario rows x diesel bands
