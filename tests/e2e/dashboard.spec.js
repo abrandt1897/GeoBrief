@@ -102,11 +102,11 @@ for (const [id, title] of TABS) {
   });
 }
 
-test("physical supply chart shows three series, the war start and the latest supply note", async ({ page }) => {
+test("physical supply chart shows five series, the war start and the latest supply note", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto(`${PAGE}#supply`);
   await expect(page.locator("#panel-title")).toHaveText("How much oil is getting out");
-  await expect(page.locator(".legend > span")).toHaveCount(3);
+  await expect(page.locator(".legend > span")).toHaveCount(5);
   await expect(page.locator("#panel svg")).toContainText("War begins");
   await expect(page.locator(".annos > div").first()).toBeVisible();
   await expect(page.locator(".supply-note h3")).not.toBeEmpty();

@@ -66,6 +66,7 @@
  * @property {string | null} [endMark] label for the dashed line at the right edge (default "Election Day"; null for none)
  * @property {Annotation[]} [vlines] labelled vertical markers drawn inside the plot
  * @property {number} [annoRows] rows the annotation captions cycle through (default 2)
+ * @property {number} [maxGap] break a line where consecutive readings are more than this many days apart
  */
 /** @typedef {{ id: string, label: string, title: string, dek: string, render: (el: HTMLElement) => void }} Tab */
 /** @typedef {{ date: string, v: number }} Reading */
@@ -133,6 +134,7 @@
   /** @type {Group[]} */
   const GROUP_ORDER = ["war", "calm", "limbo"];
   const election = D.brief.election_day;
+  const WAR_START = "2026-02-28";
 
   // ---------- data shaping ----------
   /** @type {Map<string, Scenario>} */
@@ -249,8 +251,18 @@
     }
     for (const s of o.series) {
       const pts = s.points.flatMap((p) => (p.v == null ? [] : [{ d: p.d, v: p.v }]));
-      if (pts.length > 1) {
-        const line = pts.map((p) => `${X(p.d).toFixed(1)},${Y(p.v).toFixed(1)}`).join(" ");
+      // Split into runs so a line never implies readings across a long gap.
+      /** @type {{ d: string, v: number }[][]} */
+      const runs = [];
+      for (const p of pts) {
+        const run = runs[runs.length - 1];
+        const prev = run?.[run.length - 1];
+        if (run && prev && day(p.d) - day(prev.d) <= (o.maxGap ?? Infinity)) run.push(p);
+        else runs.push([p]);
+      }
+      for (const run of runs) {
+        if (run.length < 2) continue;
+        const line = run.map((p) => `${X(p.d).toFixed(1)},${Y(p.v).toFixed(1)}`).join(" ");
         h += `<polyline fill="none"${s.dash ? ` stroke-dasharray="${s.dash}"` : ""} stroke-width="${s.width ?? 3.5}" stroke-linejoin="round" stroke-linecap="round" style="stroke:${cv(s.color)}" points="${line}"/>`;
       }
       if (pts.length < 25) {
@@ -543,6 +555,7 @@
       yFmt: (v) => `$${v.toFixed(2)}`,
       bands,
       endLabels,
+      ...(day(start) < day(WAR_START) ? { vlines: [{ date: WAR_START, text: "War begins" }] } : {}),
       tipExtra: (d) => {
         const r = dslR.find((q2) => q2.date === d);
         return r ? `<div><span>Diesel</span><span class="v">$${r.v.toFixed(2)}</span></div>` : "";
@@ -552,11 +565,13 @@
 
   /** Physical-supply series in draw order; the colour follows the series, never its rank. */
   const SUPPLY_SERIES = [
-    { key: "mideast_exports", name: "Mideast crude exports", color: "--fg", width: 3.5 },
-    { key: "hormuz", name: "Through Hormuz", color: "--war", width: 2.5 },
-    { key: "eastwest", name: "East-West pipeline", color: "--calm", width: 2.5, dash: "7 4" },
+    // Colour = what is measured; dotted = Kpler crude-only basis, solid = IEA total oil (crude, NGLs, products).
+    { key: "gulf_iea", name: "Gulf exports · IEA total oil", color: "--fg", width: 3.5 },
+    { key: "gulf_kpler", name: "Gulf exports · Kpler crude", color: "--fg", width: 2.5, dash: "1 5" },
+    { key: "hormuz_iea", name: "Hormuz · IEA total oil", color: "--war", width: 3 },
+    { key: "hormuz_kpler", name: "Hormuz · Kpler crude", color: "--war", width: 2.5, dash: "1 5" },
+    { key: "eastwest", name: "East-West pipeline", color: "--calm", width: 2.5 },
   ];
-  const WAR_START = "2026-02-28";
 
   /** @param {HTMLElement} el */
   function supplyPanel(el) {
@@ -583,7 +598,7 @@
     const legend = `<div class="legend" style="margin-top:10px">${latestOf
       .map(
         ({ c, r, v }) =>
-          `<span><span class="sw" style="${c.dash ? `background:repeating-linear-gradient(90deg,${cv(c.color)} 0 5px,transparent 5px 8px)` : `background:${cv(c.color)}`}"></span>${esc(c.name)} <b>${v.toFixed(1)}</b> <span class="muted">(${fmtDate(r.date)})</span></span>`,
+          `<span><span class="sw" style="${c.dash ? `background:repeating-linear-gradient(90deg,${cv(c.color)} 0 3px,transparent 3px 6px)` : `background:${cv(c.color)}`}"></span>${esc(c.name)} <b>${v.toFixed(1)}</b> <span class="muted">(${fmtDate(r.date)})</span></span>`,
       )
       .join("")}</div>`;
     const sn = D.supply_note;
@@ -594,7 +609,7 @@
       `<div class="controls"><div style="font-size:13px" class="muted">Million barrels a day. Monthly averages are plotted mid-month; dots are individual readings.</div></div>` +
       legend +
       '<div class="chart" style="margin-top:30px"></div>' +
-      '<div class="note">Every point carries its source and vintage; hover or tap to read them. Preliminary Kpler figures are often revised (Sept. went from 12.8 to 16.3 mb/d), and supply claims count as contested until a tracker confirms them. "Through Hormuz" is crude passing the strait; the East-West pipeline carries Saudi crude to Yanbu on the Red Sea, bypassing it.</div>' +
+      '<div class="note">Two bases, never mixed on one line: IEA counts total oil (crude, NGLs and products), Kpler counts crude only, so IEA runs higher. "Gulf exports" covers every route; "Hormuz" is only what passes the strait; the East-West pipeline carries Saudi crude to Yanbu on the Red Sea, bypassing it. Every point carries its source and vintage (hover or tap); revised figures replace preliminary ones (Kpler Sept. went from 12.8 to 16.3). A break in a line means no reading for more than 45 days on that basis. The Oct. 4 Khurais strike is not plotted because its effect on flow is contested.</div>' +
       note;
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
       label: "Line chart of Gulf crude exports, Hormuz flows and Saudi East-West pipeline throughput since January",
@@ -610,6 +625,7 @@
       vlines: [{ date: WAR_START, text: "War begins" }],
       annotations: D.supply_events.filter((e) => e.date !== WAR_START).map((e) => ({ date: e.date, text: e.label })),
       annoRows: 4,
+      maxGap: 45,
       tipExtra: (d) =>
         rowsS
           .filter((r) => r.date === d)

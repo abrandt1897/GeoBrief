@@ -1,8 +1,31 @@
 date,series,mbd,kind,source,note
-2026-02-15,mideast_exports,19.0,baseline,Kpler (via Reuters),Feb prewar baseline 18.8–19.5; midpoint
-2026-09-15,hormuz,9.7,monthly,Kpler (via Reuters),Sept prelim; first vintage 7.4
-2026-09-15,mideast_exports,16.3,monthly,Kpler (via Reuters),Sept prelim; first vintage 12.8
-2026-09-30,eastwest,2.65,estimate,Kpler,throughput estimate after Sept 22 restart
-2026-09-30,mideast_exports,18.3,daily,Kpler/Vortexa (via Reuters),prelim daily snapshot
-2026-10-01,mideast_exports,18.5,7d,Kpler (via Reuters/Seatrade),7-day moving average; incl. Red Sea and STS
-2026-10-02,eastwest,6.0,estimate,Bloomberg (one unnamed source),">80% of 7 mb/d nameplate"
+2026-02-15,gulf_iea,24.5,baseline,IEA Oil Market Report (Apr),implied: March 8.7 after a 15.8 m-o-m drop; total oil; all routes
+2026-02-15,gulf_kpler,19.5,baseline,Kpler (via Reuters/Gulf Business),revised prewar baseline incl. Iran; first vintage 18.8
+2026-02-15,hormuz_iea,20.7,baseline,IEA Sept OMR (via Argus),implied: Aug 7.6 + 13.1 shortfall; total oil
+2026-02-15,hormuz_kpler,13.5,baseline,Kpler (via CNBC),Kpler: Sept 28 7-day level equals the prewar crude baseline
+2026-03-15,gulf_iea,8.7,monthly,IEA Oil Market Report (Apr),total oil; all routes
+2026-03-15,hormuz_iea,2.3,monthly,IEA Oil Market Report (Apr),total oil; over 70% Iranian
+2026-03-15,hormuz_kpler,1.8,monthly,Kpler explainer,crude; 1.6 of it Iranian
+2026-03-28,eastwest,7.0,daily,Bloomberg (via Al Arabiya),pipeline hits 7 mb/d full capacity
+2026-04-08,eastwest,6.3,estimate,Bloomberg (via Al Jazeera),implied: Apr 8 strike cut flow by ~0.7 from 7.0
+2026-04-12,eastwest,7.0,daily,Bloomberg (via Al Jazeera),back to full capacity
+2026-04-15,gulf_iea,10.5,monthly,IEA Oil Market Report (May),total oil; all routes
+2026-04-15,hormuz_iea,2.7,monthly,IEA Oil Market Report (May),total oil; IEA Jun 22 commentary gives 2.7 as the Mar–May average
+2026-05-15,gulf_iea,9.6,monthly,IEA Oil Market Report (Jun/Jul),total oil; the May low
+2026-05-15,gulf_kpler,7.0,estimate,Kpler (via Reuters/Profit),"approx.; June was >3 higher at 10.07"
+2026-06-15,gulf_iea,16.1,monthly,IEA Oil Market Report (Jul),total oil; all routes
+2026-06-15,gulf_kpler,10.07,monthly,Kpler (via Reuters),"SA, UAE, KW, IQ, IR crude+condensate; Vortexa 10.2"
+2026-07-15,gulf_iea,15.0,monthly,IEA Oil Market Report (Aug),total oil; all routes
+2026-07-15,gulf_kpler,10.7,monthly,Kpler (via Reuters/Khaleej Times),5 countries incl. Iran
+2026-08-15,gulf_iea,13,monthly,IEA Oil Market Report (Sept),"total oil; ""around"" 13, nearly half prewar"
+2026-08-15,hormuz_iea,7.6,monthly,IEA Sept OMR (via Argus),total oil
+2026-09-09,eastwest,5.5,estimate,Kpler (via GDN),pre-attack rate; ~4.5 of it Yanbu crude exports
+2026-09-11,eastwest,0,daily,Kpler (via Reuters/Baird Maritime),shut Sept 11–22 after Iraqi-militia drone strike
+2026-09-15,gulf_kpler,16.3,monthly,Kpler (via Reuters/Gulf Business),Sept 1–28 revised incl. Iran; first vintage 12.8
+2026-09-15,hormuz_kpler,9.7,monthly,Kpler (via Reuters/Gulf Business),revised incl. Gulf of Oman STS; first vintage 7.4
+2026-09-21,eastwest,0,daily,Kpler (via Reuters/Baird Maritime),still shut; restarted Sept 22
+2026-09-28,gulf_kpler,19.5,7d,Kpler (via CNBC),7-day average
+2026-09-28,hormuz_kpler,13.5,7d,Kpler (via CNBC),7-day average; crude+products 14.2
+2026-09-30,eastwest,2.65,daily,Kpler (via Egypt Oil & Gas),trade sources ~2.0
+2026-10-01,gulf_kpler,18.5,7d,Kpler (via Reuters/gCaptain),7-day average; daily highs 19.5–22.5 Sept 24–29
+2026-10-02,eastwest,6.0,daily,Bloomberg (one unnamed source),"close to 6, >80% of 7 nameplate; Oct 4 Khurais strike: status contested, not plotted"

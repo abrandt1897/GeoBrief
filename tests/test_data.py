@@ -196,9 +196,10 @@ def test_supply_series_are_sourced_plausible_and_unique() -> None:
     assert rows, "supply.csv is empty"
     dates = [r["date"] for r in rows]
     assert dates == sorted(dates), "supply.csv must be in date order"
+    series = {"gulf_iea", "gulf_kpler", "hormuz_iea", "hormuz_kpler", "eastwest"}
     seen: set[tuple[str, str]] = set()
     for r in rows:
-        assert r["series"] in {"mideast_exports", "hormuz", "eastwest"}, f"unknown series {r['series']!r}"
+        assert r["series"] in series, f"unknown series {r['series']!r}"
         assert r["kind"] in {"baseline", "monthly", "daily", "7d", "estimate"}, f"bad kind {r['kind']!r}"
         assert 0 <= float(r["mbd"]) <= 25, f"{r['date']} {r['series']}: implausible {r['mbd']} mb/d"
         assert r["source"], f"{r['date']} {r['series']}: every reading needs a source"
