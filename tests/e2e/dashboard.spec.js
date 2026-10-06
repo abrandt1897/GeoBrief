@@ -119,6 +119,20 @@ test("physical supply chart shows five series, the war start and the latest supp
   expect(errors).toEqual([]);
 });
 
+test("gas chart: year to date by default, last 45 days shows end labels", async ({ page }) => {
+  const errors = collectErrors(page);
+  await page.goto(`${PAGE}#gas`);
+  await expect(page.locator("#seg-ytd")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("#panel svg")).toContainText("JAN.");
+  await expect(page.locator("#panel svg")).toContainText("War begins");
+  await expect(page.locator(".legend > span")).toHaveCount(2);
+  await page.click("#seg-recent");
+  await expect(page.locator("#seg-recent")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("#panel svg")).not.toContainText("JAN.");
+  await expect(page.locator('#panel svg text[font-weight="700"][text-anchor="middle"]').first()).toContainText("$");
+  expect(errors).toEqual([]);
+});
+
 test("tab deep link via #hash", async ({ page }) => {
   await page.goto(`${PAGE}#tripwires`);
   await expect(page.locator("#panel-title")).toHaveText("What would move the odds");

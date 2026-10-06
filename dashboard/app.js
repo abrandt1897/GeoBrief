@@ -219,9 +219,11 @@
     svg.setAttribute("aria-label", `${o.label}. Use left and right arrow keys to read values by date.`);
 
     let h = `<rect x="${L}" y="${T}" width="${lastX - L}" height="${B - T}" style="fill:var(--panel)"/>`;
+    // Tick labels go on top of the lines, with a halo in the panel colour so a line never runs through them.
+    let tickText = "";
     for (const t of o.yTicks) {
       h += `<line x1="${L}" x2="${R}" y1="${Y(t)}" y2="${Y(t)}" style="stroke:var(--rule)"/>`;
-      h += `<text x="${L + 4}" y="${Y(t) - 5}" font-size="13" style="fill:var(--muted)">${o.yFmt(t)}</text>`;
+      tickText += `<text x="${L + 4}" y="${Y(t) - 5}" font-size="13" paint-order="stroke" style="fill:var(--muted);stroke:var(--panel);stroke-width:4px;stroke-linejoin:round">${o.yFmt(t)}</text>`;
     }
     const d0 = new Date(x0 * 864e5);
     let y = d0.getUTCFullYear();
@@ -269,6 +271,7 @@
         for (const p of pts) h += `<circle cx="${X(p.d)}" cy="${Y(p.v)}" r="3.5" style="fill:${cv(s.color)}"/>`;
       }
     }
+    h += tickText;
     h += `<line x1="${lastX}" x2="${lastX}" y1="${T - 6}" y2="${B}" style="stroke:var(--fg)" stroke-width="1.5"/>`;
     h += `<polygon points="${lastX - 7},${T - 14} ${lastX + 7},${T - 14} ${lastX},${T - 5}" style="fill:var(--fg)"/>`;
     // End labels, nudged apart so they never overlap.
@@ -479,22 +482,26 @@
     });
   }
 
+  /** @type {"ytd" | "recent"} */
+  let gasRange = "ytd";
+
   /** @param {HTMLElement} el */
   function gasPanel(el) {
-    const natR = readings(gasRows, (r) => r.nat_regular);
-    const nycR = readings(gasRows, (r) => r.nyc_regular);
+    const allDates = gasRows.filter((r) => r.nat_regular != null || r.nyc_regular != null).map((r) => r.date);
+    const lastDate = allDates[allDates.length - 1] ?? latest.date;
+    const start = gasRange === "ytd" ? `${lastDate.slice(0, 4)}-01-01` : isoOf(day(lastDate) - 45);
+    const shown = gasRows.filter((r) => r.date >= start);
+    const natR = readings(shown, (r) => r.nat_regular);
+    const nycR = readings(shown, (r) => r.nyc_regular);
     const dslR = readings(gasRows, (r) => r.nat_diesel);
-    const dates = gasRows.filter((r) => r.nat_regular != null || r.nyc_regular != null).map((r) => r.date);
-    const firstDate = dates[0] ?? latest.date;
-    const lastDate = dates[dates.length - 1] ?? latest.date;
-    const start = isoOf(Math.min(day(firstDate), day(lastDate) - 30));
+    const dates = allDates.filter((d) => d >= start);
     const nat = nth(natR);
     const nyc = nth(nycR);
     const dsl = nth(dslR);
     /** @type {Series[]} */
     const series = [
-      { name: "National", color: "--fg", points: gasRows.map((r) => ({ d: r.date, v: r.nat_regular })) },
-      { name: "NYC metro", color: "--war", width: 2.5, points: gasRows.map((r) => ({ d: r.date, v: r.nyc_regular })) },
+      { name: "National", color: "--fg", points: shown.map((r) => ({ d: r.date, v: r.nat_regular })) },
+      { name: "NYC metro", color: "--war", width: 2.5, points: shown.map((r) => ({ d: r.date, v: r.nyc_regular })) },
     ];
     const bands = Object.keys(latest.v).flatMap((k) => {
       const s = meta.get(`nov3:${k}`);
@@ -528,7 +535,18 @@
       const f = latestF.get(k);
       return f ? [f] : [];
     });
+    /** @param {string} name @param {string} color @param {Reading | null} r */
+    const legendItem = (name, color, r) =>
+      r
+        ? `<span><span class="sw" style="background:${cv(color)}"></span>${esc(name)} <b>$${r.v.toFixed(2)}</b> <span class="muted">(${fmtDate(r.date)})</span></span>`
+        : "";
+    const legend =
+      gasRange === "ytd"
+        ? `<div class="legend" style="margin-top:10px">${legendItem("National", "--fg", nat)}${legendItem("NYC metro", "--war", nyc)}</div>`
+        : "";
     el.innerHTML =
+      `<div class="controls"><div class="seg" role="group" aria-label="Date range"><button type="button" id="seg-ytd" aria-pressed="${gasRange === "ytd"}">Year to date</button><button type="button" id="seg-recent" aria-pressed="${gasRange === "recent"}">Last 45 days</button></div><div style="font-size:13px" class="muted">AAA regular, $ per gallon</div></div>` +
+      legend +
       '<div class="chart" style="margin-top:30px"></div>' +
       `<div class="figs">${lines
         .map(
@@ -536,12 +554,23 @@
             `<div><small>${esc(f.question.replace("AAA ", "").replace(" on Nov 3", ""))}</small><strong>${f.p}%</strong></div>`,
         )
         .join("")}</div>` +
-      `<div class="note">Bars right of Election Day show each scenario’s Nov. 3 price range; bar width is proportional to its probability. Latest diesel: $${dsl ? dsl.v.toFixed(2) : "—"}. Hover or tap to read any day.</div>`;
+      `<div class="note">Bars right of Election Day show each scenario’s Nov. 3 price range; bar width is proportional to its probability. Latest diesel: $${dsl ? dsl.v.toFixed(2) : "—"}. Before Oct. 4 the series is backfilled from AAA’s weekly posts and news reports quoting AAA (about twice a week); NYC metro readings are sparse, so its line breaks where there are none for three weeks. Hover or tap to read any day.</div>`;
+    $("seg-ytd").onclick = () => {
+      gasRange = "ytd";
+      render();
+    };
+    $("seg-recent").onclick = () => {
+      gasRange = "recent";
+      render();
+    };
     /** @type {EndLabel[]} */
     const endLabels = [];
-    if (nat) endLabels.push({ v: nat.v, value: `$${nat.v.toFixed(2)}`, name: "National", color: "--fg", boxW: 66 });
-    if (nyc && nat && nyc.date === nat.date) {
-      endLabels.push({ v: nyc.v, value: `$${nyc.v.toFixed(2)}`, name: "NYC", color: "--war", boxW: 66 });
+    // Year to date leaves too little room right of "today" for end labels; the legend carries the values instead.
+    if (gasRange === "recent" && nat) {
+      endLabels.push({ v: nat.v, value: `$${nat.v.toFixed(2)}`, name: "National", color: "--fg", boxW: 66 });
+      if (nyc && nyc.date === nat.date) {
+        endLabels.push({ v: nyc.v, value: `$${nyc.v.toFixed(2)}`, name: "NYC", color: "--war", boxW: 66 });
+      }
     }
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
       label: "AAA regular gas prices with Nov. 3 scenario price bands",
@@ -556,6 +585,7 @@
       bands,
       endLabels,
       ...(day(start) < day(WAR_START) ? { vlines: [{ date: WAR_START, text: "War begins" }] } : {}),
+      maxGap: 21,
       tipExtra: (d) => {
         const r = dslR.find((q2) => q2.date === d);
         return r ? `<div><span>Diesel</span><span class="v">$${r.v.toFixed(2)}</span></div>` : "";

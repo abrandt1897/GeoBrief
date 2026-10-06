@@ -24,7 +24,7 @@ Prior (Oct 4) vs Sep 30: Iran soft-rejected the US counter (strait-first, no nuc
 
 War total = 60% (Oct 5: Khurais hit +3 infra; pm: 3rd UAE-linked hit +2 infra). NY state ≈ +10¢, **NYC metro ≈ +19¢** over national (corrected Oct 4).
 
-**Gas baseline (AAA, Oct 5):** national regular $4.37 (yday $4.37, wk $4.48, mo $4.15); diesel $6.32 (record $6.53 9/22). NY state $4.47 / $6.52; NYC metro $4.56 / $6.75. Drifting down ~1¢/day. G7 diesel release caps diesel; China product-export halt and Dated Brent >$120 push the other way.
+**Gas baseline (AAA, Oct 5):** national regular $4.37 (yday $4.37, wk $4.48, mo $4.15); diesel $6.32 (record $6.53 9/22). NY state $4.47 / $6.52; NYC metro $4.56 / $6.75. Drifting down ~1¢/day. **2026 reference (AAA):** pre-war $2.98 (Feb 26); high $4.56 (May 21); July low $3.79; Sept peak $4.48 (Sept 24); diesel record $6.53 (Sept 22). G7 diesel release caps diesel; China product-export halt and Dated Brent >$120 push the other way.
 **Gas mechanics:** rockets 2-4¢/day, feathers 1-1.5¢/day (~2.4¢ per $1/bbl); no-shock path → ~$4.10-4.25.
 **Nov 3 lines (AAA national regular):** ≥$4.50 ~41% · ≥$4.75 ~14% · ≥$5.00 ~5% · <$4.00 ~8%. NYC metro ≥$4.75 ~30%, ≥$5 ~8%. National diesel ≥$6.50 ~35%.
 **Market cross-check:** ICE Brent ~$100 (Oct 5) prices less war than 60%; Dated >$120 says physical is tighter than futures. Futures have faded every lull; supply recovery + G7 release cap upside.
