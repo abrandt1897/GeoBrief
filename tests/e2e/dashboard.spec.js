@@ -42,6 +42,22 @@ test("renders headline, scenario table, dispatches and ticker without errors", a
   expect(errors).toEqual([]);
 });
 
+test("scenario tables follow the selected tab", async ({ page }) => {
+  await page.goto(PAGE);
+  await expect(page.locator("#scenarios")).toBeVisible();
+  await expect(page.locator("#ye-scenarios")).toBeHidden();
+  await page.click("#tab-gas");
+  await expect(page.locator("#scenarios")).toBeHidden();
+  await expect(page.locator("#ye-scenarios")).toBeHidden();
+  await page.click("#tab-yearend");
+  await expect(page.locator("#scenarios")).toBeHidden();
+  await expect(page.locator("#ye-scenarios")).toBeVisible();
+  await expect(page.locator("#ye-body tr")).toHaveCount(5);
+  await expect(page.locator("#panel svg")).toContainText("Dec. 31");
+  await page.click("#seg-all");
+  await expect(page.locator(".legend > span")).toHaveCount(5);
+});
+
 test("grouped odds chart labels sum to 100", async ({ page }) => {
   await page.goto(PAGE);
   // End-label values are the bold, centred texts inside the coloured pills.

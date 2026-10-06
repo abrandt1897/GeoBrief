@@ -27,7 +27,7 @@
     <span style="width: 44px"></span>
   </div>
   <nav class="wrap secnav" aria-label="Sections">
-    <a href="#odds">Latest Odds</a><a href="#scenarios">Scenarios</a><a href="#bet">Tripwires</a
+    <a href="#odds">Latest Odds</a><a href="#scenarios" data-tab="odds">Scenarios</a><a href="#bet">Tripwires</a
     ><a href="#dispatches">Dispatches</a><a href="#method"><b>Method</b></a>
   </nav>
   <div class="drawer" id="drawer" hidden>
@@ -52,7 +52,7 @@
   </section>
   <hr />
   <div class="two">
-    <section class="main" id="scenarios" aria-labelledby="h-table">
+    <section class="main" id="scenarios" aria-labelledby="h-table" hidden>
       <h2 id="h-table">Latest Scenario Odds</h2>
       <div class="sans muted" style="font-size: 14px" id="change-note"></div>
       <div class="tablewrap">
@@ -66,6 +66,23 @@
             </tr>
           </thead>
           <tbody id="scen-body"></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="main" id="ye-scenarios" aria-labelledby="h-ye-table" hidden>
+      <h2 id="h-ye-table">Year-End Scenario Odds</h2>
+      <div class="sans muted" style="font-size: 14px" id="ye-note"></div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Scenario</th>
+              <th style="text-align: right">Dec. 31</th>
+              <th style="text-align: right">Change</th>
+              <th>Group</th>
+            </tr>
+          </thead>
+          <tbody id="ye-body"></tbody>
         </table>
       </div>
     </section>

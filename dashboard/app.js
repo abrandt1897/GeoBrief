@@ -113,6 +113,7 @@
   /** @param {string} tok @returns {string} */
   const cv = (tok) => `var(${tok})`;
 
+  const N_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
   /** @type {Record<string, string>} */
   const COLORS = {
     war_limited: "--war",
@@ -160,12 +161,12 @@
   const latestYe = ye[ye.length - 1];
   if (!latestNov || !latestYe) throw new Error("odds.csv has no nov3 or ye2026 rows");
   const prevNov = nov[nov.length - 2];
-  /** @param {Record<string, number>} v @returns {Record<Group, number>} */
-  const groups = (v) => {
+  /** @param {Record<string, number>} v @param {string} [horizon] @returns {Record<Group, number>} */
+  const groups = (v, horizon = "nov3") => {
     /** @type {Record<Group, number>} */
     const g = { war: 0, limbo: 0, calm: 0 };
     for (const [k, p] of Object.entries(v)) {
-      const s = meta.get(`nov3:${k}`);
+      const s = meta.get(`${horizon}:${k}`);
       if (s) g[s.group] += p;
     }
     return g;
@@ -407,21 +408,28 @@
   const latest = latestNov;
   const latestYeRow = latestYe;
 
-  /** @param {HTMLElement} el */
-  function oddsPanel(el) {
-    const dates = nov.map((r) => r.date);
-    const first = dates[0] ?? latest.date;
-    const start = isoOf(Math.min(day(first), day(latest.date) - 35));
+  /**
+   * Scenario-odds line chart for one horizon, with a grouped / all-scenarios toggle.
+   * @param {HTMLElement} el
+   * @param {{ horizon: string, rows: DateRow[], end: string, endMark: string, byLabel: string, note: string }} o
+   */
+  function scenarioChart(el, o) {
+    const cur = o.rows[o.rows.length - 1];
+    if (!cur) return;
+    const dates = o.rows.map((r) => r.date);
+    const first = dates[0] ?? cur.date;
+    const start = isoOf(Math.min(day(first), day(cur.date) - 35));
+    const n = Object.keys(cur.v).length;
     /** @type {Series[]} */
     let series;
     /** @type {EndLabel[]} */
     let endLabels = [];
-    const g = groups(latest.v);
+    const g = groups(cur.v, o.horizon);
     if (!all) {
       series = GROUP_ORDER.map((k) => ({
         name: GROUP_NAMES[k],
         color: GROUP_COLORS[k],
-        points: nov.map((r) => ({ d: r.date, v: groups(r.v)[k] })),
+        points: o.rows.map((r) => ({ d: r.date, v: groups(r.v, o.horizon)[k] })),
       }));
       endLabels = GROUP_ORDER.map((k) => ({
         v: g[k],
@@ -431,11 +439,11 @@
         boxW: 58,
       }));
     } else {
-      series = keysByP(latest.v).map((k) => ({
-        name: scen("nov3", k).label,
+      series = keysByP(cur.v).map((k) => ({
+        name: scen(o.horizon, k).label,
         color: colorOf(k),
         width: 2.5,
-        points: nov.map((r) => ({ d: r.date, v: r.v[k] ?? null })),
+        points: o.rows.map((r) => ({ d: r.date, v: r.v[k] ?? null })),
       }));
     }
     const maxV = Math.max(...series.flatMap((s) => s.points.map((p) => p.v ?? 0)));
@@ -447,18 +455,18 @@
       e.chart && day(e.date) >= day(start) ? [{ date: e.date, text: e.chart }] : [],
     );
     const legend = all
-      ? `<div class="legend" style="margin-top:10px">${keysByP(latest.v)
+      ? `<div class="legend" style="margin-top:10px">${keysByP(cur.v)
           .map(
             (k) =>
-              `<span><span class="sw" style="background:${cv(colorOf(k))}"></span>${esc(scen("nov3", k).label)} <b>${latest.v[k] ?? 0}%</b></span>`,
+              `<span><span class="sw" style="background:${cv(colorOf(k))}"></span>${esc(scen(o.horizon, k).label)} <b>${cur.v[k] ?? 0}%</b></span>`,
           )
           .join("")}</div>`
       : "";
     el.innerHTML =
-      `<div class="controls"><div class="seg" role="group" aria-label="Lines shown"><button type="button" id="seg-grouped" aria-pressed="${!all}">War / limbo / de-escalation</button><button type="button" id="seg-all" aria-pressed="${all}">All seven scenarios</button></div><div style="font-size:13px" class="muted">Probability of each outcome by Nov. 3</div></div>` +
+      `<div class="controls"><div class="seg" role="group" aria-label="Lines shown"><button type="button" id="seg-grouped" aria-pressed="${!all}">War / limbo / de-escalation</button><button type="button" id="seg-all" aria-pressed="${all}">All ${N_WORDS[n] ?? n} scenarios</button></div><div style="font-size:13px" class="muted">Probability of each outcome by ${esc(o.byLabel)}</div></div>` +
       legend +
       '<div class="chart" style="margin-top:30px"></div>' +
-      '<div class="note">Each point is one update in odds.csv. Sept. 30 values are reconstructed from the Oct. 4 changes, and the war split wasn’t recorded that day, so "All seven" starts Oct. 4. Hover or tap the chart to read any date.</div>';
+      `<div class="note">${o.note}</div>`;
     $("seg-grouped").onclick = () => {
       all = false;
       render();
@@ -468,9 +476,9 @@
       render();
     };
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
-      label: "Line chart of scenario probabilities by date through Election Day",
+      label: `Line chart of scenario probabilities by date through ${o.byLabel}`,
       start,
-      end: election,
+      end: o.end,
       dates,
       series,
       yMin: 0,
@@ -479,6 +487,19 @@
       yFmt: (v, tip) => `${tip ? Math.round(v) : v}%`,
       endLabels,
       annotations: annos,
+      endMark: o.endMark,
+    });
+  }
+
+  /** @param {HTMLElement} el */
+  function oddsPanel(el) {
+    scenarioChart(el, {
+      horizon: "nov3",
+      rows: nov,
+      end: election,
+      endMark: "Election Day",
+      byLabel: "Nov. 3",
+      note: 'Each point is one update in odds.csv. Sept. 30 values are reconstructed from the Oct. 4 changes, and the war split wasn’t recorded that day, so "All seven" starts Oct. 4. Hover or tap the chart to read any date.',
     });
   }
 
@@ -729,20 +750,22 @@
 
   /** @param {HTMLElement} el */
   function yePanel(el) {
-    const l = latestYeRow;
     const st = ["deal_ye2027", "hormuz_20_ye2027", "nuke_deal_2026", "surge_ye2026"].flatMap((k) => {
       const f = latestF.get(k);
       return f ? [f] : [];
     });
-    el.innerHTML =
-      `<div class="bars">${keysByP(l.v)
-        .map((k) => {
-          const p = l.v[k] ?? 0;
-          return `<div class="row"><div>${esc(scen("ye2026", k).label)}</div><div class="track" style="height:22px"><div class="fill" style="width:${p * 2}%;background:${cv(colorOf(k))}"></div></div><div class="pv">${p}%</div></div>`;
-        })
-        .join("")}</div>` +
-      `<div class="figs" style="margin-top:16px">${st.map((f) => `<div><small>${esc(f.question)}</small><strong>${f.p}%</strong></div>`).join("")}</div>` +
-      `<div class="note" style="margin-top:12px">As of ${fmtDate(l.date)}. Bars are scaled to 50%.</div>`;
+    scenarioChart(el, {
+      horizon: "ye2026",
+      rows: ye,
+      end: `${latestYeRow.date.slice(0, 4)}-12-31`,
+      endMark: "Dec. 31",
+      byLabel: "Dec. 31",
+      note: "Each point is one update in odds.csv. Year-end odds start Oct. 4. Hover or tap the chart to read any date.",
+    });
+    el.insertAdjacentHTML(
+      "beforeend",
+      `<div class="figs" style="margin-top:16px">${st.map((f) => `<div><small>${esc(f.question)}</small><strong>${f.p}%</strong></div>`).join("")}</div>`,
+    );
   }
 
   /** @param {HTMLElement} el */
@@ -861,6 +884,8 @@
     const p = $("panel");
     p.innerHTML = "";
     cur.render(p);
+    $("scenarios").hidden = tab !== "odds";
+    $("ye-scenarios").hidden = tab !== "yearend";
   }
   /** @param {string} id */
   const selectTab = (id) => {
@@ -889,10 +914,17 @@
     e.preventDefault();
   });
 
+  for (const a of document.querySelectorAll(".secnav a[data-tab]")) {
+    a.addEventListener("click", () => {
+      const id = /** @type {HTMLElement} */ (a).dataset.tab;
+      if (id && id !== tab) selectTab(id);
+    });
+  }
+
   // ---------- menu ----------
   const drawerItems = [
     ...TABS.map((t) => ({ href: "#odds", tab: t.id, name: t.label, sub: t.title })),
-    { href: "#scenarios", tab: "", name: "Scenario Table", sub: "Every path to Nov. 3 with gas and drivers" },
+    { href: "#scenarios", tab: "odds", name: "Scenario Table", sub: "Every path to Nov. 3 with gas and drivers" },
     { href: "#dispatches", tab: "", name: "Dispatches", sub: "The latest events" },
     { href: "#method", tab: "", name: "Method", sub: "How the odds are made and checked" },
   ];
@@ -946,6 +978,18 @@
       return `<tr><td style="font-weight:600"><span style="display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:8px;background:${cv(colorOf(k))}"></span>${esc(s.label)}</td><td class="num"><span class="pill" style="background:${cv(colorOf(k))}">${latest.v[k] ?? 0}%</span></td><td style="white-space:nowrap">${band}</td><td>${esc(s.driver)}</td></tr>`;
     })
     .join("");
+  const prevYe = ye[ye.length - 2];
+  $("ye-body").innerHTML = keysByP(latestYe.v)
+    .map((k) => {
+      const s = scen("ye2026", k);
+      const p = latestYe.v[k] ?? 0;
+      const was = prevYe?.v[k];
+      const d = was == null ? "—" : p === was ? "Unch." : `${p > was ? "+" : "−"}${Math.abs(p - was)}`;
+      return `<tr><td style="font-weight:600"><span style="display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:8px;background:${cv(colorOf(k))}"></span>${esc(s.label)}</td><td class="num"><span class="pill" style="background:${cv(colorOf(k))}">${p}%</span></td><td class="num" style="white-space:nowrap">${d}</td><td>${GROUP_NAMES[s.group]}</td></tr>`;
+    })
+    .join("");
+  $("ye-note").textContent =
+    `As of ${fmtDate(latestYe.date)}${prevYe ? `; change since ${fmtDate(prevYe.date)}` : ""}.`;
   $("bets").innerHTML = D.brief.bets
     .map((b) => `<div class="bet"><div class="c">${esc(b.cond)}</div><div class="e">${esc(b.effect)}</div></div>`)
     .join("");

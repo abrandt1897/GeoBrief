@@ -738,6 +738,10 @@ main {
   gap: 12px;
 }
 
+.two > .main[hidden] {
+  display: none;
+}
+
 .two > aside {
   flex: 1 1 300px;
   min-width: 0;
