@@ -1,8 +1,10 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-10-05._
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-10-06._
 
 ## Canonical Odds (Oct 5)
+
+Oct 6: no change. Houthi claims on Riyadh airport/Rabigh (Saudi confirms airport damage); East-West moving oil to Yanbu; tanker On Peace hit (unclaimed, 12 wounded); Qatar says talks continue; Brent <$100. No tripwire fired. Nov 3 war 60%.
 
 Oct 5 pm: **UAE-third tripwire fired** — Vanguard IDs the Oct 2 hit as Uhud (46k DWT products tanker, managed by Emirates Shipping, UAE; bound for Fujairah — not an STS-loop/Saudi ship), the 3rd UAE-linked hit after Cape Dao and Al Ruwais → infra +2, half-open −2. New unclaimed Hormuz hit Oct 5 16:37; IRGC hail turns a ship back. Nov 3 war 60%.
 
