@@ -1,8 +1,13 @@
 date,series,mbd,kind,source,note
+2026-01-01,hormuz_iea,20.7,baseline,IEA Sept OMR (via Argus),"prewar level, total oil: Aug 7.6 was 13.1 below it; IEA Mar OMR: ""around 20 before the war"". No January monthly published"
+2026-01-01,hormuz_kpler,13.5,baseline,Kpler (via CNBC),prewar crude level (Kpler: the Sept 28 7-day level equals it); no January monthly published
+2026-01-15,eastwest,2.0,estimate,IEA Strait of Hormuz factsheet (Feb 2026),"about 2 mb/d of capacity in use in early 2026, incl. feed to west-coast refineries"
+2026-01-15,gulf_kpler,18.8,monthly,Wood Mackenzie (own tracking),"January Middle East Gulf crude; WoodMac, not Kpler"
 2026-02-15,gulf_iea,24.5,baseline,IEA Oil Market Report (Apr),implied: March 8.7 after a 15.8 m-o-m drop; total oil; all routes
-2026-02-15,gulf_kpler,19.5,baseline,Kpler (via Reuters/Gulf Business),revised prewar baseline incl. Iran; first vintage 18.8
-2026-02-15,hormuz_iea,20.7,baseline,IEA Sept OMR (via Argus),implied: Aug 7.6 + 13.1 shortfall; total oil
-2026-02-15,hormuz_kpler,13.5,baseline,Kpler (via CNBC),Kpler: Sept 28 7-day level equals the prewar crude baseline
+2026-02-15,gulf_kpler,19.5,baseline,Kpler (via Reuters/Gulf Business),"revised prewar baseline incl. Iran; first vintage 18.8. Other Feb estimates: IEA ~18.4 crude+cond, Kpler ex-Iran ~14.3 + Iran ~2.3"
+2026-02-27,eastwest,2.0,estimate,IEA Strait of Hormuz factsheet (Feb 2026) + IEA Apr OMR,early-2026 level held until the war; ramp-up began early March
+2026-02-27,hormuz_iea,20.7,baseline,IEA Sept OMR (via Argus),same prewar level on the last day before the war
+2026-02-27,hormuz_kpler,13.5,baseline,Kpler (via CNBC),same prewar level on the last day before the war
 2026-03-15,gulf_iea,8.7,monthly,IEA Oil Market Report (Apr),total oil; all routes
 2026-03-15,hormuz_iea,2.3,monthly,IEA Oil Market Report (Apr),total oil; over 70% Iranian
 2026-03-15,hormuz_kpler,1.8,monthly,Kpler explainer,crude; 1.6 of it Iranian
