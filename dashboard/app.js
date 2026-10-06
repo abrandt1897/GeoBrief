@@ -740,7 +740,7 @@
 
   /** @param {HTMLElement} el */
   function yePanel(el) {
-    const st = ["deal_ye2027", "hormuz_20_ye2027", "nuke_deal_2026", "surge_ye2026"].flatMap((k) => {
+    const st = ["deal_ye2026", "hormuz_20_ye2026", "nuke_deal_2026", "surge_ye2026"].flatMap((k) => {
       const f = latestF.get(k);
       return f ? [f] : [];
     });

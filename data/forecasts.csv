@@ -36,3 +36,4 @@ gas_diesel_650,2026-10-06,AAA national diesel >= $6.50 on Nov 3,41,2026-11-03,AA
 gas_diesel_675,2026-10-06,AAA national diesel >= $6.75 on Nov 3,18,2026-11-03,AAA national diesel as shown on Nov 3,,,derived from scenario rows x diesel bands
 gas_diesel_700,2026-10-06,AAA national diesel >= $7.00 on Nov 3,11,2026-11-03,AAA national diesel as shown on Nov 3,,,derived from scenario rows x diesel bands
 gas_diesel_lt600,2026-10-06,AAA national diesel < $6.00 on Nov 3,18,2026-11-03,AAA national diesel as shown on Nov 3,,,derived from scenario rows x diesel bands
+hormuz_20_ye2026,2026-10-06,Hormuz back to ~20 Mbd (all liquids monthly) by end-2026,4,2026-12-31,1 if a Kpler/Vortexa monthly figure >= 19.5 Mbd for any month through Dec 2026,,,"replaces the end-2027 card; needs a deal (15%) plus mine clearance and insurance normalising within weeks, ~25% given a deal"

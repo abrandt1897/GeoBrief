@@ -58,7 +58,7 @@ War total = 60% (Oct 5: Khurais hit +3 infra; pm: 3rd UAE-linked hit +2 infra). 
 
 ### Structural
 
-- Hormuz back to ~20 mb/d (all liquids, monthly) by end-2027: ~20%
+- Hormuz back to ~20 mb/d (all liquids, monthly) by end-2026: ~4% (needs a deal plus fast mine clearance and insurance; was ~20% by end-2027)
 - War-ending deal: 15% by end-2026; 33% by end-2027
 - Comprehensive nuclear deal in 2026: ~6% (15% × 40%)
 

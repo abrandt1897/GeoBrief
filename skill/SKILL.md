@@ -175,6 +175,6 @@ War total = 55% (Oct 4 late: B-1B withdrawal −1 sustained, +1 limbo). NY state
 
 ### Structural
 
-- Hormuz back to ~20 mb/d (all liquids, monthly) by end-2027: ~20%
+- Hormuz back to ~20 mb/d (all liquids, monthly) by end-2026: ~4% (needs a deal plus fast mine clearance and insurance; was ~20% by end-2027)
 - War-ending deal: 16% by end-2026; 34% by end-2027
 - Comprehensive nuclear deal in 2026: ~6% (16% × 40%)
