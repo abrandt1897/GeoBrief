@@ -177,7 +177,18 @@ def test_render_embeds_parseable_json_without_script_breakouts() -> None:
     assert m, "data script tag missing or broken out of"
     data = json.loads(m.group(1))
     assert data["brief"]["status"] == b["status"]
-    assert {"odds", "scenarios", "gas", "markets", "forecasts", "tripwires", "terms", "blinks", "events"} <= set(data)
+    assert {
+        "odds",
+        "scenarios",
+        "gas",
+        "markets",
+        "energy",
+        "forecasts",
+        "tripwires",
+        "terms",
+        "blinks",
+        "events",
+    } <= set(data)
 
 
 def test_full_document_moves_head_content() -> None:

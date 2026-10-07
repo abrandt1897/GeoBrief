@@ -137,17 +137,50 @@ test("gas chart: Gas by default, Diesel button swaps the series, bands and odds"
   const errors = collectErrors(page);
   await page.goto(`${PAGE}#gas`);
   await expect(page.locator("#seg-gas")).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator("#panel svg")).toContainText("JAN.");
-  await expect(page.locator("#panel svg")).toContainText("War begins");
-  await expect(page.locator(".legend")).toContainText("Regular");
-  await expect(page.locator(".figs")).toContainText("regular >= $4.50");
+  const gasSvg = page.locator("#panel svg").first();
+  await expect(gasSvg).toContainText("JAN.");
+  await expect(gasSvg).toContainText("War begins");
+  await expect(page.locator(".legend").first()).toContainText("Regular");
+  await expect(page.locator(".figs")).toContainText("$4.50–$4.75");
   await expect(page.locator("#panel")).not.toContainText("NYC");
   await page.click("#seg-diesel");
   await expect(page.locator("#seg-diesel")).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator(".legend")).toContainText("Diesel");
-  await expect(page.locator(".figs > div")).toHaveCount(4);
-  await expect(page.locator(".figs")).toContainText("diesel >= $7.00");
+  await expect(page.locator(".legend").first()).toContainText("Diesel");
+  await expect(page.locator(".figs > div")).toHaveCount(5);
+  await expect(page.locator(".figs")).toContainText("$7.00 or more");
   await expect(page.locator("#panel svg polyline").first()).not.toHaveAttribute("stroke-dasharray", /.*/);
+  expect(errors).toEqual([]);
+});
+
+test("gas price ranges are exclusive and sum to 100%", async ({ page }) => {
+  await page.goto(`${PAGE}#gas`);
+  for (const fuel of ["#seg-gas", "#seg-diesel"]) {
+    await page.click(fuel);
+    const ps = await page.locator(".figs strong").allTextContents();
+    expect(ps).toHaveLength(5);
+    expect(ps.reduce((a, t) => a + Number(t.replace("%", "")), 0)).toBe(100);
+  }
+});
+
+test("Brent and LNG charts sit under the gas chart on the same dates", async ({ page }) => {
+  const errors = collectErrors(page);
+  await page.goto(`${PAGE}#gas`);
+  const subs = page.locator(".subchart");
+  await expect(subs).toHaveCount(2);
+  await expect(subs.nth(0).locator("h3")).toHaveText("Brent Crude");
+  await expect(subs.nth(1).locator("h3")).toHaveText("LNG (Asia JKM)");
+  for (const i of [0, 1]) {
+    const svg = subs.nth(i).locator("svg");
+    await expect(svg).toContainText("JAN.");
+    await expect(svg).toContainText("Election Day");
+  }
+  await expect(
+    subs
+      .nth(0)
+      .locator("svg rect[style*='fill']")
+      .filter({ has: page.locator("title") }),
+  ).toHaveCount(4);
+  await expect(subs.nth(1).locator(".legend")).toContainText("JKM");
   expect(errors).toEqual([]);
 });
 

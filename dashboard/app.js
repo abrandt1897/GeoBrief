@@ -6,6 +6,7 @@
 /** @typedef {{ horizon: string, scenario: string, label: string, group: Group | "", gas_band: string, diesel_band: string, brent_band: string, driver: string }} Scenario */
 /** @typedef {{ date: string, source: string, nat_regular: number | null, nat_diesel: number | null, ny_regular: number | null, ny_diesel: number | null, nyc_regular: number | null, nyc_diesel: number | null }} GasRow */
 /** @typedef {{ date: string, source: string, brent_ice_front: number | null, dated_brent: number | null, rial_per_usd: number | null }} MarketRow */
+/** @typedef {{ date: string, source: string, brent_front: number | null, brent_spot: number | null, jkm_front: number | null }} EnergyRow */
 /** @typedef {{ id: string, made_on: string, question: string, p: number, resolves_on: string, resolution_rule: string, outcome: number | null, resolved_on: string, notes: string }} Forecast */
 /** @typedef {{ id: string, condition: string, effect: string, status: "armed" | "fired" | "expired", set_on: string, fired_on: string, evidence: string }} Tripwire */
 /** @typedef {{ term: string, p: number, rubio: string }} Term */
@@ -33,6 +34,7 @@
  * @property {Scenario[]} scenarios
  * @property {GasRow[]} gas
  * @property {MarketRow[]} markets
+ * @property {EnergyRow[]} energy
  * @property {Forecast[]} forecasts
  * @property {Tripwire[]} tripwires
  * @property {Term[]} terms
@@ -183,6 +185,7 @@
   }
   const gasRows = [...D.gas].sort((a, b) => (a.date < b.date ? -1 : 1));
   const mkRows = [...D.markets].sort((a, b) => (a.date < b.date ? -1 : 1));
+  const enRows = [...D.energy].sort((a, b) => (a.date < b.date ? -1 : 1));
   /**
    * Non-null readings of one numeric column, oldest first.
    * @template {{ date: string }} T
@@ -501,22 +504,10 @@
     const cur = nth(priceR);
     /** @type {Series[]} */
     const series = [{ name, color: "--fg", points: shown.map((r) => ({ d: r.date, v: get(r) })) }];
-    const bands = Object.keys(latest.v).flatMap((k) => {
-      const s = meta.get(`nov3:${k}`);
-      const p = latest.v[k] ?? 0;
-      const band = isDsl ? s?.diesel_band : s?.gas_band;
-      if (!s || !band) return [];
-      const [lo = 0, hi = 0] = band.split("-").map(Number);
-      return [
-        {
-          lo,
-          hi,
-          w: Math.max(6, p * 2.2),
-          color: colorOf(k),
-          title: `${s.label}: $${lo.toFixed(2)}–${hi.toFixed(2)} (${p}%)`,
-        },
-      ];
-    });
+    const bands = scenarioBands(
+      (sc) => (isDsl ? sc.diesel_band : sc.gas_band),
+      (v) => `$${v.toFixed(2)}`,
+    );
     const vals = [...priceR.map((r) => r.v), ...bands.flatMap((b) => [b.lo, b.hi])];
     const step = Math.max(...vals) - Math.min(...vals) > 2.5 ? 0.5 : 0.25;
     const yMin = Math.floor((Math.min(...vals) - 0.05) / step) * step;
@@ -524,13 +515,17 @@
     /** @type {number[]} */
     const ticks = [];
     for (let t = yMin; t <= yMax - step + 0.01; t += step) ticks.push(Number(t.toFixed(2)));
-    const ids = isDsl
-      ? ["gas_diesel_650", "gas_diesel_675", "gas_diesel_700", "gas_diesel_lt600"]
-      : ["gas_nat_450", "gas_nat_475", "gas_nat_500", "gas_nat_lt400"];
-    const lines = ids.flatMap((k) => {
-      const f = latestF.get(k);
-      return f ? [f] : [];
-    });
+    const figs = isDsl
+      ? priceBuckets("gas_diesel_lt600", 6, [
+          ["gas_diesel_650", 6.5],
+          ["gas_diesel_675", 6.75],
+          ["gas_diesel_700", 7],
+        ])
+      : priceBuckets("gas_nat_lt400", 4, [
+          ["gas_nat_450", 4.5],
+          ["gas_nat_475", 4.75],
+          ["gas_nat_500", 5],
+        ]);
     const legend = cur
       ? `<div class="legend" style="margin-top:10px"><span><span class="sw" style="background:var(--fg)"></span>${name} <b>$${cur.v.toFixed(2)}</b> <span class="muted">(${fmtDate(cur.date)})</span></span></div>`
       : "";
@@ -538,13 +533,8 @@
       `<div class="controls"><div class="seg" role="group" aria-label="Fuel"><button type="button" id="seg-gas" aria-pressed="${!isDsl}">Gas</button><button type="button" id="seg-diesel" aria-pressed="${isDsl}">Diesel</button></div><div style="font-size:13px" class="muted">AAA national ${isDsl ? "diesel" : "regular"}, $ per gallon</div></div>` +
       legend +
       '<div class="chart" style="margin-top:30px"></div>' +
-      `<div class="figs">${lines
-        .map(
-          (f) =>
-            `<div><small>${esc(f.question.replace("AAA ", "").replace(" on Nov 3", ""))}</small><strong>${f.p}%</strong></div>`,
-        )
-        .join("")}</div>` +
-      `<div class="note">Bars right of Election Day show each scenario’s Nov. 3 ${isDsl ? "diesel" : "regular"} price range; bar width is proportional to its probability. Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.</div>`;
+      figs +
+      `<div class="note">Bars right of Election Day show each scenario’s Nov. 3 ${isDsl ? "diesel" : "regular"} price range; bar width is proportional to its probability. The ranges under the chart don’t overlap, so they sum to 100%. Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.</div>`;
     $("seg-gas").onclick = () => {
       gasFuel = "gas";
       render();
@@ -565,6 +555,139 @@
       yFmt: (v) => `$${v.toFixed(2)}`,
       bands,
       ...(day(start) < day(WAR_START) ? { vlines: [{ date: WAR_START, text: "War begins" }] } : {}),
+      maxGap: 21,
+    });
+    energyChart(el, {
+      title: "Brent Crude",
+      unit: "ICE Brent front-month futures and EIA Brent spot, $ per barrel",
+      start,
+      series: [
+        { key: "brent_front", name: "Brent futures", color: "--fg" },
+        { key: "brent_spot", name: "Brent spot (EIA)", color: "--muted", width: 2.5, dash: "1 5" },
+      ],
+      bands: scenarioBands(
+        (sc) => sc.brent_band,
+        (v) => `$${v.toFixed(0)}`,
+      ),
+      step: 10,
+      fmt: (v) => `$${v.toFixed(0)}`,
+      tipFmt: (v) => `$${v.toFixed(2)}`,
+      note: "Futures are the ICE front month, the price most headlines quote; spot is EIA’s daily Europe Brent FOB, which prices physical cargoes now and runs well above futures when prompt barrels are scarce. EIA spot lags a few days. Bars right of Election Day show each scenario’s Nov. 3 Brent range, sized by probability.",
+    });
+    energyChart(el, {
+      title: "LNG (Asia JKM)",
+      unit: "Platts JKM front-month futures, $ per million British thermal units",
+      start,
+      series: [{ key: "jkm_front", name: "JKM", color: "--fg" }],
+      step: 5,
+      fmt: (v) => `$${v.toFixed(0)}`,
+      tipFmt: (v) => `$${v.toFixed(2)}`,
+      note: "JKM is the Asian spot LNG benchmark, the one most exposed to Hormuz since Qatar ships about a fifth of the world’s LNG through it. The series is the continuous front-month future, so it steps when the contract rolls mid-month. There are no scenario bands for LNG yet.",
+    });
+  }
+
+  /**
+   * Nov. 3 price bands, one per current scenario, sized by its latest probability.
+   * @param {(s: Scenario) => string} field
+   * @param {(v: number) => string} f
+   * @returns {Band[]}
+   */
+  function scenarioBands(field, f) {
+    return Object.keys(latest.v).flatMap((k) => {
+      const s = meta.get(`nov3:${k}`);
+      const p = latest.v[k] ?? 0;
+      const band = s ? field(s) : "";
+      if (!s || !band) return [];
+      const [lo = 0, hi = 0] = band.split("-").map(Number);
+      return [{ lo, hi, w: Math.max(6, p * 2.2), color: colorOf(k), title: `${s.label}: ${f(lo)}–${f(hi)} (${p}%)` }];
+    });
+  }
+
+  /**
+   * Turns the "< low" and "≥ threshold" forecasts into non-overlapping price ranges that sum to 100%.
+   * @param {string} ltId forecast id for "below low"
+   * @param {number} low
+   * @param {[string, number][]} ge forecast ids for "at or above" each threshold, ascending
+   * @returns {string}
+   */
+  function priceBuckets(ltId, low, ge) {
+    const lt = latestF.get(ltId);
+    const ps = ge.map(([id]) => latestF.get(id)?.p);
+    if (!lt || ps.some((p) => p == null)) return "";
+    const f = (/** @type {number} */ v) => `$${v.toFixed(2)}`;
+    const at = /** @type {number[]} */ (ps);
+    const first = ge[0]?.[1] ?? low;
+    const cells = [
+      [`Under ${f(low)}`, lt.p],
+      [`${f(low)}–${f(first)}`, 100 - lt.p - (at[0] ?? 0)],
+      ...ge.map(([, t], i) => {
+        const next = ge[i + 1];
+        return next ? [`${f(t)}–${f(next[1])}`, (at[i] ?? 0) - (at[i + 1] ?? 0)] : [`${f(t)} or more`, at[i] ?? 0];
+      }),
+    ];
+    return `<div class="figs">${cells
+      .map(([label, p]) => `<div><small>${label} on Nov. 3</small><strong>${Math.round(Number(p))}%</strong></div>`)
+      .join("")}</div>`;
+  }
+
+  /**
+   * A daily market-price chart drawn under the gas chart, on the same dates.
+   * @param {HTMLElement} el
+   * @param {{ title: string, unit: string, start: string, series: { key: "brent_front" | "brent_spot" | "jkm_front", name: string, color: string, width?: number, dash?: string }[], bands?: Band[], step: number, fmt: (v: number) => string, tipFmt: (v: number) => string, note: string }} o
+   */
+  function energyChart(el, o) {
+    const shown = enRows.filter((r) => r.date >= o.start);
+    const dates = shown.filter((r) => o.series.some((c) => r[c.key] != null)).map((r) => r.date);
+    /** @type {Series[]} */
+    const series = o.series.map((c) => ({
+      name: c.name,
+      color: c.color,
+      ...(c.width ? { width: c.width } : {}),
+      ...(c.dash ? { dash: c.dash } : {}),
+      points: shown.map((r) => ({ d: r.date, v: r[c.key] })),
+    }));
+    const vals = [
+      ...shown.flatMap((r) => o.series.flatMap((c) => (r[c.key] == null ? [] : [Number(r[c.key])]))),
+      ...(o.bands ?? []).flatMap((b) => [b.lo, b.hi]),
+    ];
+    if (!vals.length) return;
+    const yMin = Math.floor(Math.min(...vals) / o.step) * o.step;
+    const yMax = Math.ceil(Math.max(...vals) / o.step) * o.step;
+    /** @type {number[]} */
+    const ticks = [];
+    for (let t = yMin; t < yMax; t += o.step) ticks.push(t);
+    const legend = o.series
+      .flatMap((c) => {
+        const r = readings(shown, (x) => x[c.key]).pop();
+        if (!r) return [];
+        const sw = c.dash
+          ? `background:repeating-linear-gradient(90deg,${cv(c.color)} 0 3px,transparent 3px 6px)`
+          : `background:${cv(c.color)}`;
+        return [
+          `<span><span class="sw" style="${sw}"></span>${esc(c.name)} <b>${o.tipFmt(r.v)}</b> <span class="muted">(${fmtDate(r.date)})</span></span>`,
+        ];
+      })
+      .join("");
+    const box = document.createElement("section");
+    box.className = "subchart";
+    box.innerHTML =
+      `<h3>${esc(o.title)}</h3><div style="font-size:13px;font-family:var(--sans)" class="muted">${esc(o.unit)}</div>` +
+      `<div class="legend" style="margin-top:10px">${legend}</div>` +
+      '<div class="chart" style="margin-top:30px"></div>' +
+      `<div class="note">${esc(o.note)}</div>`;
+    el.appendChild(box);
+    lineChart(/** @type {HTMLElement} */ (q(box, ".chart")), {
+      label: `${o.title}: ${o.unit}`,
+      start: o.start,
+      end: election,
+      dates,
+      series,
+      yMin,
+      yMax,
+      yTicks: ticks,
+      yFmt: (v, tip) => (tip ? o.tipFmt(v) : o.fmt(v)),
+      ...(o.bands ? { bands: o.bands } : {}),
+      ...(day(o.start) < day(WAR_START) ? { vlines: [{ date: WAR_START, text: "War begins" }] } : {}),
       maxGap: 21,
     });
   }

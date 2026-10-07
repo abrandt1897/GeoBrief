@@ -217,6 +217,7 @@ def render(brief: Brief, odds: list[Row], forecasts: list[Row], terms: list[Row]
         "scenarios": rows("scenarios.csv"),
         "gas": numeric(rows("gas.csv")),
         "markets": numeric(rows("markets.csv")),
+        "energy": numeric(rows("energy.csv")),
         "forecasts": [{**r, "p": float(r["p"]), "outcome": num(r["outcome"])} for r in forecasts],
         "tripwires": rows("tripwires.csv"),
         "terms": [{**t, "p": float(t["p"])} for t in terms],

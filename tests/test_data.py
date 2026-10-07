@@ -19,6 +19,7 @@ SCHEMAS: dict[str, list[str]] = {
     "scenarios.csv": ["horizon", "scenario", "label", "group", "gas_band", "diesel_band", "brent_band", "driver"],
     "gas.csv": ["date", "nat_regular", "nat_diesel", "ny_regular", "ny_diesel", "nyc_regular", "nyc_diesel", "source"],
     "markets.csv": ["date", "brent_ice_front", "dated_brent", "rial_per_usd", "source"],
+    "energy.csv": ["date", "brent_front", "brent_spot", "jkm_front", "source"],
     "forecasts.csv": [
         "id",
         "made_on",
@@ -75,6 +76,7 @@ def test_no_ragged_rows(name: str) -> None:
         ("odds.csv", ["date"]),
         ("gas.csv", ["date"]),
         ("markets.csv", ["date"]),
+        ("energy.csv", ["date"]),
         ("forecasts.csv", ["made_on", "resolves_on"]),
         ("tripwires.csv", ["set_on"]),
         ("blinks.csv", ["date"]),
@@ -126,6 +128,18 @@ def test_gas_one_row_per_date_and_plausible_prices() -> None:
         for col in ("nat_diesel", "ny_diesel", "nyc_diesel"):
             if r[col]:
                 assert 2 < float(r[col]) < 10, f"{r['date']} {col}={r[col]}"
+
+
+def test_energy_one_row_per_date_and_plausible_prices() -> None:
+    rows = load("energy.csv")
+    dates = [r["date"] for r in rows]
+    assert len(dates) == len(set(dates)), "energy.csv has two rows for one date"
+    assert dates == sorted(dates), "energy.csv must be in date order"
+    for r in rows:
+        assert r["source"], f"{r['date']}: energy row without a source"
+        for col, lo, hi in (("brent_front", 30, 250), ("brent_spot", 30, 250), ("jkm_front", 3, 80)):
+            if r[col]:
+                assert lo < float(r[col]) < hi, f"{r['date']} {col}={r[col]}"
 
 
 def test_forecasts_valid_p_outcome_and_unique_versions() -> None:

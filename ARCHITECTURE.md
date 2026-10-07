@@ -42,6 +42,7 @@ GeoBrief is a flat-file repo. Text and CSV files are the database, one Python sc
 | `data/forecasts.csv`                             | yes            | Every resolvable forecast; latest row per `id` wins; outcomes feed calibration                        |
 | `data/deal_terms.csv`                            | yes            | P(term \| deal), with Rubio-term flags                                                                |
 | `data/gas.csv`, `data/markets.csv`               | yes            | AAA prices; Brent, Dated Brent, rial                                                                  |
+| `data/energy.csv`                                | yes            | Daily ICE Brent front month, EIA Brent spot and JKM LNG front month for the Brent and LNG charts      |
 | `data/supply.csv`, `supply_events.csv`           | yes            | Physical supply series and chart markers                                                              |
 | `data/tripwires.csv`, `data/blinks.csv`          | yes            | Tripwire board; TACO history                                                                          |
 | `log/events.md`                                  | yes            | Parsed as `- YYYY-MM-DD \| text [chart: label]`; older `[chart:]` tags are parsed but no longer drawn |
