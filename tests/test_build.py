@@ -19,7 +19,7 @@ def brief(**over: object) -> build.Brief:
         "status": "S",
         "change_note": "C",
         "bets": [],
-        "blink10": {"blink": 38, "no_blink": 38, "unresolved": 24, "rubio_met": 0},
+        "blink10": {"blink": 70, "no_blink": 30, "unresolved": 0, "rubio_met": 0},
         "deal_p": {"ye2026": 16, "ye2027": 34},
         "election_day": "2026-11-03",
     }
@@ -149,15 +149,18 @@ def test_nuclear_deal_capped_by_comprehensive_and_deal_times_iaea_term() -> None
     assert any("P(IAEA term)" in e for e in errs)
 
 
-@pytest.mark.parametrize(("p", "ok"), [(21, True), (60, True), (88, True), (20, False), (89, False)])
-def test_war_forecast_between_escalated_and_all_war(p: float, ok: bool) -> None:
-    errs = build.check_war(GOOD_ODDS, build.latest_forecasts([forecast("war_nov3", p)]))
-    assert (errs == []) == ok
+@pytest.mark.parametrize(
+    ("blink", "no_blink", "unresolved", "ok"),
+    [(70, 30, 0, True), (93, 6, 1, True), (94, 5, 1, False), (38, 38, 24, False)],
+)
+def test_blink10_fits_year_end_odds(blink: int, no_blink: int, unresolved: int, ok: bool) -> None:
+    b10 = {"blink": blink, "no_blink": no_blink, "unresolved": unresolved, "rubio_met": 0}
+    assert (build.check_blink10_scenarios(GOOD_ODDS, brief(blink10=b10)) == []) == ok
 
 
 def test_checks_use_latest_date_only() -> None:
-    older = [odds_row("2026-09-30", "nov3", "escalated_war", 90), odds_row("2026-09-30", "nov3", "limited_war", 10)]
-    assert build.check_war(older + GOOD_ODDS, build.latest_forecasts([forecast("war_nov3", 60)])) == []
+    older = [odds_row("2026-09-30", "ye2026", "comprehensive_deal", 90)]
+    assert build.check_blink10_scenarios(older + GOOD_ODDS, brief()) == []
 
 
 # ---------- rendering ----------
@@ -283,3 +286,23 @@ def test_void_outcome_is_kept_as_text() -> None:
     assert build.outcome("void") == "void"
     assert build.outcome("1") == 1.0
     assert build.outcome("") is None
+
+
+def test_bad_outcome_names_the_value() -> None:
+    with pytest.raises(SystemExit, match="'yes'"):
+        build.outcome("yes")
+
+
+def test_nyc_premium_uses_latest_row_with_both_prices() -> None:
+    gas = [
+        {"date": "2026-10-05", "nat_regular": "4.37", "nyc_regular": "4.56"},
+        {"date": "2026-10-06", "nat_regular": "4.37", "nyc_regular": "4.55"},
+        {"date": "2026-10-07", "nat_regular": "4.36", "nyc_regular": ""},
+    ]
+    assert build.nyc_premium(gas) == pytest.approx(0.18)
+
+
+def test_nyc_lines_shift_by_the_premium() -> None:
+    base = build.implied_price_line(GOOD_ODDS, SCEN, "gas_nat_475")
+    assert build.implied_price_line(GOOD_ODDS, SCEN, "gas_nyc_475") == pytest.approx(base)
+    assert build.implied_price_line(GOOD_ODDS, SCEN, "gas_nyc_475", 0.2) > (base or 0)

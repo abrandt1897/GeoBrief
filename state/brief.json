@@ -2,15 +2,15 @@
   "updated": "2026-10-07",
   "headline": "Iran War Odds Through 2026",
   "status": "A Panama-flagged tanker, the On Peace, was hit by an unknown projectile in Hormuz, wounding 12 crew; no one claimed it. Qatar says US–Iran messages are still moving through Doha. Trump says the US must finish with Iran \"the nice way or the not-so-nice way.\" Houthis claimed strikes on Riyadh's airport and the Rabigh refinery; the East-West line is moving oil to Yanbu. Brent dipped below $100.",
-  "change_note": "Oct. 7: Escalated war now means a step the war hasn't taken yet: ground forces in Iran, strikes on Iranian civilian infrastructure, or a major Gulf export hub, power or desalination plant knocked out for a week. Another July-style strike campaign counts as limited war. Escalated by Nov. 3: 14% → 7%; by year-end: 20% → 12%. War by Nov. 3 holds at 60%.",
+  "change_note": "Oct. 7: Escalated war now means a step the war hasn't taken yet: ground forces in Iran, strikes on Iranian civilian infrastructure, or a major Gulf export hub, power or desalination plant knocked out for a week. Another July-style strike campaign counts as limited war. Escalated by Nov. 3: 14% → 7%; by year-end: 20% → 12%. Vance says Iran must make a \"meaningful\" cut in enrichment capacity: year-end deal 15% → 13%, MOU-style by Nov. 3 11% → 10%. War by Nov. 3 60% → 45% under the stricter rule (an official claim of a specific, confirmed attack, or a US strike). Blink #10 re-derived: 70% blink, 30% no blink.",
   "bets": [
     {
-      "cond": "The IRGC officially claims a confirmed hit, lays mines or strikes infrastructure",
+      "cond": "The IRGC or Artesh officially claims a specific attack that is independently confirmed",
       "effect": "War by Nov. 3 resolves yes; escalated ~10%"
     },
     {
       "cond": "Iran accepts US sequencing, or round two is set with text",
-      "effect": "Year-end deal → ~23%"
+      "effect": "Year-end deal → ~21%"
     },
     {
       "cond": "The East-West line or Yanbu is offline 3+ days",
@@ -18,14 +18,14 @@
     }
   ],
   "blink10": {
-    "blink": 38,
-    "no_blink": 38,
-    "unresolved": 24,
+    "blink": 70,
+    "no_blink": 30,
+    "unresolved": 0,
     "rubio_met": 0
   },
   "deal_p": {
-    "ye2026": 15,
-    "ye2027": 33
+    "ye2026": 13,
+    "ye2027": 31
   },
   "election_day": "2026-11-03"
 }

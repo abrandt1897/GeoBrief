@@ -31,6 +31,10 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
+      # A manual run skips CI, so run the unit and data tests here first.
+      - name: Tests (manual runs only)
+        if: github.event_name == 'workflow_dispatch'
+        run: pip install -r requirements-dev.txt && python3 -m pytest -q
       - name: Build
         run: python3 dashboard/build.py
       - uses: actions/configure-pages@v5

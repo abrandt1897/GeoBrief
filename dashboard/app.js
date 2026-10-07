@@ -866,13 +866,22 @@
 
   /** @param {HTMLElement} el */
   function tripPanel(el) {
+    /** @type {Record<string, number>} */
     const order = { fired: 0, armed: 1, expired: 2 };
+    /** @type {Record<string, string>} */
     const col = { fired: "--war", armed: "--calm", expired: "--muted" };
-    const items = [...D.tripwires].sort((a, b) => order[a.status] - order[b.status]);
+    // Unknown statuses sort last instead of producing NaN.
+    /** @param {string} s */
+    const rank = (s) => order[s] ?? Infinity;
+    const items = [...D.tripwires].sort((a, b) => {
+      const ra = rank(a.status);
+      const rb = rank(b.status);
+      return ra === rb ? 0 : ra < rb ? -1 : 1;
+    });
     el.innerHTML = `<div class="cols">${items
       .map(
         (t) =>
-          `<div class="trip"><div class="st" style="color:${cv(col[t.status])}">${t.status.toUpperCase()}${t.fired_on ? ` · ${fmtDate(t.fired_on).toUpperCase()}` : ""}</div>` +
+          `<div class="trip"><div class="st" style="color:${cv(col[t.status] ?? "--muted")}">${t.status.toUpperCase()}${t.fired_on ? ` · ${fmtDate(t.fired_on).toUpperCase()}` : ""}</div>` +
           `<div class="c"${t.status === "expired" ? ' style="color:var(--muted)"' : ""}>${esc(t.condition)}</div><div class="e">${esc(t.effect)}</div>` +
           (t.evidence ? `<div class="e" style="font-weight:400">${esc(t.evidence)}</div>` : "") +
           "</div>",
@@ -904,19 +913,66 @@
     });
   }
 
+  /**
+   * Time-averaged Brier score per resolved forecast id: every version (made_on row) is scored against the
+   * outcome and weighted by the days it stood, until the next version or resolution. Void ids are left out.
+   * @returns {{ id: string, family: string, p: number, brier: number, outcome: number }[]}
+   */
+  function scoredForecasts() {
+    /** @type {Map<string, Forecast[]>} */
+    const byId = new Map();
+    for (const f of D.forecasts) byId.set(f.id, [...(byId.get(f.id) ?? []), f]);
+    return [...byId].flatMap(([id, rows]) => {
+      const vs = [...rows].sort((a, b) => (a.made_on < b.made_on ? -1 : a.made_on > b.made_on ? 1 : 0));
+      const last = vs[vs.length - 1];
+      if (!last || last.outcome === "void") return [];
+      const res = [...vs].reverse().find((f) => f.outcome === 0 || f.outcome === 1);
+      if (!res) return [];
+      const outcome = Number(res.outcome);
+      const end = day(res.resolved_on || last.resolved_on || res.resolves_on);
+      const live = vs.filter((f) => f.outcome !== "void" && day(f.made_on) <= end);
+      let w = 0;
+      let b = 0;
+      let pw = 0;
+      live.forEach((f, i) => {
+        const next = live[i + 1];
+        const days = Math.max(0, (next ? day(next.made_on) : end) - day(f.made_on));
+        w += days;
+        b += days * (f.p / 100 - outcome) ** 2;
+        pw += days * f.p;
+      });
+      // A forecast made on its resolution day stood zero days; score its latest version alone.
+      const only = live[live.length - 1] ?? last;
+      const brier = w > 0 ? b / w : (only.p / 100 - outcome) ** 2;
+      const p = w > 0 ? pw / w : only.p;
+      return [{ id, family: id.split("_")[0] ?? id, p, brier, outcome }];
+    });
+  }
+
   /** @param {HTMLElement} el */
   function calPanel(el) {
-    // Score the latest version of each forecast once; void ones (unscorable or replaced) are left out.
     const current = [...latestF.values()].filter((f) => f.outcome !== "void");
-    const res = current.filter((f) => f.outcome === 0 || f.outcome === 1);
-    const brier = res.length
-      ? (res.reduce((a, f) => a + (f.p / 100 - Number(f.outcome)) ** 2, 0) / res.length).toFixed(3)
-      : "—";
+    const res = scoredForecasts();
+    /** @param {{ brier: number }[]} xs */
+    const mean = (xs) => (xs.reduce((a, x) => a + x.brier, 0) / xs.length).toFixed(3);
+    const brier = res.length ? mean(res) : "—";
+    /** @type {Map<string, typeof res>} */
+    const fams = new Map();
+    for (const r of res) fams.set(r.family, [...(fams.get(r.family) ?? []), r]);
+    const famHtml = fams.size
+      ? `<div style="display:flex;flex-wrap:wrap;gap:4px 20px;font-size:14px" class="cal-fams">${[...fams]
+          .sort(([a], [b]) => (a < b ? -1 : 1))
+          .map(
+            ([k, xs]) =>
+              `<span><span class="muted">${esc(k)}</span> <b>${mean(xs)}</b> <span class="muted">(${xs.length})</span></span>`,
+          )
+          .join("")}</div>`
+      : "";
     /** @type {Map<number, number[]>} */
     const buckets = new Map();
     for (const f of res) {
       const b = Math.min(9, Math.floor(f.p / 10));
-      buckets.set(b, [...(buckets.get(b) ?? []), Number(f.outcome)]);
+      buckets.set(b, [...(buckets.get(b) ?? []), f.outcome]);
     }
     const dots = [...buckets]
       .map(([b, xs]) => {
@@ -924,7 +980,7 @@
         return `<circle cx="${30 + (b + 0.5) * 18}" cy="${190 - obs * 180}" r="${3 + Math.sqrt(xs.length) * 2}" style="fill:var(--war)"/>`;
       })
       .join("");
-    const open = current.length - res.length;
+    const open = current.filter((f) => f.outcome == null).length;
     const next = current
       .filter((f) => f.outcome == null)
       .map((f) => f.resolves_on)
@@ -934,7 +990,8 @@
       `<svg viewBox="0 0 220 220" width="260" role="img" aria-label="Reliability plot" style="max-width:100%"><rect x="30" y="10" width="180" height="180" style="fill:var(--panel)"/><line x1="30" y1="190" x2="210" y2="10" style="stroke:var(--muted)" stroke-dasharray="4 4"/>${dots}` +
       '<text x="120" y="212" font-size="11" text-anchor="middle" style="fill:var(--muted)">FORECAST</text><text x="14" y="100" font-size="11" text-anchor="middle" transform="rotate(-90 14 100)" style="fill:var(--muted)">OBSERVED</text></svg>' +
       `<div style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;gap:32px"><div><small class="muted">Brier score</small><div style="font-size:32px;font-weight:700">${brier}</div></div><div><small class="muted">Resolved</small><div style="font-size:32px;font-weight:700">${res.length}</div></div><div><small class="muted">Open</small><div style="font-size:32px;font-weight:700">${open}</div></div></div>` +
-      `<div style="font-size:15px;max-width:380px">${res.length ? "Each dot is a bucket of forecasts; the closer to the diagonal, the better calibrated." : `No forecasts have resolved yet. The next ones resolve on ${next ? fmtDate(next) : "—"}.`}</div></div></div>`;
+      famHtml +
+      `<div style="font-size:15px;max-width:380px">${res.length ? "Each forecast’s Brier score is averaged over every version of it, weighted by the days each version stood, then averaged by question family and overall. Each dot is a bucket of forecasts by their time-averaged probability; the closer to the diagonal, the better calibrated." : `No forecasts have resolved yet. The next ones resolve on ${next ? fmtDate(next) : "—"}.`}</div></div></div>`;
   }
 
   /** @type {Tab[]} */
@@ -1038,8 +1095,18 @@
     } catch {
       // Storage can be blocked; the tab still switches.
     }
+    // Put the tab in the URL so a reload or a shared link opens it; replaceState adds no history entry.
+    try {
+      if (location.hash !== `#${tab}`) history.replaceState(history.state, "", `#${tab}`);
+    } catch {
+      // Some sandboxed frames refuse history changes; the tab still switches.
+    }
     render();
   };
+  addEventListener("hashchange", () => {
+    const h = location.hash.slice(1);
+    if (isTab(h) && h !== tab) selectTab(h);
+  });
   $("tabs").addEventListener("click", (e) => {
     const b = /** @type {HTMLElement | null} */ (/** @type {Element} */ (e.target).closest("button[data-tab]"));
     if (!b?.dataset.tab) return;
@@ -1059,7 +1126,7 @@
 
   // ---------- menu ----------
   const drawerItems = [
-    ...TABS.map((t) => ({ href: "#odds", tab: t.id, name: t.label, sub: t.sub ?? t.title })),
+    ...TABS.map((t) => ({ href: `#${t.id}`, tab: t.id, name: t.label, sub: t.sub ?? t.title })),
     { href: "#scenarios", tab: "odds", name: "Scenario Table", sub: "Every path to Nov. 3 with gas and drivers" },
     { href: "#dispatches", tab: "", name: "Dispatches", sub: "The latest events" },
     { href: "#method", tab: "", name: "Method", sub: "How the odds are made and checked" },
@@ -1083,6 +1150,11 @@
     const a = /** @type {HTMLElement | null} */ (/** @type {Element} */ (e.target).closest("a"));
     if (!a) return;
     if (a.dataset.tab) selectTab(a.dataset.tab);
+    // Tab links point at the tab's id, which has no element of its own: scroll to the chart well instead.
+    if (a.dataset.tab && isTab(a.getAttribute("href")?.slice(1))) {
+      e.preventDefault();
+      $("odds").scrollIntoView();
+    }
     setMenu(false);
   });
   document.addEventListener("keydown", (e) => {
@@ -1109,6 +1181,23 @@
           ? "Election Day"
           : "Election Day has passed";
   $("dateline").textContent = `Updated ${fmtDate(D.brief.updated)}, ${D.brief.updated.slice(0, 4)} · ${countdown}`;
+  // Staleness: runs are at 6 a.m. and 6 p.m. ET, but `updated` is a date only, so read it as 18:00 ET
+  // (22:00Z) of that day, the latest a run on that date can be. More than 18 hours past that, a run was missed.
+  const updatedAt = Date.parse(D.brief.updated.length > 10 ? D.brief.updated : `${D.brief.updated}T22:00:00Z`);
+  const stale = Number.isFinite(updatedAt) && Date.now() - updatedAt > 18 * 3600e3;
+  if (stale) {
+    const note = document.createElement("div");
+    note.className = "stale-note";
+    note.setAttribute("role", "status");
+    note.id = "stale-note";
+    note.textContent = `Last updated ${fmtDate(D.brief.updated)}, ${D.brief.updated.slice(0, 4)}; the scheduled update may have been missed, so figures may be out of date.`;
+    $("dateline").after(note);
+    const live = document.querySelector(".ticker .live");
+    if (live) {
+      live.textContent = fmtDate(D.brief.updated).toUpperCase();
+      live.classList.add("stale");
+    }
+  }
   $("change-note").textContent = D.brief.change_note;
   $("scen-body").innerHTML = keysByP(latest.v)
     .map((k) => {
@@ -1178,7 +1267,17 @@
   // Brent: daily settles in energy.csv (the chart's series), not the occasional markets.csv readings.
   const brR = readings(enRows, (r) => r.brent_front);
   const br = nth(brR);
-  const brP = nth(brR, 1);
+  const brPrev = nth(brR, 1);
+  // energy.csv has no contract label, and an ICE Brent contract expires on the last business day of the month
+  // two months before delivery, so the front month changes at each month end (Trading Economics may roll a few
+  // days early). Across a month boundary the two rows are different contracts: show no move. In a month's last
+  // week, hide a move over $4, which is more likely a roll than a day's trading.
+  const brRoll =
+    br && brPrev
+      ? br.date.slice(0, 7) !== brPrev.date.slice(0, 7) ||
+        (Number(br.date.slice(8, 10)) >= 24 && Math.abs(br.v - brPrev.v) > 4)
+      : false;
+  const brP = brRoll ? null : brPrev;
   // Physical price: the newer of a Dated Brent reading (markets.csv, possibly a floor) and EIA spot (energy.csv).
   const datedM = mkRows.filter((r) => r.dated_brent != null).pop();
   const spotE = enRows.filter((r) => r.brent_spot != null).pop();

@@ -72,6 +72,8 @@ def num(v: str | None) -> float | None:
 def outcome(v: str) -> float | str | None:
     """Forecast outcome: 1, 0, "void" (not scored) or None (open)."""
     v = v.strip()
+    if v not in ("", "0", "1", "void"):
+        sys.exit(f"forecasts.csv outcome {v!r} must be blank, 0, 1 or void")
     return v if v == "void" else num(v)
 
 
@@ -194,16 +196,20 @@ def check_deal(odds: list[Row], latest_f: dict[str, Row], terms: list[Row], brie
     return errors
 
 
-def check_war(odds: list[Row], latest_f: dict[str, Row]) -> list[str]:
-    """war_nov3 (a claimed kinetic round) covers every escalated path and fits inside limited + escalated war."""
-    nov = latest_odds(odds, "nov3")
-    if "escalated_war" not in nov or "war_nov3" not in latest_f:
-        return []
-    esc, war = nov["escalated_war"], nov["escalated_war"] + nov.get("limited_war", 0)
-    p = float(latest_f["war_nov3"]["p"])
-    if not esc - 0.5 <= p <= war + 0.5:
-        return [f"war_nov3 forecast {p:g} outside escalated war {esc:g} .. limited + escalated {war:g}"]
-    return []
+def check_blink10_scenarios(odds: list[Row], brief: Brief) -> list[str]:
+    """Blink #10 against the year-end odds.
+
+    Dec 31 always resolves it (neither a deal nor a Jul-scale campaign is a blink), so "unresolved" stays near 0.
+    No blink needs a Rubio-term deal or a Jul-scale campaign, so it is at least the comprehensive deal odds.
+    """
+    ye = latest_odds(odds, "ye2026")
+    b = brief["blink10"]
+    errors: list[str] = []
+    if b["unresolved"] > 2:
+        errors.append(f"Blink #10 unresolved {b['unresolved']} > 2, but Dec 31 always resolves it")
+    if "comprehensive_deal" in ye and b["no_blink"] < ye["comprehensive_deal"] - 0.5:
+        errors.append(f"Blink #10 no blink {b['no_blink']} < YE comprehensive deal {ye['comprehensive_deal']:g}")
+    return errors
 
 
 def band_segments(band: str) -> list[tuple[float, float, float]]:
@@ -235,16 +241,15 @@ def p_at_least(segs: list[tuple[float, float, float]], x: float) -> float:
     return p
 
 
-# Forecast id -> (scenarios.csv band column, ">=" or "<", threshold, offset added to the band price).
-# NYC metro lines use the national gas band plus the NYC premium.
-NYC_PREMIUM = 0.19
+# Forecast id -> (scenarios.csv band column, ">=" or "<", threshold).
+# NYC metro lines use the national gas band plus the NYC premium (see nyc_premium).
 PRICE_LINES: dict[str, tuple[str, str, float]] = {
     "gas_nat_lt400": ("gas_band", "<", 4.00),
     "gas_nat_450": ("gas_band", ">=", 4.50),
     "gas_nat_475": ("gas_band", ">=", 4.75),
     "gas_nat_500": ("gas_band", ">=", 5.00),
-    "gas_nyc_475": ("gas_band", ">=", 4.75 - NYC_PREMIUM),
-    "gas_nyc_500": ("gas_band", ">=", 5.00 - NYC_PREMIUM),
+    "gas_nyc_475": ("gas_band", ">=", 4.75),
+    "gas_nyc_500": ("gas_band", ">=", 5.00),
     "gas_diesel_lt600": ("diesel_band", "<", 6.00),
     "gas_diesel_650": ("diesel_band", ">=", 6.50),
     "gas_diesel_675": ("diesel_band", ">=", 6.75),
@@ -260,9 +265,21 @@ PRICE_LINES: dict[str, tuple[str, str, float]] = {
 }
 
 
-def implied_price_line(odds: list[Row], scenarios: list[Row], fid: str) -> float | None:
-    """A Nov. 3 price line implied by the latest scenario odds and their bands, in percent."""
+def nyc_premium(gas: list[Row]) -> float:
+    """NYC metro regular minus national regular on the latest gas.csv row that has both, to the cent."""
+    both = [r for r in gas if r["nat_regular"] and r["nyc_regular"]]
+    last = max(both, key=lambda r: r["date"])
+    return round(float(last["nyc_regular"]) - float(last["nat_regular"]), 2)
+
+
+def implied_price_line(odds: list[Row], scenarios: list[Row], fid: str, premium: float = 0.0) -> float | None:
+    """A Nov. 3 price line implied by the latest scenario odds and their bands, in percent.
+
+    `premium` is the NYC-over-national gap; NYC lines test the national band at the threshold minus it.
+    """
     col, op, x = PRICE_LINES[fid]
+    if fid.startswith("gas_nyc_"):
+        x -= premium
     nov = latest_odds(odds, "nov3")
     bands = {s["scenario"]: s[col] for s in scenarios if s["horizon"] == "nov3"}
     total = 0.0
@@ -275,13 +292,15 @@ def implied_price_line(odds: list[Row], scenarios: list[Row], fid: str) -> float
     return total
 
 
-def check_price_lines(odds: list[Row], scenarios: list[Row], latest_f: dict[str, Row]) -> list[str]:
+def check_price_lines(
+    odds: list[Row], scenarios: list[Row], latest_f: dict[str, Row], premium: float = 0.0
+) -> list[str]:
     """Every Nov. 3 price forecast equals scenario odds x bands (rounded), so the bars and ranges agree."""
     errors: list[str] = []
     for fid in PRICE_LINES:
         if fid not in latest_f:
             continue
-        want = implied_price_line(odds, scenarios, fid)
+        want = implied_price_line(odds, scenarios, fid, premium)
         if want is None:
             errors.append(f"{fid}: a current nov3 scenario has no band for it")
             continue
@@ -337,7 +356,7 @@ def check(odds: list[Row], forecasts: list[Row], terms: list[Row], brief: Brief)
         check_sums(odds)
         + check_blink10(latest_f, brief)
         + check_deal(odds, latest_f, terms, brief)
-        + check_war(odds, latest_f)
+        + check_blink10_scenarios(odds, brief)
     )
 
 
@@ -345,7 +364,7 @@ def check_derived(odds: list[Row], forecasts: list[Row], scenarios: list[Row], t
     """Checks on numbers derived from the odds: price lines, scored scenarios and tripwire targets."""
     latest_f = latest_forecasts(forecasts)
     return (
-        check_price_lines(odds, scenarios, latest_f)
+        check_price_lines(odds, scenarios, latest_f, nyc_premium(rows("gas.csv")))
         + check_scenario_forecasts(odds, latest_f)
         + check_tripwires(odds, latest_f, trips)
     )

@@ -44,7 +44,7 @@ description: 'Geopolitical situation briefings and probabilistic scenario analys
 ## War Arc (Feb 28 – Oct 4, 2026)
 
 - **Feb 28** US-Israel campaign; Khamenei killed (Mojtaba succeeds). **Apr 13** dual blockade.
-- **Jun 17** MOU (Islamabad; 14-pt, 60 days → lapsed Aug 16-17; $300B fund para 6; HEU dilution only). **Jun 18** blockade lifted, oil waiver. **Jun 25–28** first kinetic round over routing.
+- **Jun 17** MOU (Versailles, after the G7; 14-pt, 60 days → lapsed Aug 16-17; $300B fund para 6; HEU dilution only). **Jun 18** blockade lifted, oil waiver. **Jun 25–28** first kinetic round over routing.
 - **Jul 7–24** first US non-blink (~11 nights, 300+ targets, waiver revoked); Iran hits Qatar/Kuwait/Jordan/Bahrain. **Jul 12** PGSA closes strait (permit regime). **Jul 14** blockade back; Houthis break Saudi truce. **~Jul 18-19** US troops killed in Jordan — no escalation.
 - **Jul 24–Aug 29** pause (interceptor shortages). PGSA tolls ≤$2M/vessel, yuan/crypto. **Aug 24** "Economic Outcast" sanctions. **Aug 25** Iran-Oman corridor framework. UAE suspends trade/finance with Iran.
 - **Aug 30–Sep 10** Larak strikes; Sep 5 US hits 3 Iranian tankers; **Sep 10** largest shipping exchange (US sinks 5 Iranian tankers; Iran hits 10 ships + Jordan base).
@@ -73,7 +73,7 @@ description: 'Geopolitical situation briefings and probabilistic scenario analys
 
 ## Houthis / Bab el-Mandeb
 
-Hold Yemen's Red Sea coast; open war with Riyadh (Riyadh/Yanbu/Taif/Khamis Mushait targeted; UN displaced 230k). Iranian advisers present. US has a Saudi-only-targeting pledge. **By Nov 3:** Houthi hit (not intercepted) on Yanbu/East-West ~40%; non-Saudi shipping hit ~20%; US joins vs Houthis ~10%.
+Hold Yemen's Red Sea coast; open war with Riyadh (Riyadh/Yanbu/Taif/Khamis Mushait targeted; UN displaced 230k). Iranian advisers present. US has a Saudi-only-targeting pledge. **By Nov 3:** Houthi hit (not intercepted) on Yanbu/East-West — happened (Khurais, Oct 4; forecast voided because it was made the same day); Yemeni gov't claims Bab el-Mandeb/Mokha retaken Oct 5 (disputed); non-Saudi shipping hit ~20% (tripwire `tw_bab`); US joins vs Houthis ~10%.
 
 ## US Capacity & Political Clock
 
@@ -82,7 +82,7 @@ Hold Yemen's Red Sea coast; open war with Riyadh (Riyadh/Yanbu/Taif/Khamis Musha
 - **Cost:** $43.6B through Sep 3; ~$2-3B/month low intensity; money not binding. **Binding constraint = interceptors** (½–⅔ depleted, 5+ yrs to rebuild) → most plausible no-blink = short, sharp campaign then declared victory.
 - **Congress:** CR to Dec 11; $87.6B supplemental → lame duck. WPR passed 3×; GOP defections 7.
 - **Midterms:** generic ~D+9; House flip ~85-90%; Senate toss-up. Post-election both blink and escalation get cheaper.
-- **Pre-election deal:** ~7% — written counter exists, but Trump wants post-election and denies relief-for-nukes; pass-through only ~15-30¢ by Nov 3.
+- **Pre-election deal:** ~4% signed (`deal_prenov3`) — written counter exists, but Trump wants post-election and denies relief-for-nukes; pass-through only ~15-30¢ by Nov 3.
 
 ## MOU & Rubio's Terms
 
@@ -102,13 +102,13 @@ Hold Yemen's Red Sea coast; open war with Riyadh (Riyadh/Yanbu/Taif/Khamis Musha
 
 - **Blink:** deal meeting none of Rubio's 3; OR Dec 31 with neither deal nor annihilation-scale campaign; OR unfreeze/blockade easing before a signed deal.
 - **No blink:** campaign ≥ Jul 8-18 scale hitting Pickaxe/Kharg/leadership; OR deal meeting ≥1 of Rubio's 3.
-- **Odds (Oct 4):** blink ~38% · no blink ~38% · unresolved ~24%.
+- **Odds (Oct 7):** blink ~70% · no blink ~30% · unresolved ~0% (Dec 31 always resolves it). No blink = YE comprehensive 8 + a Jul-scale campaign on Pickaxe/Kharg/leadership ~22 (the WSJ says bombing resumes in Nov).
 
 **Rezaei "4-5 days" (→ Sep 28-29):** no IRGC-claimed hit; Sep 28-29 four unclaimed hits (incl. ADNOC, PGSA-listed, dark Kuwaiti) + infrastructure threats = enforcement with deniability. Window passed without the claimed-escalation step.
 
-## Deal Tracker (Oct 4)
+## Deal Tracker (Oct 7)
 
-P(term | deal). P(deal) ≈ 16% by end-2026, 34% by end-2027.
+P(term | deal). P(deal) ≈ 13% by end-2026, 31% by end-2027 (Vance, Oct 5–6: any deal needs a "meaningful" enrichment-capacity cut).
 
 | Term                                                   | P   |
 | ------------------------------------------------------ | --- |
@@ -123,7 +123,7 @@ P(term | deal). P(deal) ≈ 16% by end-2026, 34% by end-2027.
 | Lebanon/Hezbollah linked                               | 55% |
 | Capped "service fees" survive                          | 52% |
 | Houthi Red Sea standdown                               | 42% |
-| Verifiable enrichment cap / IAEA at Pickaxe (Rubio #1) | 40% |
+| Verifiable enrichment cap / IAEA at Pickaxe (Rubio #1) | 50% |
 | Economic Outcast rollback                              | 40% |
 | Zero fees (Rubio #2)                                   | 30% |
 | HEU turned over (Rubio #3)                             | 20% |
@@ -131,8 +131,8 @@ P(term | deal). P(deal) ≈ 16% by end-2026, 34% by end-2027.
 | Israel bound signatory                                 | 15% |
 | Full denuclearization                                  | 5%  |
 
-**Read:** likely deal = enhanced MOU + unfreeze + Oman-run strait; IAEA access the likeliest Rubio term (up on "concrete nuclear steps"); HEU turnover unlikely. Rubio 0-for-3 → blink #10.
-**Tripwires:** Iran accepts US sequencing or round 2 scheduled with text → YE deal ~23%. Leaked text with IAEA/enrichment cap → deal +5. US delegate on Oman track → joint admin ~90%, deal +10. Unfreeze before signing → deal −5, limbo +5.
+**Read:** likely deal = enhanced MOU + unfreeze + Oman-run strait; IAEA access the likeliest Rubio term (up on "concrete nuclear steps" and Vance's enrichment condition, 40 → 50%); HEU turnover unlikely. Rubio 0-for-3 → blink #10.
+**Tripwires:** Iran accepts US sequencing or round 2 scheduled with text → YE deal ~21%. Leaked text with IAEA/enrichment cap → deal +5. US delegate on Oman track → joint admin ~90%, deal +10. Unfreeze before signing → deal −5, limbo +5.
 
 ## Canonical Odds (Oct 7)
 
@@ -145,7 +145,9 @@ _Snapshot of `state/current.md` in the GeoBrief repo, which is canonical; copy i
 - **MOU-style deal:** interim truce / enhanced MOU like the MOU week, or unsigned Iranian concessions; no signed comprehensive deal.
 - **Comprehensive deal:** a _signed_ deal in which Iran concedes at least one of Rubio's three terms. Must stay below MOU-style.
 - **Resolution (what is in force on the horizon date):** a signed deal wins (comprehensive if it concedes a Rubio term, else MOU-style); otherwise an interim truce or enhanced MOU in force that day is MOU-style, even after earlier strikes; otherwise escalated if any escalated step occurred from Oct 7; otherwise limited war / limbo. Scored as `scen_<horizon>_<scenario>` in `data/forecasts.csv`.
-- **War by Nov 3 (`war_nov3`, 60%)** is a separate question: a US strike on Iran, or an official IRGC/Artesh claim of a specific attack that is independently confirmed (UKMTO, CENTCOM, vessel ID, imagery). Unnamed media tallies (Fars "13 violators") and denied, unconfirmed claims (Oct 6 helicopter) don't count. It sits between escalated (7) and limited + escalated (88).
+- **War by Nov 3 (`war_nov3`, 45%)** is a separate question: a US strike on Iran, or an official IRGC/Artesh claim of a specific attack that is independently confirmed (UKMTO, CENTCOM, vessel ID, imagery). Unnamed media tallies (Fars "13 violators") and denied, unconfirmed claims (Oct 6 helicopter) don't count. It has no fixed relation to the scenarios: escalated can come from a Houthi or militia outage with no US strike or claim, and MOU-style can follow strikes.
+
+Oct 7 (review follow-up): **Vance (Reuters, Oct 5–6) makes a "meaningful" cut in enrichment capacity a US condition** for any deal, a floor above Rubio's "no nuclear weapon" → year-end deal 15 → 13, by 2027 33 → 31; a signed deal more likely carries a Rubio term (IAEA/enrichment-cap term 40 → 50%), so year-end comprehensive holds at 8 and MOU-style 16 → 14 (limited 66). Nov 3 MOU-style 11 → 10 (limited 82): Iran soft-rejected the counter and calls talks "meaningless." **War by Nov 3 60 → 45** under the stricter claim rule: one official claim (Cape Dao, Sept 23) against ~8 unclaimed hits since, no US strike since Sept 10, and the WSJ says bombing resumes after the election. **Blink #10 re-derived** from the year-end odds (blink 70, no blink 30, unresolved 0). Tripwires merged, made disjoint and filled in (below).
 
 Oct 7 (Adam, later): **escalated narrowed to steps the war hasn't taken yet** (ground forces in Iran, strikes on Iranian civilian infrastructure, or a major Gulf export hub, power or desalination plant out 7+ days). A July-scale campaign on military targets now counts as limited war. Nov 3 escalated 14 → 7: the sustained-campaign 7 moves to limited war / limbo (81); the 7 left is a hub/plant outage ~4, civilian-infrastructure strikes ~2, ground forces ~2, less overlap. Year-end escalated 20 → 12 (limited 64): post-election escalation gets cheaper and the TR ARG (2,000 Marines) arrives in Nov, but a July-style campaign no longer counts. Brent series now matches Trading Economics.
 
@@ -159,46 +161,51 @@ Oct 5: **UAE-third tripwire fired** (Uhud, Emirates Shipping) → infra +2, half
 
 | Scenario            | P   | Gas (AAA reg.) | Brent (Jan.) | Key Driver                                                                                                     |
 | ------------------- | --- | -------------- | ------------ | -------------------------------------------------------------------------------------------------------------- |
-| Limited war / Limbo | 81% | $4.00-4.75     | $83-115      | No settlement; Iran holds strait-first; claimed hits, US strike rounds, limbo                                  |
+| Limited war / Limbo | 82% | $4.00-4.75     | $83-115      | No settlement; Iran holds strait-first; claimed hits, US strike rounds, limbo                                  |
 | Escalated war       | 7%  | $4.75-5.10     | $115-127     | New step: Gulf hub/plant out 7+ days (~4), strikes on Iranian civilian infrastructure (~2), ground forces (~2) |
-| MOU-style deal      | 11% | $3.85-4.10     | $73-87       | Iran folds on sequencing or interim text; nothing signed in full                                               |
+| MOU-style deal      | 10% | $3.85-4.10     | $73-87       | Iran folds on sequencing or interim text; nothing signed in full                                               |
 | Comprehensive deal  | 1%  | $3.85-4.05     | $73-85       | Signed deal conceding a Rubio term before the election                                                         |
 
 **Weighted bands (`scenarios.csv`):** a merged scenario keeps the price mix of the paths inside it as sub-ranges weighted by their odds — limited = round 46 ($4.40-4.60) + strike campaign 7 ($4.55-4.75) + limbo 19 ($4.20-4.40) + half-open 9 ($4.00-4.25); escalated = new step 7 ($4.75-5.10); MOU = Iran folds 8 + signed non-comprehensive 3. Every Nov 3 price line = odds × bands, uniform within each sub-range; `build.py` fails if a line drifts more than 1 point. Brent bands sit ~$3 under December futures for backwardation into the January contract (Nov/Dec was ~$5 at the Sept 30 expiry, halved for expiry-day distortion).
 
-**Gas baseline (AAA, Oct 6):** national regular $4.37 (wk $4.48, mo $4.15); diesel $6.32 (record $6.53 9/22). NY state $4.47 / $6.52; NYC metro $4.55 / $6.73 (≈ +19¢ / +41¢ over national). **2026 reference (AAA):** pre-war $2.98 (Feb 26); high $4.56 (May 21); July low $3.79; Sept peak $4.48 (Sept 24).
+**Gas baseline (AAA, Oct 6):** national regular $4.37 (wk $4.48, mo $4.15); diesel $6.32 (record $6.53 9/22). NY state $4.47 / $6.52; NYC metro $4.55 / $6.73 (≈ +18¢ / +41¢ over national; the NYC lines use the latest gap from `gas.csv`). **2026 reference (AAA):** pre-war $2.98 (Feb 26); high $4.56 (May 21); July low $3.79; Sept peak $4.48 (Sept 24).
 **Gas mechanics:** rockets 2-4¢/day, feathers 1-1.5¢/day (~2.4¢ per $1/bbl); no-shock path → ~$4.10-4.25.
-**Nov 3 lines (AAA national regular):** ≥$4.50 ~37% · ≥$4.75 ~7% · ≥$5.00 ~2% · <$4.00 ~7%. NYC metro ≥$4.75 ~23%, ≥$5 ~6%. Diesel ≥$6.50 ~37% · ≥$6.75 ~10% · ≥$7.00 ~6% · <$6.00 ~18%. Brent (Jan.) ≥$100 ~64% · ≥$110 ~11% · ≥$120 ~4% · <$90 ~18%. JKM (Dec.) ≥$25 ~73% · ≥$28 ~29% · ≥$31 ~5% · <$20 ~5%.
-**Market cross-check:** ICE Brent ~$100.6 (Oct 6) prices less war than 60%; Dated Brent >$120 (Oct 2 floor) says physical is tighter than futures. Futures have faded every lull; supply recovery + G7 release cap upside.
+**Nov 3 lines (AAA national regular):** ≥$4.50 ~37% · ≥$4.75 ~7% · ≥$5.00 ~2% · <$4.00 ~6%. NYC metro ≥$4.75 ~20%, ≥$5 ~6%. Diesel ≥$6.50 ~37% · ≥$6.75 ~11% · ≥$7.00 ~6% · <$6.00 ~17%. Brent (Jan.) ≥$100 ~65% · ≥$110 ~11% · ≥$120 ~4% · <$90 ~17%. JKM (Dec.) ≥$25 ~73% · ≥$28 ~30% · ≥$31 ~5% · <$20 ~5%.
+**Market cross-check:** ICE Brent ~$100.6 (Oct 6) prices less war than the bands do; Dated Brent >$120 (Oct 2 floor) says physical is tighter than futures. Futures have faded every lull; supply recovery + G7 release cap upside.
 
 ### Through Year-End 2026
 
 | Scenario            | P   |
 | ------------------- | --- |
-| Limited war / Limbo | 64% |
+| Limited war / Limbo | 66% |
 | Escalated war       | 12% |
-| MOU-style deal      | 16% |
+| MOU-style deal      | 14% |
 | Comprehensive deal  | 8%  |
 
-P(signed deal by YE) 15% sits between comprehensive (8) and MOU + comprehensive (24): 8 comprehensive + 7 signed without a Rubio term (counted in MOU-style with Iran folds 9).
+P(signed deal by YE) 13% sits between comprehensive (8) and MOU + comprehensive (22): 8 comprehensive + 5 signed without a Rubio term (counted in MOU-style with Iran folds 9).
 
 ### Live Tripwires
 
 Registry and targets: `data/tripwires.csv` (`targets` = the numbers each would move to; `build.py` fails if a target is within 2 of the current value).
 
-- IRGC officially claims a confirmed hit, lays mines, or strikes infrastructure → war by Nov 3 resolves yes; escalated ~10%.
-- Iran formally accepts US sequencing / round 2 scheduled with text → YE deal ~23%, war by Nov 3 ~51%, MOU-style ~16%.
-- East-West line or Yanbu offline 3+ days (loadings-confirmed) → escalated ~10% (a pipeline outage alone doesn't count; a Yanbu terminal hit out 7+ days does); gas ≥$4.75 ~17%.
-- Strike in the Fujairah/Sohar STS zone → escalated ~11%, war by Nov 3 ~66%.
-- Saudi shuttle or STS-loop ship hit → war by Nov 3 ~72%, escalated ~10%.
-- Kpler monthly Hormuz crude >12 Mbd in Oct → gas ≥$4.50 ~32%, MOU-style ~14%.
-- B-1Bs reappear at Diego Garcia/Gulf, or B-2/B-52s forward-deploy; or GHWB returns to the AOR while TR arrives → Blink #10 no-blink ~48%, escalated ~10%.
-- US blockade easing → MOU-style ~19%; before signing = blink #10.
-- Trump–Pezeshkian meeting → MOU-style ~14%, YE deal ~18%.
+- Iran's armed forces (IRGC or Artesh) officially claim a specific attack that is independently confirmed → war by Nov 3 resolves yes; escalated ~10%.
+- Iran formally accepts US sequencing / round 2 scheduled with text → YE deal ~21%, war by Nov 3 ~36%, MOU-style ~16%.
+- Iran ends strait tolls and permits, or declares Hormuz open to all shipping (Rubio #2) → MOU-style ~20%, YE deal ~20%, YE comprehensive ~12%.
+- Iran offers a concrete enrichment-capacity cut (Vance's condition) → YE deal ~19%, YE comprehensive ~12%; a flat refusal on the record → YE deal ~11%.
+- East-West line or Yanbu offline 3+ days by any attacker, incl. a repeat of the Sept Iraqi-militia shutdown (loadings-confirmed) → escalated ~10% (a pipeline outage alone doesn't count; a Yanbu terminal hit out 7+ days does); gas ≥$4.75 ~17%.
+- Strike in the Fujairah/Sohar STS zone, incl. on a Saudi STS-loop ship → escalated ~11%, war by Nov 3 ~52%.
+- Saudi shuttle ship hit outside the STS zone → war by Nov 3 ~55%, escalated ~10%.
+- Direct Iran–Israel exchange (Iranian fire at Israel, or an Israeli strike inside Iran) → escalated ~11%, war by Nov 3 ~60%.
+- Houthis declare Bab el-Mandeb closed, or hit a non-Saudi ship there → Brent (Jan.) ≥$100 ~72%, gas ≥$4.50 ~42%.
+- AAA national regular below $4.20 before Nov 3 → gas ≥$4.50 ~25%, <$4.00 ~12%.
+- B-1Bs reappear at Diego Garcia/Gulf, B-2/B-52s forward-deploy, or three carriers on station (GHWB back in the AOR while TR arrives) → Blink #10 no-blink ~40%, escalated ~10%.
+- US blockade easing → MOU-style ~19%; before signing = a Blink #10 blink.
+- Trump–Pezeshkian meeting → MOU-style ~14%, YE deal ~16%.
 - CENTCOM-confirmed US deaths from an Iranian attack, or US strike on Pickaxe → war by Nov 3 ~90%, escalated ~13%.
+  Retired Oct 7: the Kpler monthly (lands after Nov 3) and the separate carriers tripwire (merged into bombers).
 
 ### Structural
 
 - Hormuz back to ~20 mb/d (all liquids, monthly) by end-2026: ~4% (needs a deal plus fast mine clearance and insurance; the end-2027 card is void)
-- War-ending deal: 15% by end-2026; 33% by end-2027
-- Comprehensive nuclear deal in 2026: ~6% (15% × 40%); any comprehensive (≥1 Rubio term) ~8%
+- War-ending deal: 13% by end-2026; 31% by end-2027
+- Comprehensive nuclear deal in 2026: ~6% (13% × 50%); any comprehensive (≥1 Rubio term) ~8%

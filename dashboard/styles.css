@@ -240,6 +240,17 @@ main {
   color: var(--muted);
 }
 
+.stale-note {
+  align-self: flex-start;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--fg);
+  background: var(--panel);
+  border-left: 3px solid var(--war);
+  padding: 6px 10px;
+}
+
 .tabs {
   display: flex;
   flex-wrap: wrap;
@@ -886,6 +897,11 @@ footer.method {
   padding: 10px 14px;
   display: flex;
   align-items: center;
+}
+
+.ticker .live.stale {
+  background: var(--limbo);
+  white-space: nowrap;
 }
 
 .ticker .viewport {

@@ -36,11 +36,11 @@ date,horizon,scenario,p,note
 2026-10-06,ye2026,escalated_war,20,~40% of war_resumed 49; Nov bombing intent and ~45% real surge by YE
 2026-10-06,ye2026,mou_deal,18,9 of deal 15 (enhanced-MOU style) + iran_folds 9
 2026-10-06,ye2026,comprehensive_deal,6,= nuke_deal_2026; signed deal conceding a Rubio term
-2026-10-07,nov3,limited_war,81,"+7 from escalated: short infrastructure hits (Khurais restored within a day) no longer count; +7 more after Adam narrowed escalated to new steps: a strike campaign on military targets is limited war; renamed Limited war / Limbo"
+2026-10-07,nov3,limited_war,82,+7 from escalated: short infrastructure hits (Khurais restored within a day) no longer count; +7 more after Adam narrowed escalated to new steps: a strike campaign on military targets is limited war; renamed Limited war / Limbo; +1 from MOU-style after Vance's condition
 2026-10-07,nov3,escalated_war,7,"narrowed to steps not yet taken (Adam): Gulf hub/power/desal plant out 7+ days ~4, strikes on Iranian civilian infrastructure ~2, ground forces ~2, less overlap"
-2026-10-07,nov3,mou_deal,11,
+2026-10-07,nov3,mou_deal,10,"-1: Iran soft-rejected the counter, Pezeshkian calls talks 'meaningless', Vance raised the bar (enrichment-capacity cut)"
 2026-10-07,nov3,comprehensive_deal,1,
-2026-10-07,ye2026,limited_war,64,"+8 from escalated: a July-style strike campaign on military targets now counts as limited; renamed Limited war / Limbo"
+2026-10-07,ye2026,limited_war,66,+8 from escalated: a July-style strike campaign on military targets now counts as limited; renamed Limited war / Limbo; +2 from MOU-style after Vance's condition
 2026-10-07,ye2026,escalated_war,12,"narrowed to steps not yet taken (Adam): civilian-infrastructure strikes ~5, ground forces ~4, Gulf hub/plant out 7+ days ~5, less overlap; post-election and TR ARG arrival make them likelier than by Nov 3"
-2026-10-07,ye2026,mou_deal,16,-2 to comprehensive: signed deals with no Rubio term (15 - 8 = 7) + Iran folds 9
-2026-10-07,ye2026,comprehensive_deal,8,"+2: P(deal) 15 x P(at least one Rubio term | deal) ~50%; was pinned to the IAEA-only nuclear-deal forecast (6)"
+2026-10-07,ye2026,mou_deal,14,-2: signed deals with no Rubio term (13 - 8 = 5) + Iran folds 9; P(deal) 15 -> 13 after Vance's enrichment-capacity condition
+2026-10-07,ye2026,comprehensive_deal,8,"P(deal) 13 x P(at least one Rubio term | deal) ~60% (Vance makes an enrichment-capacity cut a condition, so a signed deal more likely carries one)"

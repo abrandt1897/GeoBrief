@@ -2,8 +2,25 @@
 import { expect, test } from "@playwright/test";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
+import fs from "node:fs";
 
 const PAGE = pathToFileURL(path.resolve("dashboard/dist/index.html")).href;
+
+/** The built page's data payload. @returns {any} */
+function payload() {
+  const html = fs.readFileSync(path.resolve("dashboard/dist/index.html"), "utf8");
+  const m = /<script id="geobrief-data" type="application\/json">([\s\S]*?)<\/script>/.exec(html);
+  if (!m?.[1]) throw new Error("no data block");
+  return JSON.parse(m[1]);
+}
+/** The built page's brief.updated (YYYY-MM-DD). @returns {string} */
+const briefUpdated = () => String(payload().brief.updated).slice(0, 10);
+/** Latest p of a forecast id. @param {string} id @returns {number} */
+const latestP = (id) =>
+  /** @type {{ id: string, made_on: string, p: number }[]} */ (payload().forecasts)
+    .filter((f) => f.id === id)
+    .sort((a, b) => (a.made_on < b.made_on ? -1 : 1))
+    .at(-1)?.p ?? NaN;
 
 /** @param {import("@playwright/test").Page} page @returns {string[]} */
 function collectErrors(page) {
@@ -38,7 +55,7 @@ test("renders headline, scenario table, dispatches and ticker without errors", a
   await expect(page.locator("#scen-body tr").first()).toContainText("Limited war / Limbo");
   await expect(page.locator("#disp .disp")).toHaveCount(6);
   await expect(page.locator("#ticker")).toContainText("ESCALATED WAR BY NOV. 3");
-  await expect(page.locator("#ticker")).toContainText("WAR BY NOV. 3 60%");
+  await expect(page.locator("#ticker")).toContainText(`WAR BY NOV. 3 ${latestP("war_nov3")}%`);
   await expect(page.locator("#ticker")).toContainText("AAA NATIONAL");
   expect(errors).toEqual([]);
 });
@@ -191,7 +208,7 @@ test("Brent and LNG buttons swap in their series, bands and ranges", async ({ pa
 test("tab deep link via #hash", async ({ page }) => {
   await page.goto(`${PAGE}#tripwires`);
   await expect(page.locator("#panel-title")).toHaveText("What Would Move The Odds");
-  await expect(page.locator(".trip")).toHaveCount(15);
+  await expect(page.locator(".trip")).toHaveCount(payload().tripwires.length);
   await expect(page.locator(".trip").first()).toContainText("FIRED");
 });
 
@@ -319,4 +336,51 @@ test("dark mode uses the dark palette", async ({ page }) => {
   await page.goto(PAGE);
   const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   expect(bg).toBe("rgb(18, 18, 18)");
+});
+
+test("a tab picked from the menu survives a reload via the URL hash", async ({ page }) => {
+  await page.goto(PAGE);
+  await page.click("#menu-btn");
+  await expect(page.locator('#drawer a[data-tab="supply"]')).toHaveAttribute("href", "#supply");
+  await page.click('#drawer a[data-tab="supply"]');
+  await expect(page.locator("#panel-title")).toHaveText("How Much Oil Is Getting Out");
+  expect(new URL(page.url()).hash).toBe("#supply");
+  await page.click("#tab-deal");
+  expect(new URL(page.url()).hash).toBe("#deal");
+  // Clear storage so only the hash can carry the tab across the reload.
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  await expect(page.locator("#panel-title")).toHaveText("What A Deal Would Likely Contain");
+  await expect(page.locator("#tab-deal")).toHaveAttribute("aria-selected", "true");
+});
+
+test("fresh data: no staleness notice and the ticker says LIVE", async ({ page }) => {
+  // Noon ET on the update day.
+  await page.clock.setFixedTime(new Date(`${briefUpdated()}T16:00:00Z`));
+  await page.goto(PAGE);
+  await expect(page.locator("#stale-note")).toHaveCount(0);
+  await expect(page.locator(".ticker .live")).toHaveText("LIVE");
+});
+
+test("stale data: notice under the dateline, ticker not LIVE, fits a phone in dark mode", async ({ page }) => {
+  const updated = briefUpdated();
+  const later = new Date(`${updated}T22:00:00Z`);
+  later.setUTCDate(later.getUTCDate() + 2);
+  await page.clock.setFixedTime(later);
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = collectErrors(page);
+  await page.goto(PAGE);
+  const note = page.locator("#stale-note");
+  await expect(note).toBeVisible();
+  await expect(note).toContainText("Last updated");
+  await expect(note).toContainText("may have been missed");
+  await expect(page.locator(".ticker .live")).not.toHaveText("LIVE");
+  const scrollW = await page.evaluate(() => document.documentElement.scrollWidth);
+  expect(scrollW).toBeLessThanOrEqual(390);
+  const box = await note.boundingBox();
+  if (!box) throw new Error("notice not rendered");
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(390);
+  expect(errors).toEqual([]);
 });

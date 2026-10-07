@@ -246,3 +246,38 @@ def test_supply_events_have_short_captions() -> None:
     assert [r["date"] for r in rows] == sorted(r["date"] for r in rows)
     for r in rows:
         assert 1 <= len(r["label"].split()) <= 3, f"chart caption should be 1-3 words: {r['label']!r}"
+
+
+def test_current_md_tables_match_latest_odds() -> None:
+    """The scenario tables in state/current.md quote the latest odds.csv rows (prose drifts otherwise)."""
+    text = (ROOT / "state" / "current.md").read_text(encoding="utf-8")
+    odds = load("odds.csv")
+    labels = {
+        "limited_war": "Limited war / Limbo",
+        "escalated_war": "Escalated war",
+        "mou_deal": "MOU-style deal",
+        "comprehensive_deal": "Comprehensive deal",
+    }
+    sections = {"nov3": "### Through Midterms", "ye2026": "### Through Year-End"}
+    for horizon, head in sections.items():
+        body = text.split(head, 1)[1].split("\n### ", 1)[0]
+        last = max(r["date"] for r in odds if r["horizon"] == horizon)
+        for r in odds:
+            if r["horizon"] == horizon and r["date"] == last:
+                m = re.search(rf"^\| {re.escape(labels[r['scenario']])} +\| (\d+)% ", body, re.M)
+                assert m, f"current.md {horizon}: no table row for {r['scenario']}"
+                got = m.group(1)
+                assert float(got) == float(r["p"]), f"current.md {horizon} {r['scenario']} {got}% != odds.csv {r['p']}"
+
+
+def test_prose_quotes_canonical_deal_and_blink_odds() -> None:
+    brief = json.loads((ROOT / "state" / "brief.json").read_text(encoding="utf-8"))
+    deal, b10 = brief["deal_p"], brief["blink10"]
+    for name in ("state/deal-tracker.md", "skill/SKILL.md"):
+        text = (ROOT / name).read_text(encoding="utf-8")
+        want = f"P(deal) ≈ {deal['ye2026']}% by end-2026, {deal['ye2027']}% by end-2027"
+        assert want in text, f"{name}: expected {want!r}"
+    for name in ("state/taco.md", "skill/SKILL.md"):
+        text = (ROOT / name).read_text(encoding="utf-8")
+        want = f"blink ~{b10['blink']}% · no blink ~{b10['no_blink']}% · unresolved ~{b10['unresolved']}%"
+        assert want in text, f"{name}: expected {want!r}"

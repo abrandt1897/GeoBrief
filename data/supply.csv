@@ -32,5 +32,7 @@ date,series,mbd,kind,source,note
 2026-09-28,gulf_kpler,19.5,7d,Kpler (via CNBC),7-day average
 2026-09-28,hormuz_kpler,13.5,7d,Kpler (via CNBC),7-day average; crude+products 14.2
 2026-09-30,eastwest,2.65,daily,Kpler (via Egypt Oil & Gas),trade sources ~2.0
+2026-09-30,gulf_kpler,18.3,daily,"Kpler/Vortexa (preliminary, reported Oct 5)","Middle East crude exports vs ~18 prewar; non-Iranian Gulf exports 16.5, above prewar"
 2026-10-01,gulf_kpler,18.5,7d,Kpler (via Reuters/gCaptain),7-day average; daily highs 19.5–22.5 Sept 24–29
 2026-10-02,eastwest,6.0,unconfirmed,Bloomberg (one unnamed source),"single unnamed source; not plotted until Kpler/Vortexa/TankerTrackers confirm. close to 6, >80% of 7 nameplate; Oct 4 Khurais strike: status contested, not plotted"
+2026-10-06,eastwest,5.8,unconfirmed,Saudi energy minister (via Reuters/Al Jazeera),"official statement: capacity restored after the Sept attack; Reuters wording is ""5.8 million barrels as of Tuesday morning"". Kpler (via Maritime Executive) says Red Sea loadings rebounded quickly; not plotted until a tracker gives a rate"
