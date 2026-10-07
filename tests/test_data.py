@@ -29,7 +29,7 @@ SCHEMAS: dict[str, list[str]] = {
     ],
     "gas.csv": ["date", "nat_regular", "nat_diesel", "ny_regular", "ny_diesel", "nyc_regular", "nyc_diesel", "source"],
     "markets.csv": ["date", "brent_ice_front", "dated_brent", "dated_floor", "rial_per_usd", "source"],
-    "energy.csv": ["date", "brent_front", "brent_spot", "jkm_front", "source"],
+    "energy.csv": ["date", "brent_front", "brent_spot", "jkm_front", "brent_nov3", "jkm_nov3", "source"],
     "forecasts.csv": [
         "id",
         "made_on",
@@ -152,7 +152,13 @@ def test_energy_one_row_per_date_and_plausible_prices() -> None:
     assert dates == sorted(dates), "energy.csv must be in date order"
     for r in rows:
         assert r["source"], f"{r['date']}: energy row without a source"
-        for col, lo, hi in (("brent_front", 30, 250), ("brent_spot", 30, 250), ("jkm_front", 3, 80)):
+        for col, lo, hi in (
+            ("brent_front", 30, 250),
+            ("brent_spot", 30, 250),
+            ("jkm_front", 3, 80),
+            ("brent_nov3", 30, 250),
+            ("jkm_nov3", 3, 80),
+        ):
             if r[col]:
                 assert lo < float(r[col]) < hi, f"{r['date']} {col}={r[col]}"
 

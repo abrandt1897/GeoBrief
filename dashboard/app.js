@@ -6,7 +6,7 @@
 /** @typedef {{ horizon: string, scenario: string, label: string, group: Group | "", gas_band: string, diesel_band: string, brent_band: string, lng_band: string, driver: string }} Scenario */
 /** @typedef {{ date: string, source: string, nat_regular: number | null, nat_diesel: number | null, ny_regular: number | null, ny_diesel: number | null, nyc_regular: number | null, nyc_diesel: number | null }} GasRow */
 /** @typedef {{ date: string, source: string, brent_ice_front: number | null, dated_brent: number | null, dated_floor: number | null, rial_per_usd: number | null }} MarketRow */
-/** @typedef {{ date: string, source: string, brent_front: number | null, brent_spot: number | null, jkm_front: number | null }} EnergyRow */
+/** @typedef {{ date: string, source: string, brent_front: number | null, brent_spot: number | null, jkm_front: number | null, brent_nov3: number | null, jkm_nov3: number | null }} EnergyRow */
 /** @typedef {{ id: string, made_on: string, question: string, p: number, resolves_on: string, resolution_rule: string, outcome: number | "void" | null, resolved_on: string, notes: string }} Forecast */
 /** @typedef {{ id: string, condition: string, effect: string, status: "armed" | "fired" | "expired", set_on: string, fired_on: string, evidence: string }} Tripwire */
 /** @typedef {{ term: string, p: number, rubio: string }} Term */
@@ -552,7 +552,7 @@
     },
     brent: {
       label: "Brent",
-      unit: "Brent front-month futures (Trading Economics) and EIA Brent spot, $ per barrel",
+      unit: "Brent front-month futures (Trading Economics), the January contract and EIA Brent spot, $ per barrel",
       chartLabel: "Brent crude futures and spot prices with Nov. 3 scenario price bands",
       lines: () => [
         { name: "Brent futures", color: "--fg", pts: readings(enRows, (r) => r.brent_front) },
@@ -562,6 +562,13 @@
           width: 2.5,
           dash: "1 5",
           pts: readings(enRows, (r) => r.brent_spot),
+        },
+        {
+          name: "January contract",
+          color: "--fg",
+          width: 2.5,
+          dash: "6 4",
+          pts: readings(enRows, (r) => r.brent_nov3),
         },
       ],
       band: (sc) => sc.brent_band,
@@ -576,13 +583,22 @@
           ["brent_120", 120],
         ],
       ],
-      note: `${BANDS_NOTE} Bands and ranges are for the January contract, the front month on Nov. 3 after December expires Oct. 30; they sit about $3 under December for backwardation. Futures are the front month as Trading Economics shows it, the price most headlines quote; spot is EIA’s daily Europe Brent FOB, which prices physical cargoes now and runs well above futures when prompt barrels are scarce. EIA spot lags a few days.`,
+      note: `${BANDS_NOTE} Bands and ranges are for the January contract, the front month on Nov. 3 after December expires Oct. 30. The dashed line is the January contract itself (ICE settlements, recorded from Oct. 6), so it compares directly with the bands; it runs about $3 under December for backwardation, and the front-month line joins it when December expires. Futures are the front month as Trading Economics shows it, the price most headlines quote; spot is EIA’s daily Europe Brent FOB, which prices physical cargoes now and runs well above futures when prompt barrels are scarce. EIA spot lags a few days.`,
     },
     lng: {
       label: "LNG",
       unit: "Asian spot LNG (Platts JKM front month), $ per million Btu",
       chartLabel: "JKM Asian LNG prices with Nov. 3 scenario price bands",
-      lines: () => [{ name: "JKM", color: "--fg", pts: readings(enRows, (r) => r.jkm_front) }],
+      lines: () => [
+        { name: "JKM", color: "--fg", pts: readings(enRows, (r) => r.jkm_front) },
+        {
+          name: "December contract",
+          color: "--fg",
+          width: 2.5,
+          dash: "6 4",
+          pts: readings(enRows, (r) => r.jkm_nov3),
+        },
+      ],
       band: (sc) => sc.lng_band,
       dp: 2,
       step: 5,
@@ -595,7 +611,7 @@
           ["lng_jkm_31", 31],
         ],
       ],
-      note: `${BANDS_NOTE} JKM is the Asian spot LNG benchmark and the one most exposed to Hormuz, since Qatar ships about a fifth of the world’s LNG through it. The series is the continuous front-month future, so it steps when the contract rolls mid-month; bands and ranges are for the December contract, the front month on Nov. 3.`,
+      note: `${BANDS_NOTE} JKM is the Asian spot LNG benchmark and the one most exposed to Hormuz, since Qatar ships about a fifth of the world’s LNG through it. The series is the continuous front-month future, so it steps when the contract rolls mid-month; bands and ranges are for the December contract, the front month on Nov. 3. The dashed line is the December contract itself (ICE settlements, recorded from Oct. 6), so it compares directly with the bands.`,
     },
   };
   /** @type {Fuel} */

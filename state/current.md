@@ -15,6 +15,8 @@ _Overwritten each update. Tabular data lives in `data/*.csv`; this file holds th
 
 Oct 7 (review follow-up): **Vance (Reuters, Oct 5–6) makes a "meaningful" cut in enrichment capacity a US condition** for any deal, a floor above Rubio's "no nuclear weapon" → year-end deal 15 → 13, by 2027 33 → 31; a signed deal more likely carries a Rubio term (IAEA/enrichment-cap term 40 → 50%), so year-end comprehensive holds at 8 and MOU-style 16 → 14 (limited 66). Nov 3 MOU-style 11 → 10 (limited 82): Iran soft-rejected the counter and calls talks "meaningless." **War by Nov 3 60 → 45** under the stricter claim rule: one official claim (Cape Dao, Sept 23) against ~8 unclaimed hits since, no US strike since Sept 10, and the WSJ says bombing resumes after the election. **Blink #10 re-derived** from the year-end odds (blink 70, no blink 30, unresolved 0). Tripwires merged, made disjoint and filled in (below).
 
+Oct 7 (Adam, afternoon): **status-quo price sub-bands recentred on the forwards.** The limited war / limbo sub-bands had the war premium priced into the status quo (gas median $4.45 vs $4.37 today and falling; Brent median $102 vs January $97.59). Recentred on RBOB-implied gas ~$4.25–4.35, diesel $6.32 and falling, ICE January Brent $97.59 and ICE December JKM $25.84 (Oct 6 settlements). Medians now gas $4.31, diesel $6.23, Brent $97.5, JKM $25.8. The Brent and LNG charts now also plot the resolving contract itself (dashed), so the line and the bands compare like for like.
+
 Oct 7 (Adam, later): **escalated narrowed to steps the war hasn't taken yet** (ground forces in Iran, strikes on Iranian civilian infrastructure, or a major Gulf export hub, power or desalination plant out 7+ days). A July-scale campaign on military targets now counts as limited war. Nov 3 escalated 14 → 7: the sustained-campaign 7 moves to limited war / limbo (81); the 7 left is a hub/plant outage ~4, civilian-infrastructure strikes ~2, ground forces ~2, less overlap. Year-end escalated 20 → 12 (limited 64): post-election escalation gets cheaper and the TR ARG (2,000 Marines) arrives in Nov, but a July-style campaign no longer counts. Brent series now matches Trading Economics.
 
 Oct 7 (review fixes, no new events): **escalated re-scored on the 7-day rule** — its old infra component (14) counted any hit, and Khurais was back within a day; P(export infrastructure offline 7+ days by Nov 3) ~7 + sustained campaign ~7 = 14 (was 21); the 7 moves to limited war / limbo (74). **Year-end comprehensive 6 → 8:** P(deal) 15 × P(at least one Rubio term | deal) ~50%, no longer pinned to the IAEA-only nuclear-deal forecast (6); MOU-style 18 → 16. Price lines re-derived from weighted sub-bands (below). Brent lines now resolve on the January contract, JKM on December.
@@ -27,17 +29,17 @@ Oct 5: **UAE-third tripwire fired** (Uhud, Emirates Shipping) → infra +2, half
 
 | Scenario            | P   | Gas (AAA reg.) | Brent (Jan.) | Key Driver                                                                                                     |
 | ------------------- | --- | -------------- | ------------ | -------------------------------------------------------------------------------------------------------------- |
-| Limited war / Limbo | 82% | $4.00-4.75     | $83-115      | No settlement; Iran holds strait-first; claimed hits, US strike rounds, limbo                                  |
+| Limited war / Limbo | 82% | $3.95-4.70     | $82-113      | No settlement; Iran holds strait-first; claimed hits, US strike rounds, limbo                                  |
 | Escalated war       | 7%  | $4.75-5.10     | $115-127     | New step: Gulf hub/plant out 7+ days (~4), strikes on Iranian civilian infrastructure (~2), ground forces (~2) |
 | MOU-style deal      | 10% | $3.85-4.10     | $73-87       | Iran folds on sequencing or interim text; nothing signed in full                                               |
 | Comprehensive deal  | 1%  | $3.85-4.05     | $73-85       | Signed deal conceding a Rubio term before the election                                                         |
 
-**Weighted bands (`scenarios.csv`):** a merged scenario keeps the price mix of the paths inside it as sub-ranges weighted by their odds — limited = round 46 ($4.40-4.60) + strike campaign 7 ($4.55-4.75) + limbo 19 ($4.20-4.40) + half-open 9 ($4.00-4.25); escalated = new step 7 ($4.75-5.10); MOU = Iran folds 8 + signed non-comprehensive 3. Every Nov 3 price line = odds × bands, uniform within each sub-range; `build.py` fails if a line drifts more than 1 point. Brent bands sit ~$3 under December futures for backwardation into the January contract (Nov/Dec was ~$5 at the Sept 30 expiry, halved for expiry-day distortion).
+**Weighted bands (`scenarios.csv`):** a merged scenario keeps the price mix of the paths inside it as sub-ranges weighted by their odds — limited = round 46 ($4.25-4.50) + strike campaign 7 ($4.45-4.70) + limbo 19 ($4.10-4.30) + half-open 9 ($3.95-4.15), centred on the forwards; escalated = new step 7 ($4.75-5.10); MOU = Iran folds 8 + signed non-comprehensive 3. Every Nov 3 price line = odds × bands, uniform within each sub-range; `build.py` fails if a line drifts more than 1 point. Brent bands are for the January contract (ICE settle $97.59 on Oct 6, ~$3 under December); JKM bands for December ($25.84).
 
 **Gas baseline (AAA, Oct 6):** national regular $4.37 (wk $4.48, mo $4.15); diesel $6.32 (record $6.53 9/22). NY state $4.47 / $6.52; NYC metro $4.55 / $6.73 (≈ +18¢ / +41¢ over national; the NYC lines use the latest gap from `gas.csv`). **2026 reference (AAA):** pre-war $2.98 (Feb 26); high $4.56 (May 21); July low $3.79; Sept peak $4.48 (Sept 24).
 **Gas mechanics:** rockets 2-4¢/day, feathers 1-1.5¢/day (~2.4¢ per $1/bbl); no-shock path → ~$4.10-4.25.
-**Nov 3 lines (AAA national regular):** ≥$4.50 ~37% · ≥$4.75 ~7% · ≥$5.00 ~2% · <$4.00 ~6%. NYC metro ≥$4.75 ~20%, ≥$5 ~6%. Diesel ≥$6.50 ~37% · ≥$6.75 ~11% · ≥$7.00 ~6% · <$6.00 ~17%. Brent (Jan.) ≥$100 ~65% · ≥$110 ~11% · ≥$120 ~4% · <$90 ~17%. JKM (Dec.) ≥$25 ~73% · ≥$28 ~30% · ≥$31 ~5% · <$20 ~5%.
-**Market cross-check:** ICE Brent ~$100.6 (Oct 6) prices less war than the bands do; Dated Brent >$120 (Oct 2 floor) says physical is tighter than futures. Futures have faded every lull; supply recovery + G7 release cap upside.
+**Nov 3 lines (AAA national regular):** ≥$4.50 ~13% · ≥$4.75 ~7% · ≥$5.00 ~2% · <$4.00 ~9%. NYC metro ≥$4.75 ~11%, ≥$5 ~6%. Diesel ≥$6.50 ~12% · ≥$6.75 ~7% · ≥$7.00 ~6% · <$6.00 ~19%. Brent (Jan.) ≥$100 ~37% · ≥$110 ~9% · ≥$120 ~4% · <$90 ~21%. JKM (Dec.) ≥$25 ~67% · ≥$28 ~12% · ≥$31 ~5% · <$20 ~5%.
+**Market cross-check:** the bands now centre on ICE January Brent ($97.59, Oct 6); Dated Brent >$120 (Oct 2 floor) says physical is tighter than futures. Futures have faded every lull; supply recovery + G7 release cap upside.
 
 ### Through Year-End 2026
 
@@ -62,8 +64,8 @@ Registry and targets: `data/tripwires.csv` (`targets` = the numbers each would m
 - Strike in the Fujairah/Sohar STS zone, incl. on a Saudi STS-loop ship → escalated ~11%, war by Nov 3 ~52%.
 - Saudi shuttle ship hit outside the STS zone → war by Nov 3 ~55%, escalated ~10%.
 - Direct Iran–Israel exchange (Iranian fire at Israel, or an Israeli strike inside Iran) → escalated ~11%, war by Nov 3 ~60%.
-- Houthis declare Bab el-Mandeb closed, or hit a non-Saudi ship there → Brent (Jan.) ≥$100 ~72%, gas ≥$4.50 ~42%.
-- AAA national regular below $4.20 before Nov 3 → gas ≥$4.50 ~25%, <$4.00 ~12%.
+- Houthis declare Bab el-Mandeb closed, or hit a non-Saudi ship there → Brent (Jan.) ≥$100 ~55%, gas ≥$4.50 ~25%.
+- AAA national regular below $4.20 before Nov 3 → gas ≥$4.50 ~5%, <$4.00 ~16%.
 - B-1Bs reappear at Diego Garcia/Gulf, B-2/B-52s forward-deploy, or three carriers on station (GHWB back in the AOR while TR arrives) → Blink #10 no-blink ~40%, escalated ~10%.
 - US blockade easing → MOU-style ~19%; before signing = a Blink #10 blink.
 - Trump–Pezeshkian meeting → MOU-style ~14%, YE deal ~16%.

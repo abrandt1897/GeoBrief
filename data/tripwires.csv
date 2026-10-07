@@ -17,5 +17,5 @@ tw_sts_strike,"Strike in the Fujairah/Sohar STS zone, including on a Saudi STS-l
 tw_strait_open,"Iran ends strait tolls and permits, or declares Hormuz open to all shipping (Rubio #2)",MOU-style by Nov. 3 ~20%; year-end deal ~20%; year-end comprehensive ~12%,armed,2026-10-07,,,nov3:mou_deal=20;deal_ye2026=20;ye2026:comprehensive_deal=12
 tw_enrichment,"Iran offers a concrete cut in enrichment capacity (Vance's condition), in text or on the record",Year-end deal ~19%; year-end comprehensive ~12% (a flat refusal on the record: deal ~11%),armed,2026-10-07,,,deal_ye2026=19;ye2026:comprehensive_deal=12
 tw_israel,"Direct Iran–Israel exchange: Iranian missiles or drones fired at Israel, or an Israeli strike inside Iran",Escalated by Nov. 3 ~11%; war by Nov. 3 ~60%,armed,2026-10-07,,,nov3:escalated_war=11;war_nov3=60
-tw_bab,"Houthis declare Bab el-Mandeb closed, or hit a non-Saudi ship in the strait (confirmed by UKMTO)",Brent (Jan.) ≥ $100 on Nov. 3 ~72%; gas ≥ $4.50 ~42%,armed,2026-10-07,,,brent_100=72;gas_nat_450=42
-tw_aaa_low,AAA national regular below $4.20 on any day before Nov. 3,Gas ≥ $4.50 on Nov. 3 ~25%; < $4.00 ~12%,armed,2026-10-07,,,gas_nat_450=25;gas_nat_lt400=12
+tw_bab,"Houthis declare Bab el-Mandeb closed, or hit a non-Saudi ship in the strait (confirmed by UKMTO)",Brent (Jan.) ≥ $100 on Nov. 3 ~55%; gas ≥ $4.50 ~25%,armed,2026-10-07,,,brent_100=55;gas_nat_450=25
+tw_aaa_low,AAA national regular below $4.20 on any day before Nov. 3,Gas ≥ $4.50 on Nov. 3 ~5%; < $4.00 ~16%,armed,2026-10-07,,,gas_nat_450=5;gas_nat_lt400=16
