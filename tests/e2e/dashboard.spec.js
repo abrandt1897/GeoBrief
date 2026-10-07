@@ -214,6 +214,22 @@ test("tab deep link via #hash", async ({ page }) => {
   await expect(page.locator(".trip").first()).toContainText("FIRED");
 });
 
+test("expired and week-old fired tripwires sit in a collapsed past section", async ({ page }) => {
+  await page.goto(`${PAGE}#tripwires`);
+  const { tripwires, brief } = payload();
+  const dayOf = (/** @type {string} */ s) => Date.parse(`${s.slice(0, 10)}T00:00:00Z`) / 864e5;
+  const pastCount = /** @type {{ status: string, fired_on: string }[]} */ (tripwires).filter(
+    (t) => t.status === "expired" || (t.status === "fired" && dayOf(brief.updated) - dayOf(t.fired_on) > 7),
+  ).length;
+  const past = page.locator("details.past-trips");
+  await expect(past).not.toHaveAttribute("open", "");
+  await expect(past.locator(".trip")).toHaveCount(pastCount);
+  await expect(past.locator(".trip").first()).toBeHidden();
+  await past.locator("summary").click();
+  await expect(past.locator(".trip").first()).toBeVisible();
+  await expect(page.locator(".cols").first().locator(".trip", { hasText: "EXPIRED" })).toHaveCount(0);
+});
+
 test("menu opens, switches tab, and closes on Escape and outside click", async ({ page }) => {
   await page.goto(PAGE);
   const btn = page.locator("#menu-btn");

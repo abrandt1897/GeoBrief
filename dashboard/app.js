@@ -881,28 +881,41 @@
   }
 
   /** @param {HTMLElement} el */
+  // A fired tripwire stays in the main list for 7 days after it fires (counted from the data date), then joins
+  // expired ones in the collapsed past section.
+  const FIRED_DAYS = 7;
+  /** @param {Tripwire} t */
+  const isPastTrip = (t) =>
+    t.status === "expired" || (t.status === "fired" && day(D.brief.updated) - day(t.fired_on) > FIRED_DAYS);
+
+  /** @param {HTMLElement} el */
   function tripPanel(el) {
     /** @type {Record<string, number>} */
     const order = { fired: 0, armed: 1, expired: 2 };
     /** @type {Record<string, string>} */
     const col = { fired: "--war", armed: "--calm", expired: "--muted" };
-    // Unknown statuses sort last instead of producing NaN.
+    // Unknown statuses sort last instead of producing NaN; within a status, the latest fired first.
     /** @param {string} s */
     const rank = (s) => order[s] ?? Infinity;
     const items = [...D.tripwires].sort((a, b) => {
       const ra = rank(a.status);
       const rb = rank(b.status);
-      return ra === rb ? 0 : ra < rb ? -1 : 1;
+      if (ra !== rb) return ra < rb ? -1 : 1;
+      return a.fired_on === b.fired_on ? 0 : a.fired_on > b.fired_on ? -1 : 1;
     });
-    el.innerHTML = `<div class="cols">${items
-      .map(
-        (t) =>
-          `<div class="trip"><div class="st" style="color:${cv(col[t.status] ?? "--muted")}">${t.status.toUpperCase()}${t.fired_on ? ` · ${fmtDate(t.fired_on).toUpperCase()}` : ""}</div>` +
-          `<div class="c"${t.status === "expired" ? ' style="color:var(--muted)"' : ""}>${esc(t.condition)}</div><div class="e">${esc(t.effect)}</div>` +
-          (t.evidence ? `<div class="e" style="font-weight:400">${esc(t.evidence)}</div>` : "") +
-          "</div>",
-      )
-      .join("")}</div>`;
+    /** @param {Tripwire} t */
+    const card = (t) =>
+      `<div class="trip"><div class="st" style="color:${cv(col[t.status] ?? "--muted")}">${t.status.toUpperCase()}${t.fired_on ? ` · ${fmtDate(t.fired_on).toUpperCase()}` : ""}</div>` +
+      `<div class="c"${t.status === "expired" ? ' style="color:var(--muted)"' : ""}>${esc(t.condition)}</div><div class="e">${esc(t.effect)}</div>` +
+      (t.evidence ? `<div class="e" style="font-weight:400">${esc(t.evidence)}</div>` : "") +
+      "</div>";
+    const live = items.filter((t) => !isPastTrip(t));
+    const past = items.filter(isPastTrip);
+    el.innerHTML =
+      `<div class="cols">${live.map(card).join("")}</div>` +
+      (past.length
+        ? `<details class="past-trips"><summary>Past tripwires (${past.length})</summary><div class="cols">${past.map(card).join("")}</div></details>`
+        : "");
   }
 
   /** @param {HTMLElement} el */
