@@ -305,4 +305,6 @@ def test_nyc_premium_uses_latest_row_with_both_prices() -> None:
 def test_nyc_lines_shift_by_the_premium() -> None:
     base = build.implied_price_line(GOOD_ODDS, SCEN, "gas_nat_475")
     assert build.implied_price_line(GOOD_ODDS, SCEN, "gas_nyc_475") == pytest.approx(base)
-    assert build.implied_price_line(GOOD_ODDS, SCEN, "gas_nyc_475", 0.2) > (base or 0)
+    shifted = build.implied_price_line(GOOD_ODDS, SCEN, "gas_nyc_475", 0.2)
+    assert shifted is not None and base is not None
+    assert shifted > base
