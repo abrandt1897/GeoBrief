@@ -45,3 +45,13 @@ lng_jkm_lt20,2026-10-07,JKM LNG front month < $20 on Nov 3,5,2026-11-03,JKM fron
 lng_jkm_25,2026-10-07,JKM LNG front month >= $25 on Nov 3,71,2026-11-03,JKM front-month close on Nov 3 (CME/Investing.com JKMc1),,,derived from scenario rows x lng bands
 lng_jkm_28,2026-10-07,JKM LNG front month >= $28 on Nov 3,21,2026-11-03,JKM front-month close on Nov 3 (CME/Investing.com JKMc1),,,derived from scenario rows x lng bands
 lng_jkm_31,2026-10-07,JKM LNG front month >= $31 on Nov 3,10,2026-11-03,JKM front-month close on Nov 3 (CME/Investing.com JKMc1),,,derived from scenario rows x lng bands
+gas_nat_lt400,2026-10-07,AAA national regular < $4.00 on Nov 3,4,2026-11-03,AAA national regular as shown on Nov 3,,,re-derived from the four scenario rows x gas bands (uniform within band); was from the old seven rows
+gas_nat_450,2026-10-07,AAA national regular >= $4.50 on Nov 3,38,2026-11-03,AAA national regular as shown on Nov 3,,,re-derived from the four scenario rows x gas bands
+gas_nat_475,2026-10-07,AAA national regular >= $4.75 on Nov 3,13,2026-11-03,AAA national regular as shown on Nov 3,,,re-derived from the four scenario rows x gas bands
+gas_nat_500,2026-10-07,AAA national regular >= $5.00 on Nov 3,4,2026-11-03,AAA national regular as shown on Nov 3,,,re-derived from the four scenario rows x gas bands
+gas_nyc_475,2026-10-07,AAA NYC metro regular >= $4.75 on Nov 3,27,2026-11-03,AAA NYC metro regular as shown on Nov 3,,,re-derived from the four scenario rows x gas bands + 19c NYC premium
+gas_nyc_500,2026-10-07,AAA NYC metro regular >= $5.00 on Nov 3,11,2026-11-03,AAA NYC metro regular as shown on Nov 3,,,re-derived from the four scenario rows x gas bands + 19c NYC premium
+gas_diesel_lt600,2026-10-07,AAA national diesel < $6.00 on Nov 3,9,2026-11-03,AAA national diesel as shown on Nov 3,,,re-derived from the four scenario rows x diesel bands
+gas_diesel_650,2026-10-07,AAA national diesel >= $6.50 on Nov 3,38,2026-11-03,AAA national diesel as shown on Nov 3,,,re-derived from the four scenario rows x diesel bands
+gas_diesel_675,2026-10-07,AAA national diesel >= $6.75 on Nov 3,17,2026-11-03,AAA national diesel as shown on Nov 3,,,re-derived from the four scenario rows x diesel bands
+gas_diesel_700,2026-10-07,AAA national diesel >= $7.00 on Nov 3,11,2026-11-03,AAA national diesel as shown on Nov 3,,,re-derived from the four scenario rows x diesel bands

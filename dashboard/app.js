@@ -860,7 +860,7 @@
       )
       .join(
         "",
-      )}<div class="note" style="margin-top:8px">Probability that each term is in a deal, if there is one. P(deal) is ${D.brief.deal_p.ye2026}% by end-2026 and ${D.brief.deal_p.ye2027}% by end-2027. Green marks Rubio’s three terms.</div></div>`;
+      )}<div class="note" style="margin-top:8px">Probability that each term is in a deal, if there is one. P(a signed war-ending deal) is ${D.brief.deal_p.ye2026}% by end-2026 and ${D.brief.deal_p.ye2027}% by end-2027. Green marks Rubio’s three terms.</div></div>`;
   }
 
   /** @param {HTMLElement} el */
@@ -1134,6 +1134,12 @@
   const gNow = groups(latest.v);
   const gPrev = prevNov ? groups(prevNov.v) : null;
   const escNow = gNow.escalated_war ?? 0;
+  const prevYe = ye[ye.length - 2];
+  const yeNow = groups(latestYe.v, "ye2026");
+  const yePrev = prevYe ? groups(prevYe.v, "ye2026") : null;
+  /** @param {Record<Group, number | null>} g */
+  const dealOf = (g) => (g.mou_deal == null ? null : g.mou_deal + (g.comprehensive_deal ?? 0));
+  const dealNow = dealOf(yeNow) ?? 0;
   /** @param {number} a @param {number | null | undefined} b @param {number} dp @returns {[string, string]} */
   const delta = (a, b, dp) => {
     if (b == null) return ["", ""];
@@ -1156,7 +1162,7 @@
   /** @type {[string, string, [string, string]][]} */
   const items = [
     ["ESCALATED WAR BY NOV. 3", `${Math.round(escNow)}%`, delta(escNow, gPrev?.escalated_war, 0)],
-    ["DEAL BY YE", `${D.brief.deal_p.ye2026}%`, ["", ""]],
+    ["DEAL BY YE", `${Math.round(dealNow)}%`, delta(dealNow, yePrev ? dealOf(yePrev) : null, 0)],
   ];
   if (br) items.push(["BRENT", `$${br.v.toFixed(2)}`, delta(br.v, brP?.v, 2)]);
   if (dated) items.push(["DATED BRENT", `>$${dated.v.toFixed(0)}`, ["SQUEEZE", "var(--tick-up)"]]);

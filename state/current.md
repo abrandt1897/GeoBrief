@@ -12,7 +12,7 @@ _Overwritten each update. Tabular data lives in `data/*.csv`; this file holds th
 - **Comprehensive deal:** a _signed_ deal in which Iran concedes at least one of Rubio's three terms. Must stay below MOU-style.
 - **Precedence:** a signed deal by the horizon date wins; otherwise the worst war level reached.
 
-Oct 6: no change. Houthi claims on Riyadh airport/Rabigh (Saudi confirms airport damage); East-West moving oil to Yanbu; tanker On Peace hit (unclaimed, 12 wounded); Qatar says talks continue; Brent <$100. No tripwire fired. Nov 3 war 60%.
+Oct 6: no change. Houthi claims on Riyadh airport/Rabigh (Saudi confirms airport damage); East-West moving oil to Yanbu; tanker On Peace hit (unclaimed, 12 wounded); Qatar says talks continue; Brent <$100. No tripwire fired. Nov 3 war 88% (limited 67 + escalated 21); YE deal 24% (MOU 18 + comprehensive 6).
 
 Oct 5 pm: **UAE-third tripwire fired** — Vanguard IDs the Oct 2 hit as Uhud (46k DWT products tanker, managed by Emirates Shipping, UAE; bound for Fujairah — not an STS-loop/Saudi ship), the 3rd UAE-linked hit after Cape Dao and Al Ruwais → infra +2, half-open −2. New unclaimed Hormuz hit Oct 5 16:37; IRGC hail turns a ship back. Nov 3 war 60%.
 
@@ -29,12 +29,12 @@ Prior (Oct 4) vs Sep 30: Iran soft-rejected the US counter (strait-first, no nuc
 | MOU-style deal     | 11% | $3.90-4.25     | $80-96   | Iran folds on sequencing or interim text; nothing signed in full |
 | Comprehensive deal | 1%  | $3.85-4.05     | $76-88   | Signed deal conceding a Rubio term before the election           |
 
-Mapped Oct 6 from the old seven: limited = limited round 39 + limbo 19 + half-open 9; escalated = infra 14 + sustained 7; MOU = Iran folds 8 + 3 of deal 4; comprehensive = 1 of deal 4. War by Nov 3 (claimed kinetic round, `war_nov3`) = 60%, between escalated (21) and all war (88). NY state ≈ +10¢, **NYC metro ≈ +19¢** over national (corrected Oct 4).
+Mapped Oct 6 from the old seven: limited = limited round 39 + limbo 19 + half-open 9; escalated = infra 14 + sustained 7; MOU = Iran folds 8 + 3 of deal 4; comprehensive = 1 of deal 4. **Headline war by Nov 3 = limited + escalated = 88%.** The older `war_nov3` forecast (a claimed kinetic round) = 60% is a narrower question, kept for scoring only. NY state ≈ +10¢, **NYC metro ≈ +19¢** over national (corrected Oct 4).
 
 **Gas baseline (AAA, Oct 5):** national regular $4.37 (yday $4.37, wk $4.48, mo $4.15); diesel $6.32 (record $6.53 9/22). NY state $4.47 / $6.52; NYC metro $4.56 / $6.75. Drifting down ~1¢/day. **2026 reference (AAA):** pre-war $2.98 (Feb 26); high $4.56 (May 21); July low $3.79; Sept peak $4.48 (Sept 24); diesel record $6.53 (Sept 22). G7 diesel release caps diesel; China product-export halt and Dated Brent >$120 push the other way.
 **Gas mechanics:** rockets 2-4¢/day, feathers 1-1.5¢/day (~2.4¢ per $1/bbl); no-shock path → ~$4.10-4.25.
-**Nov 3 lines (AAA national regular):** ≥$4.50 ~41% · ≥$4.75 ~14% · ≥$5.00 ~5% · <$4.00 ~8%. NYC metro ≥$4.75 ~30%, ≥$5 ~8%. National diesel ≥$6.50 ~41% · ≥$6.75 ~18% · ≥$7.00 ~11% · <$6.00 ~18% (Oct 6: derived from new per-scenario diesel bands in `scenarios.csv`, diesel ≈ $6.32 + 1.5 × (regular − $4.37); diesel has moved 1.2–2× regular this war).
-**Market cross-check:** ICE Brent ~$100 (Oct 5) prices less war than 60%; Dated >$120 says physical is tighter than futures. Futures have faded every lull; supply recovery + G7 release cap upside.
+**Nov 3 lines (AAA national regular):** ≥$4.50 ~38% · ≥$4.75 ~13% · ≥$5.00 ~4% · <$4.00 ~4%. NYC metro ≥$4.75 ~27%, ≥$5 ~11%. National diesel ≥$6.50 ~38% · ≥$6.75 ~17% · ≥$7.00 ~11% · <$6.00 ~9% (Oct 7: all re-derived from the four scenario rows × `gas_band` / `diesel_band` in `scenarios.csv`, uniform within each band; the earlier lines still used the old seven rows. Diesel bands: diesel ≈ $6.32 + 1.5 × (regular − $4.37); diesel has moved 1.2–2× regular this war).
+**Market cross-check:** ICE Brent ~$100 (Oct 5) prices less war than 88%; Dated >$120 says physical is tighter than futures. Futures have faded every lull; supply recovery + G7 release cap upside.
 
 ### Through Year-End 2026
 
@@ -45,7 +45,7 @@ Mapped Oct 6 from the old seven: limited = limited round 39 + limbo 19 + half-op
 | MOU-style deal     | 18% |
 | Comprehensive deal | 6%  |
 
-Mapped Oct 6: old war resumed 49 split ~60/40 limited/escalated (Nov bombing intent, ~45% real surge by YE); limited also takes half-open 18 + limbo 9; MOU = 9 of deal 15 + Iran folds 9; comprehensive = 6 (= nuclear-deal forecast). P(signed deal by YE) 15% sits between comprehensive and MOU + comprehensive.
+Mapped Oct 6: old war resumed 49 split ~60/40 limited/escalated (Nov bombing intent, ~45% real surge by YE); limited also takes half-open 18 + limbo 9; MOU = 9 of deal 15 + Iran folds 9; comprehensive = 6 (= nuclear-deal forecast). **Headline deal by YE = MOU + comprehensive = 24%.** P(signed war-ending deal by YE) 15% (`deal_ye2026`) is narrower and sits between comprehensive and MOU + comprehensive.
 
 ### Live Tripwires
 
