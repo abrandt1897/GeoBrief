@@ -8,6 +8,7 @@ import re
 from datetime import date
 from pathlib import Path
 
+import build
 import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -45,6 +46,7 @@ SCHEMAS: dict[str, list[str]] = {
     "deal_terms.csv": ["term", "p", "rubio"],
     "blinks.csv": ["date", "end_date", "label", "detail", "type"],
     "supply.csv": ["date", "series", "mbd", "kind", "source", "note"],
+    "rescores.csv": ["date", "horizon", "note"],
     "supply_events.csv": ["date", "label"],
 }
 
@@ -287,3 +289,37 @@ def test_prose_quotes_canonical_deal_and_blink_odds() -> None:
         text = (ROOT / name).read_text(encoding="utf-8")
         want = f"blink ~{b10['blink']}% · no blink ~{b10['no_blink']}% · unresolved ~{b10['unresolved']}%"
         assert want in text, f"{name}: expected {want!r}"
+
+
+def test_prose_tripwire_lists_match_the_registry() -> None:
+    """current.md and SKILL.md list every armed tripwire exactly as `build.py --tripwire-lines` prints it."""
+    want = [build.tripwire_line(t) for t in load("tripwires.csv") if t["status"] == "armed"]
+    for name in ("state/current.md", "skill/SKILL.md"):
+        text = (ROOT / name).read_text(encoding="utf-8")
+        missing = [w for w in want if w not in text]
+        assert not missing, f"{name} is missing tripwire lines (run build.py --tripwire-lines): {missing}"
+
+
+NOV3_LINE_IDS = [
+    "gas_nat_450", "gas_nat_475", "gas_nat_500", "gas_nat_lt400",
+    "gas_nyc_475", "gas_nyc_500",
+    "gas_diesel_650", "gas_diesel_675", "gas_diesel_700", "gas_diesel_lt600",
+    "brent_100", "brent_110", "brent_120", "brent_lt90",
+    "lng_jkm_25", "lng_jkm_28", "lng_jkm_31", "lng_jkm_lt20",
+]  # fmt: skip
+
+
+@pytest.mark.parametrize("name", ["state/current.md", "skill/SKILL.md"])
+def test_prose_quotes_current_forecasts(name: str) -> None:
+    """The forecast numbers quoted in the prose match the latest forecasts.csv rows."""
+    text = (ROOT / name).read_text(encoding="utf-8")
+    latest = build.latest_forecasts(load("forecasts.csv"))
+    p = {k: f"{float(r['p']):g}" for k, r in latest.items()}
+    lines = re.search(r"\*\*Nov 3 lines \(AAA national regular\):\*\*(.*)", text)
+    assert lines, f"{name}: no Nov 3 lines paragraph"
+    quoted = re.findall(r"~(\d+)%", lines.group(1))
+    assert quoted == [p[k] for k in NOV3_LINE_IDS], f"{name}: Nov 3 lines {quoted} != forecasts.csv"
+    assert f"(`war_nov3`, {p['war_nov3']}%)" in text, f"{name}: war_nov3 should read {p['war_nov3']}%"
+    assert f"War-ending deal: {p['deal_ye2026']}% by end-2026; {p['deal_ye2027']}% by end-2027" in text
+    assert f"P(signed deal by YE) {p['deal_ye2026']}%" in text
+    assert f"~{p['deal_prenov3']}% signed (`deal_prenov3`)" in text

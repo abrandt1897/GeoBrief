@@ -6,15 +6,18 @@
   "bets": [
     {
       "cond": "The IRGC or Artesh officially claims a specific attack that is independently confirmed",
-      "effect": "War by Nov. 3 resolves yes; escalated ~10%"
+      "effect": "War by Nov. 3 resolves yes; escalated ~{nov3:escalated_war}%",
+      "tripwire": "tw_irgc_claim"
     },
     {
       "cond": "Iran accepts US sequencing, or round two is set with text",
-      "effect": "Year-end deal → ~21%"
+      "effect": "Year-end deal → ~{deal_ye2026}%",
+      "tripwire": "tw_accept"
     },
     {
       "cond": "The East-West line or Yanbu is offline 3+ days",
-      "effect": "Escalated war → ~10%; gas ≥ $4.75 on Nov. 3 → ~17%"
+      "effect": "Escalated war → ~{nov3:escalated_war}%; gas ≥ $4.75 on Nov. 3 → ~{gas_nat_475}%",
+      "tripwire": "tw_eastwest_offline"
     }
   ],
   "blink10": {

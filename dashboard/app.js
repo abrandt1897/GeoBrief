@@ -16,6 +16,8 @@
 /** @typedef {{ date: string, series: string, mbd: number | null, kind: string, source: string, note: string }} SupplyRow */
 /** @typedef {{ date: string, label: string }} SupplyEvent */
 /** @typedef {{ title: string, lead: string, more: string }} SupplyNote */
+/** A day odds moved because a scenario definition changed, not because of news. */
+/** @typedef {{ date: string, horizon: "nov3" | "ye2026" | "all", note: string }} Rescore */
 /**
  * @typedef {object} Brief
  * @property {string} updated
@@ -43,6 +45,7 @@
  * @property {SupplyRow[]} supply
  * @property {SupplyEvent[]} supply_events
  * @property {SupplyNote | null} supply_note
+ * @property {Rescore[]} [rescores] from data/rescores.csv; absent in payloads built before it existed
  */
 /** @typedef {{ date: string, v: Record<string, number> }} DateRow */
 /** @typedef {{ d: string, v: number | null }} Pt */
@@ -50,6 +53,7 @@
 /** @typedef {{ v: number, value: string, name: string, color: string, boxW: number }} EndLabel */
 /** @typedef {{ lo: number, hi: number, w: number, color: string, title: string }} Band */
 /** @typedef {{ date: string, text: string }} Annotation */
+/** @typedef {{ date: string, text: string, note: string }} Marker */
 /**
  * @typedef {object} ChartOpts
  * @property {string} label
@@ -66,6 +70,7 @@
  * @property {Annotation[]} [annotations]
  * @property {string | null} [endMark] label for the dashed line at the right edge (default "Election Day"; null for none)
  * @property {Annotation[]} [vlines] labelled vertical markers drawn inside the plot
+ * @property {Marker[]} [markers] subtle dashed markers (re-scores) with a small label and a hover note
  * @property {number} [annoRows] rows the annotation captions cycle through (default 2)
  * @property {number} [maxGap] break a line where consecutive readings are more than this many days apart
  */
@@ -167,7 +172,21 @@
   const latestNov = nov[nov.length - 1];
   const latestYe = ye[ye.length - 1];
   if (!latestNov || !latestYe) throw new Error("odds.csv has no nov3 or ye2026 rows");
-  const prevNov = nov[nov.length - 2];
+  const RESCORES = D.rescores ?? [];
+  /** Re-scores that apply to one horizon. @param {string} horizon @returns {Rescore[]} */
+  const rescoresFor = (horizon) => RESCORES.filter((r) => r.horizon === horizon || r.horizon === "all");
+  /**
+   * The update before the latest, or undefined when there is none or a re-score falls after it (up to and
+   * including the latest date): across a re-score the change reflects a new definition, not news.
+   * @param {DateRow[]} rows @param {string} horizon @returns {DateRow | undefined}
+   */
+  const comparablePrev = (rows, horizon) => {
+    const cur = rows[rows.length - 1];
+    const prev = rows[rows.length - 2];
+    if (!cur || !prev) return undefined;
+    return rescoresFor(horizon).some((r) => r.date > prev.date && r.date <= cur.date) ? undefined : prev;
+  };
+  const prevNov = comparablePrev(nov, "nov3");
   /**
    * One update's odds summed into the four scenarios. Older updates used finer scenarios that each map to one
    * of the four; an update holding a row that maps to none (e.g. an unsplit war total) gives null throughout.
@@ -262,6 +281,21 @@
       h += `<line x1="${X(v.date)}" x2="${X(v.date)}" y1="${T}" y2="${B}" style="stroke:var(--war)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
       h += `<text x="${X(v.date) + 6}" y="${T + 16}" font-size="13" font-weight="700" style="fill:var(--war)">${esc(v.text)}</text>`;
     }
+    // Re-score markers: the dashed line sits under the series; its label goes on top (after the hit area) so
+    // hovering it shows the note. The label sits right of the line, or left of it when the marker is on the
+    // latest date (the end labels live right of that) or would run past the plot; never outside [L, R].
+    let markerTop = "";
+    for (const mk of o.markers ?? []) {
+      const mx = Math.max(L, Math.min(R, X(mk.date)));
+      const lw = mk.text.length * 8.4 + 4;
+      const right = Math.abs(mx - lastX) < 1 ? mx - 5 - lw < L : mx + 5 + lw <= R;
+      const tx = right ? mx + 5 : mx - 5;
+      h += `<line class="rescore-line" x1="${mx}" x2="${mx}" y1="${T}" y2="${B}" style="stroke:var(--muted)" stroke-width="1.25" stroke-dasharray="2 4"/>`;
+      markerTop +=
+        `<g class="rescore" data-date="${esc(mk.date)}"><title>${esc(`${fmtDate(mk.date)}: ${mk.note}`)}</title>` +
+        `<rect x="${right ? mx : mx - lw - 10}" y="${T}" width="${lw + 10}" height="22" fill="transparent"/>` +
+        `<text x="${tx}" y="${T + 15}" font-size="12" font-weight="700" letter-spacing="0.06em" text-anchor="${right ? "start" : "end"}" paint-order="stroke" style="fill:var(--muted);stroke:var(--panel);stroke-width:4px;stroke-linejoin:round">${esc(mk.text)}</text></g>`;
+    }
     for (const b of o.bands ?? []) {
       h += `<rect x="${R + 8}" y="${Y(b.hi)}" width="${b.w}" height="${Y(b.lo) - Y(b.hi)}" style="fill:${cv(b.color)}" fill-opacity=".9"><title>${esc(b.title)}</title></rect>`;
     }
@@ -294,6 +328,12 @@
       const prev = labs[i - 1];
       if (prev && l.y - prev.y < 34) l.y = prev.y + 34;
     });
+    // Then keep the lowest inside the plot, pushing the stack back up where it ran past the axis.
+    for (let i = labs.length - 1; i >= 0; i--) {
+      const l = labs[i];
+      const below = labs[i + 1];
+      if (l) l.y = Math.min(l.y, below ? below.y - 34 : B);
+    }
     for (const l of labs) {
       h += `<circle cx="${lastX}" cy="${Y(l.v)}" r="6" style="fill:${cv(l.color)}"/>`;
       h += `<rect x="${lastX + 12}" y="${l.y - 14}" width="${l.boxW}" height="28" style="fill:${cv(l.color)}"/>`;
@@ -302,6 +342,7 @@
     }
     h += `<g class="hover" style="display:none"><line y1="${T}" y2="${B}" style="stroke:var(--fg)" stroke-dasharray="2 3"/></g>`;
     h += `<rect class="hit" x="${L}" y="${T - 14}" width="${R - L}" height="${B - T + 14}" fill="transparent"/>`;
+    h += markerTop;
     svg.innerHTML = h;
     host.appendChild(svg);
 
@@ -346,7 +387,11 @@
           rowsHtml += `<div><span class="k" style="--c:${cv(s.color)}">${esc(s.name)}</span><span class="v">${o.yFmt(p.v, true)}</span></div>`;
         } else dot.style.display = "none";
       });
-      tip.innerHTML = `<b>${fmtDate(d)}</b>${rowsHtml || '<div class="muted">No reading</div>'}`;
+      const notes = (o.markers ?? [])
+        .filter((mk) => mk.date === d)
+        .map((mk) => `<div class="tip-note">${esc(mk.text)}: ${esc(mk.note)}</div>`)
+        .join("");
+      tip.innerHTML = `<b>${fmtDate(d)}</b>${rowsHtml || '<div class="muted">No reading</div>'}${notes}`;
       tip.hidden = false;
       const hostW = host.clientWidth;
       const px = (x / W) * hostW;
@@ -479,8 +524,14 @@
       yFmt: (v, tip) => `${tip ? Math.round(v) : v}%`,
       endLabels,
       endMark: o.endMark,
+      markers: rescoresFor(o.horizon)
+        .filter((r) => r.date >= start && r.date <= cur.date)
+        .map((r) => ({ date: r.date, text: "RE-SCORED", note: r.note })),
     });
   }
+
+  const RESCORE_NOTE =
+    "A dashed RE-SCORED line marks a day the odds moved because a scenario definition changed, not because of news; hover it for the reason. Definitions were settled on Oct. 7 and odds on earlier definitions were removed, so the lines start there.";
 
   /** @param {HTMLElement} el */
   function oddsPanel(el) {
@@ -490,7 +541,7 @@
       end: election,
       endMark: "Election Day",
       byLabel: "Nov. 3",
-      note: "Each point is one update in odds.csv. Before Oct. 6 the odds used finer scenarios, summed here into the four; that split puts earlier deal odds under MOU-style. Lines start Oct. 4 because the Sept. 30 war split wasn’t recorded. Hover or tap the chart to read any date.",
+      note: `Each point is one update in odds.csv. ${RESCORE_NOTE} Hover or tap the chart to read any date.`,
     });
   }
 
@@ -724,19 +775,34 @@
     const lt = latestF.get(ltId);
     const ps = ge.map(([id]) => latestF.get(id)?.p);
     if (!lt || ps.some((p) => p == null)) return "";
-    const at = /** @type {number[]} */ (ps);
+    const probs = ladderProbs(lt.p, /** @type {number[]} */ (ps));
     const first = ge[0]?.[1] ?? low;
-    const cells = [
-      [`Under ${f(low)}`, lt.p],
-      [`${f(low)}–${f(first)}`, 100 - lt.p - (at[0] ?? 0)],
+    const labels = [
+      `Under ${f(low)}`,
+      `${f(low)}–${f(first)}`,
       ...ge.map(([, t], i) => {
         const next = ge[i + 1];
-        return next ? [`${f(t)}–${f(next[1])}`, (at[i] ?? 0) - (at[i + 1] ?? 0)] : [`${f(t)} or more`, at[i] ?? 0];
+        return next ? `${f(t)}–${f(next[1])}` : `${f(t)} or more`;
       }),
     ];
-    return `<div class="figs">${cells
-      .map(([label, p]) => `<div><small>${label} on Nov. 3</small><strong>${Math.round(Number(p))}%</strong></div>`)
+    return `<div class="figs">${labels
+      .map((label, i) => `<div><small>${label} on Nov. 3</small><strong>${Math.round(probs[i] ?? 0)}%</strong></div>`)
       .join("")}</div>`;
+  }
+
+  /**
+   * A price ladder's nested threshold odds as non-overlapping ranges summing to 100: [under low (if a "<" id),
+   * low to the first threshold, ..., the top threshold or more]. Shared by the energy chart and calibration.
+   * @param {number | null} lt p of "< low", or null for a ladder of "≥" ids only
+   * @param {number[]} at p of "≥" each threshold, ascending
+   * @returns {number[]}
+   */
+  function ladderProbs(lt, at) {
+    return [
+      ...(lt == null ? [] : [lt]),
+      100 - (lt ?? 0) - (at[0] ?? 0),
+      ...at.map((p, i) => (i + 1 < at.length ? p - (at[i + 1] ?? 0) : p)),
+    ];
   }
 
   /** Physical-supply data sources; the button picks which one the Gulf and Hormuz lines use. */
@@ -938,43 +1004,163 @@
       end: `${latestYeRow.date.slice(0, 4)}-12-31`,
       endMark: "Dec. 31",
       byLabel: "Dec. 31",
-      note: "Each point is one update in odds.csv. The four year-end scenarios start Oct. 6; the earlier set had no limited/escalated war split. Hover or tap the chart to read any date.",
+      note: `Each point is one update in odds.csv. ${RESCORE_NOTE} Hover or tap the chart to read any date.`,
     });
   }
 
   /**
-   * Time-averaged Brier score per resolved forecast id: every version (made_on row) is scored against the
-   * outcome and weighted by the days it stood, until the next version or resolution. Void ids are left out.
-   * @returns {{ id: string, family: string, p: number, brier: number, outcome: number }[]}
+   * A set of forecasts scored together as one multi-outcome forecast.
+   * @typedef {object} ForecastGroup
+   * @property {string} key
+   * @property {string[]} ids member forecast ids
+   * @property {(ps: number[]) => number[]} probs members' p (percent) → each outcome's p (percent), summing to 100
+   * @property {(os: number[]) => number | null} index members' 0/1 outcomes → the outcome that happened (null if incoherent)
    */
-  function scoredForecasts() {
+  /**
+   * A price ladder: an optional "< low" id, then "≥ threshold" ids ascending. Outcomes are the same ranges as
+   * the energy chart's buckets (ladderProbs): under low, low to the first threshold, ..., the top one or more.
+   * @param {string | null} lt @param {string[]} ge @returns {ForecastGroup}
+   */
+  const ladder = (lt, ge) => ({
+    key: (ge[0] ?? "").replace(/_[^_]+$/, ""),
+    ids: lt ? [lt, ...ge] : ge,
+    probs: (ps) => ladderProbs(lt ? (ps[0] ?? 0) : null, lt ? ps.slice(1) : ps),
+    index: (os) => {
+      const lo = lt ? os[0] : 0;
+      const at = lt ? os.slice(1) : os;
+      // Nested bets: the thresholds that resolved 1 must be a prefix (≥ $4.50 can't be 0 while ≥ $4.75 is 1).
+      let k = 0;
+      while (at[k] === 1) k++;
+      if (at.slice(k).some((o) => o === 1)) return null;
+      if (lo === 1) return k === 0 ? 0 : null;
+      return (lt ? 1 : 0) + k;
+    },
+  });
+  /**
+   * Every forecast group: the price ladders and, per horizon, the scen_<horizon>_<scenario> set (exactly one
+   * scenario resolves 1). A group whose ids aren't all in forecasts.csv is left out, so its members score alone.
+   * @param {Map<string, Forecast[]>} byId @returns {ForecastGroup[]}
+   */
+  const forecastGroups = (byId) => {
+    const ladders = [
+      ...Object.values(FUELS).map((f) =>
+        ladder(
+          f.buckets[0],
+          f.buckets[2].map(([id]) => id),
+        ),
+      ),
+      ladder(null, ["gas_nyc_475", "gas_nyc_500"]),
+    ];
+    /** @type {Map<string, string[]>} */
+    const scen = new Map();
+    for (const [id, rows] of byId) {
+      // A retired scenario (latest row void) is not one of the horizon's outcomes.
+      if (rows[rows.length - 1]?.outcome === "void") continue;
+      const m = /^scen_([^_]+)_.+$/.exec(id);
+      if (m?.[1]) scen.set(m[1], [...(scen.get(m[1]) ?? []), id]);
+    }
+    /** @type {ForecastGroup[]} */
+    const sets = [...scen].map(([h, ids]) => ({
+      key: `scen_${h}`,
+      ids,
+      probs: (ps) => ps,
+      index: (os) => (os.filter((o) => o === 1).length === 1 ? os.indexOf(1) : null),
+    }));
+    return [...ladders, ...sets].filter((g) => g.ids.every((id) => byId.has(id)));
+  };
+
+  /** Every forecast's rows by id, oldest made_on first. @returns {Map<string, Forecast[]>} */
+  const forecastsById = () => {
     /** @type {Map<string, Forecast[]>} */
     const byId = new Map();
     for (const f of D.forecasts) byId.set(f.id, [...(byId.get(f.id) ?? []), f]);
-    return [...byId].flatMap(([id, rows]) => {
-      const vs = [...rows].sort((a, b) => (a.made_on < b.made_on ? -1 : a.made_on > b.made_on ? 1 : 0));
-      const last = vs[vs.length - 1];
-      if (!last || last.outcome === "void") return [];
-      const res = [...vs].reverse().find((f) => f.outcome === 0 || f.outcome === 1);
-      if (!res) return [];
-      const outcome = Number(res.outcome);
-      const end = day(res.resolved_on || last.resolved_on || res.resolves_on);
-      const live = vs.filter((f) => f.outcome !== "void" && day(f.made_on) <= end);
+    for (const [id, rows] of byId)
+      byId.set(
+        id,
+        [...rows].sort((a, b) => (a.made_on < b.made_on ? -1 : 1)),
+      );
+    return byId;
+  };
+
+  /**
+   * Time-averaged Brier score per resolved forecast or group. Every version is scored against the outcome and
+   * weighted by the days it stood, until the next version or resolution; a group's version changes whenever any
+   * member is re-forecast. Void rows are left out, and an id whose latest row is void is not scored (nor is any
+   * group containing it). A group is scored once every member has resolved.
+   * The score is the multi-category Brier halved, ½·Σₖ(pₖ − oₖ)², so it runs 0..1 like the binary Brier;
+   * for a lone yes/no forecast (two outcomes) it equals the binary (p − o)² exactly.
+   * @returns {{ id: string, family: string, brier: number, points: { p: number, o: number }[] }[]}
+   *   points: each outcome's time-averaged p (percent) and whether it happened, for the reliability plot
+   *   (a lone forecast contributes its "yes" outcome only, as before).
+   */
+  function scoredForecasts() {
+    const byId = forecastsById();
+    const groups = forecastGroups(byId);
+    const grouped = new Set(groups.flatMap((g) => g.ids));
+    /** @type {(ForecastGroup & { binary: boolean })[]} */
+    const all = [
+      ...groups.map((g) => ({ ...g, binary: false })),
+      ...[...byId.keys()]
+        .filter((id) => !grouped.has(id))
+        .map((id) => ({
+          key: id,
+          ids: [id],
+          probs: (/** @type {number[]} */ ps) => [ps[0] ?? 0, 100 - (ps[0] ?? 0)],
+          index: (/** @type {number[]} */ os) => (os[0] === 1 ? 0 : 1),
+          binary: true,
+        })),
+    ];
+    return all.flatMap((g) => {
+      const members = g.ids.map((id) => {
+        const vs = byId.get(id) ?? [];
+        const last = vs[vs.length - 1];
+        if (!last || last.outcome === "void") return null;
+        const res = [...vs].reverse().find((f) => f.outcome === 0 || f.outcome === 1);
+        if (!res) return null;
+        return {
+          vs,
+          last,
+          outcome: Number(res.outcome),
+          end: day(res.resolved_on || last.resolved_on || res.resolves_on),
+        };
+      });
+      if (members.some((m) => m == null)) return [];
+      const ms = /** @type {NonNullable<(typeof members)[number]>[]} */ (members);
+      const idx = g.index(ms.map((m) => m.outcome));
+      if (idx == null) return [];
+      const end = Math.max(...ms.map((m) => m.end));
+      const lives = ms.map((m) => {
+        const live = m.vs.filter((f) => f.outcome !== "void" && day(f.made_on) <= end);
+        return live.length ? live : [m.last];
+      });
+      // One version per date any member was (re-)forecast, once every member has a forecast.
+      const times = [...new Set(lives.flatMap((l) => l.map((f) => day(f.made_on))))].sort((a, b) => a - b);
+      const versions = times.flatMap((t) => {
+        const ps = lives.map((l) => l.filter((f) => day(f.made_on) <= t).pop()?.p);
+        return ps.every((p) => p != null) ? [{ t, probs: g.probs(/** @type {number[]} */ (ps)) }] : [];
+      });
+      /** @param {number[]} pv */
+      const score = (pv) => pv.reduce((a, p, k) => a + (p / 100 - (k === idx ? 1 : 0)) ** 2, 0) / 2;
       let w = 0;
       let b = 0;
-      let pw = 0;
-      live.forEach((f, i) => {
-        const next = live[i + 1];
-        const days = Math.max(0, (next ? day(next.made_on) : end) - day(f.made_on));
+      /** @type {number[]} */
+      const pw = [];
+      versions.forEach((v, i) => {
+        const next = versions[i + 1];
+        const days = Math.max(0, (next ? next.t : end) - v.t);
         w += days;
-        b += days * (f.p / 100 - outcome) ** 2;
-        pw += days * f.p;
+        b += days * score(v.probs);
+        v.probs.forEach((p, k) => (pw[k] = (pw[k] ?? 0) + days * p));
       });
       // A forecast made on its resolution day stood zero days; score its latest version alone.
-      const only = live[live.length - 1] ?? last;
-      const brier = w > 0 ? b / w : (only.p / 100 - outcome) ** 2;
-      const p = w > 0 ? pw / w : only.p;
-      return [{ id, family: id.split("_")[0] ?? id, p, brier, outcome }];
+      const only = versions[versions.length - 1];
+      if (!only) return [];
+      const brier = w > 0 ? b / w : score(only.probs);
+      const pAvg = w > 0 ? pw.map((x) => x / w) : only.probs;
+      const points = pAvg.map((p, k) => ({ p, o: k === idx ? 1 : 0 }));
+      return [
+        { id: g.key, family: g.key.split("_")[0] ?? g.key, brier, points: g.binary ? points.slice(0, 1) : points },
+      ];
     });
   }
 
@@ -999,9 +1185,9 @@
       : "";
     /** @type {Map<number, number[]>} */
     const buckets = new Map();
-    for (const f of res) {
-      const b = Math.min(9, Math.floor(f.p / 10));
-      buckets.set(b, [...(buckets.get(b) ?? []), f.outcome]);
+    for (const pt of res.flatMap((f) => f.points)) {
+      const b = Math.max(0, Math.min(9, Math.floor(pt.p / 10)));
+      buckets.set(b, [...(buckets.get(b) ?? []), pt.o]);
     }
     const dots = [...buckets]
       .map(([b, xs]) => {
@@ -1009,7 +1195,10 @@
         return `<circle cx="${30 + (b + 0.5) * 18}" cy="${190 - obs * 180}" r="${3 + Math.sqrt(xs.length) * 2}" style="fill:var(--war)"/>`;
       })
       .join("");
-    const open = current.filter((f) => f.outcome == null).length;
+    // A ladder or scenario set counts once, as it is scored, and stays open until every member resolves.
+    /** @type {Map<string, string>} */
+    const groupOf = new Map(forecastGroups(forecastsById()).flatMap((g) => g.ids.map((id) => [id, g.key])));
+    const open = new Set(current.filter((f) => f.outcome == null).map((f) => groupOf.get(f.id) ?? f.id)).size;
     const next = current
       .filter((f) => f.outcome == null)
       .map((f) => f.resolves_on)
@@ -1020,7 +1209,7 @@
       '<text x="120" y="212" font-size="11" text-anchor="middle" style="fill:var(--muted)">FORECAST</text><text x="14" y="100" font-size="11" text-anchor="middle" transform="rotate(-90 14 100)" style="fill:var(--muted)">OBSERVED</text></svg>' +
       `<div style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;gap:32px"><div><small class="muted">Brier score</small><div style="font-size:32px;font-weight:700">${brier}</div></div><div><small class="muted">Resolved</small><div style="font-size:32px;font-weight:700">${res.length}</div></div><div><small class="muted">Open</small><div style="font-size:32px;font-weight:700">${open}</div></div></div>` +
       famHtml +
-      `<div style="font-size:15px;max-width:380px">${res.length ? "Each forecast’s Brier score is averaged over every version of it, weighted by the days each version stood, then averaged by question family and overall. Each dot is a bucket of forecasts by their time-averaged probability; the closer to the diagonal, the better calibrated." : `No forecasts have resolved yet. The next ones resolve on ${next ? fmtDate(next) : "—"}.`}</div></div></div>`;
+      `<div style="font-size:15px;max-width:380px">${res.length ? "Each forecast’s Brier score is averaged over every version of it, weighted by the days each version stood, then averaged by question family and overall. A price ladder or a horizon’s four scenarios is one forecast with several outcomes (Brier halved to run 0–1). Each dot is a bucket of outcomes by their time-averaged probability; the closer to the diagonal, the better calibrated." : `No forecasts have resolved yet. The next ones resolve on ${next ? fmtDate(next) : "—"}.`}</div></div></div>`;
   }
 
   /** @type {Tab[]} */
@@ -1236,7 +1425,7 @@
       return `<tr><td style="font-weight:600"><span style="display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:8px;background:${cv(colorOf(k))}"></span>${esc(s.label)}</td><td class="num"><span class="pill" style="background:${cv(colorOf(k))}">${latest.v[k] ?? 0}%</span></td><td style="white-space:nowrap">${band}</td><td>${esc(s.driver)}</td></tr>`;
     })
     .join("");
-  const prevYe = ye[ye.length - 2];
+  const prevYe = comparablePrev(ye, "ye2026");
   $("ye-body").innerHTML = keysByP(latestYe.v)
     .map((k) => {
       const s = scen("ye2026", k);
@@ -1247,7 +1436,7 @@
     })
     .join("");
   $("ye-note").textContent =
-    `As of ${fmtDate(latestYe.date)}${prevYe ? `; change since ${fmtDate(prevYe.date)}` : ""}.`;
+    `As of ${fmtDate(latestYe.date)}${prevYe ? `; change since ${fmtDate(prevYe.date)}` : ye.length > 1 ? "; no change shown across a re-score" : ""}.`;
   $("bets").innerHTML = D.brief.bets
     .map((b) => `<div class="bet"><div class="c">${esc(b.cond)}</div><div class="e">${esc(b.effect)}</div></div>`)
     .join("");

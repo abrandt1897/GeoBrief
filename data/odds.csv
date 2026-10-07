@@ -1,41 +1,4 @@
 date,horizon,scenario,p,note
-2026-09-30,nov3,war_total,53,reconstructed from Oct 4 deltas; war split not recorded
-2026-09-30,nov3,limbo,19,reconstructed from Oct 4 deltas
-2026-09-30,nov3,half_open,13,reconstructed from Oct 4 deltas
-2026-09-30,nov3,iran_folds,8,reconstructed from Oct 4 deltas
-2026-09-30,nov3,deal,7,reconstructed from Oct 4 deltas
-2026-10-04,nov3,war_limited,39,Iran holds strait-first; soft rejection of US counter
-2026-10-04,nov3,limbo,20,+1 late Oct 4 (B-1B exit)
-2026-10-04,nov3,half_open,12,
-2026-10-04,nov3,war_infra,9,Houthi claims on Khurais/Riyadh; refinery fire
-2026-10-04,nov3,iran_folds,8,
-2026-10-04,nov3,war_sustained,7,-1 late Oct 4 (B-1B exit = less Europe-based capacity)
-2026-10-04,nov3,deal,5,delegation expelled
-2026-10-04,ye2026,war_resumed,48,
-2026-10-04,ye2026,half_open,18,
-2026-10-04,ye2026,deal,16,
-2026-10-04,ye2026,limbo,9,
-2026-10-04,ye2026,iran_folds,9,
-2026-10-05,nov3,war_limited,39,Iran holds strait-first; Pezeshkian calls talks meaningless
-2026-10-05,nov3,limbo,19,-1 Pezeshkian: negotiations meaningless
-2026-10-05,nov3,half_open,9,-1 Ghalibaf: strait stays closed until 7 conditions met; -2 tw_uae_third fired (Uhud)
-2026-10-05,nov3,war_infra,14,+3 tw_saudi_infra fired (Khurais; flow restored); +2 tw_uae_third fired (Emirates Shipping tanker Uhud hit Oct 2)
-2026-10-05,nov3,iran_folds,8,
-2026-10-05,nov3,war_sustained,7,
-2026-10-05,nov3,deal,4,-1 Pezeshkian: negotiations meaningless
-2026-10-05,ye2026,war_resumed,49,
-2026-10-05,ye2026,half_open,18,
-2026-10-05,ye2026,deal,15,
-2026-10-05,ye2026,limbo,9,
-2026-10-05,ye2026,iran_folds,9,
-2026-10-06,nov3,limited_war,67,new four-scenario set: war_limited 39 + limbo 19 + half_open 9
-2026-10-06,nov3,escalated_war,21,war_infra 14 + war_sustained 7
-2026-10-06,nov3,mou_deal,11,iran_folds 8 + 3 of deal 4
-2026-10-06,nov3,comprehensive_deal,1,1 of deal 4 (signed; Iran concedes a Rubio term)
-2026-10-06,ye2026,limited_war,56,new four-scenario set: ~60% of war_resumed 49 (29) + half_open 18 + limbo 9
-2026-10-06,ye2026,escalated_war,20,~40% of war_resumed 49; Nov bombing intent and ~45% real surge by YE
-2026-10-06,ye2026,mou_deal,18,9 of deal 15 (enhanced-MOU style) + iran_folds 9
-2026-10-06,ye2026,comprehensive_deal,6,= nuke_deal_2026; signed deal conceding a Rubio term
 2026-10-07,nov3,limited_war,82,+7 from escalated: short infrastructure hits (Khurais restored within a day) no longer count; +7 more after Adam narrowed escalated to new steps: a strike campaign on military targets is limited war; renamed Limited war / Limbo; +1 from MOU-style after Vance's condition
 2026-10-07,nov3,escalated_war,7,"narrowed to steps not yet taken (Adam): Gulf hub/power/desal plant out 7+ days ~4, strikes on Iranian civilian infrastructure ~2, ground forces ~2, less overlap"
 2026-10-07,nov3,mou_deal,10,"-1: Iran soft-rejected the counter, Pezeshkian calls talks 'meaningless', Vance raised the bar (enrichment-capacity cut)"

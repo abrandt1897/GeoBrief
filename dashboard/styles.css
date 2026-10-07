@@ -408,6 +408,20 @@ main {
   font-variant-numeric: tabular-nums;
 }
 
+.tip div.tip-note {
+  display: block;
+  max-width: 240px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--rule);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.chart svg g.rescore {
+  cursor: help;
+}
+
 .tip span.k::before {
   content: "";
   display: inline-block;

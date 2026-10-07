@@ -269,8 +269,8 @@ def test_scenario_forecasts_must_match_odds() -> None:
     assert any("scen_nov3_escalated_war" in e for e in build.check_scenario_forecasts(GOOD_ODDS, fc))
 
 
-def trip(targets: str, status: str = "armed") -> Row:
-    return {"id": "tw_x", "status": status, "targets": targets}
+def trip(targets: str, status: str = "armed", effect: str = "") -> Row:
+    return {"id": "tw_x", "status": status, "targets": targets, "effect": effect, "condition": "C"}
 
 
 def test_tripwire_targets_must_move_the_odds() -> None:
@@ -280,6 +280,30 @@ def test_tripwire_targets_must_move_the_odds() -> None:
     assert any("unknown target" in e for e in build.check_tripwires(GOOD_ODDS, fc, [trip("nope=50")]))
     assert any("no targets" in e for e in build.check_tripwires(GOOD_ODDS, fc, [trip("")]))
     assert build.check_tripwires(GOOD_ODDS, fc, [trip("war_nov3=60", status="fired")]) == []
+
+
+def test_relative_targets_and_effect_placeholders() -> None:
+    fc = build.latest_forecasts([forecast("war_nov3", 60)])
+    t = trip("war_nov3+=9;nov3:escalated_war-=4", effect="War ~{war_nov3}%; escalated ~{nov3:escalated_war}%")
+    assert build.check_tripwires(GOOD_ODDS, fc, [t]) == []
+    assert build.target_values(GOOD_ODDS, fc, t["targets"]) == {"war_nov3": 69, "nov3:escalated_war": 17}
+    (out,) = build.rendered_trips(GOOD_ODDS, [forecast("war_nov3", 60)], [t])
+    assert out["effect"] == "War ~69%; escalated ~17%"
+    assert any("within 2" in e for e in build.check_tripwires(GOOD_ODDS, fc, [trip("war_nov3+=1")]))
+    assert any("not a target" in e for e in build.check_tripwires(GOOD_ODDS, fc, [trip("war_nov3+=9", effect="{x}")]))
+    fired = trip("war_nov3+=9", status="fired", effect="War ~{war_nov3}%")
+    assert any("placeholders" in e for e in build.check_tripwires(GOOD_ODDS, fc, [fired]))
+    assert build.tripwire_line(t) == f"- C → war by Nov 3 +9, escalated by Nov 3 {build.MINUS}4."
+    assert build.target_values(GOOD_ODDS, fc, "war_nov3+=50") == {"war_nov3": 100}
+
+
+def test_bets_fill_from_their_tripwire() -> None:
+    tw = {**trip("war_nov3+=9"), "id": "tw_a"}
+    b = brief(bets=[{"cond": "c", "effect": "War ~{war_nov3}%", "tripwire": "tw_a"}])
+    assert build.check_bets(b, [tw]) == []
+    assert build.rendered_brief(b, GOOD_ODDS, [forecast("war_nov3", 60)], [tw])["bets"][0]["effect"] == "War ~69%"
+    orphan = brief(bets=[{"cond": "c", "effect": "War ~{war_nov3}%"}])
+    assert any("no tripwire" in e for e in build.check_bets(orphan, [tw]))
 
 
 def test_void_outcome_is_kept_as_text() -> None:

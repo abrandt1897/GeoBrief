@@ -96,12 +96,86 @@ test("hover shows a readout and arrow keys step through dates", async ({ page })
   const tip = page.locator(".tip");
   await expect(tip).toBeVisible();
   await expect(tip).toContainText("Limited war");
+  // The odds may hold a single date after a re-score, so step through the gas chart's many dates instead.
+  await page.click("#tab-gas");
+  const gas = page.locator("#panel svg");
+  await gas.focus();
+  await expect(tip).toBeVisible();
   const first = await tip.locator("b").textContent();
-  await svg.focus();
   await page.keyboard.press("ArrowLeft");
   await expect(tip.locator("b")).not.toHaveText(first ?? "");
   await page.keyboard.press("Escape");
   await expect(tip).toBeHidden();
+});
+
+/** @typedef {{ date: string, horizon: string, scenario: string, p: number }} OddsRow */
+/** Sorted odds dates of one horizon. @param {string} horizon @returns {string[]} */
+const oddsDates = (horizon) =>
+  [
+    ...new Set(/** @type {OddsRow[]} */ (payload().odds).filter((r) => r.horizon === horizon).map((r) => r.date)),
+  ].sort();
+/** Re-scores applying to a horizon. @param {string} horizon @returns {{ date: string, horizon: string, note: string }[]} */
+const rescoresFor = (horizon) =>
+  /** @type {{ date: string, horizon: string, note: string }[]} */ (payload().rescores ?? []).filter(
+    (r) => r.horizon === horizon || r.horizon === "all",
+  );
+
+/** @type {[string, string][]} */
+const SCENARIO_CHARTS = [
+  ["odds", "nov3"],
+  ["yearend", "ye2026"],
+];
+for (const [tab, horizon] of SCENARIO_CHARTS) {
+  test(`${tab} chart: a dashed RE-SCORED marker per re-score, inside the plot, with the note on hover`, async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await page.goto(`${PAGE}#${tab}`);
+    const dates = oddsDates(horizon);
+    const last = dates.at(-1) ?? "";
+    const dayOf = (/** @type {string} */ s) => Date.parse(`${s}T00:00:00Z`) / 864e5;
+    const start = Math.min(dayOf(dates[0] ?? last), dayOf(last) - 35);
+    const want = rescoresFor(horizon).filter((r) => dayOf(r.date) >= start && r.date <= last);
+    const svg = page.locator("#panel svg");
+    const marks = svg.locator("g.rescore");
+    await expect(marks).toHaveCount(want.length);
+    await expect(svg.locator("line.rescore-line")).toHaveCount(want.length);
+    await expect(svg.locator("line.rescore-line").first()).toHaveAttribute("stroke-dasharray", /\d/);
+    const svgBox = await svg.boundingBox();
+    if (!svgBox) throw new Error("chart not rendered");
+    for (const [i, r] of want.entries()) {
+      const m = marks.nth(i);
+      await expect(m).toHaveAttribute("data-date", r.date);
+      await expect(m.locator("text")).toHaveText("RE-SCORED");
+      expect(await m.locator("title").textContent()).toContain(r.note);
+      const b = await m.locator("text").boundingBox();
+      if (!b) throw new Error("marker label not rendered");
+      expect(b.x).toBeGreaterThanOrEqual(svgBox.x);
+      expect(b.x + b.width).toBeLessThanOrEqual(svgBox.x + svgBox.width);
+    }
+    // The chart's readout for a re-scored date carries the note too (for touch and keyboard readers).
+    const scored = want.find((r) => r.date === last);
+    if (scored) {
+      await svg.focus();
+      await expect(page.locator(".tip .tip-note")).toContainText(scored.note);
+    }
+    expect(await svg.innerHTML()).not.toMatch(/NaN|Infinity/);
+    expect(errors).toEqual([]);
+  });
+}
+
+test("odds history: a dot per scenario even on a single date, and no ticker move across a re-score", async ({
+  page,
+}) => {
+  await page.goto(PAGE);
+  const dates = oddsDates("nov3");
+  const last = dates.at(-1) ?? "";
+  const prev = dates.at(-2);
+  // End-label dots always mark the latest update, so even one date shows four points.
+  await expect(page.locator("#panel svg circle[r='6']")).toHaveCount(4);
+  const item = page.locator("#ticker > .item", { hasText: "ESCALATED WAR BY NOV. 3" });
+  const crossed = !prev || rescoresFor("nov3").some((r) => r.date > prev && r.date <= last);
+  if (crossed) await expect(item).not.toContainText(/[▲▼]|UNCH/);
 });
 
 test("odds chart shows one line per scenario and no toggle", async ({ page }) => {

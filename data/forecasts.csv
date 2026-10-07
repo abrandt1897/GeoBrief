@@ -1,26 +1,26 @@
 id,made_on,question,p,resolves_on,resolution_rule,outcome,resolved_on,notes
-war_nov3,2026-10-04,War scenario (any) by Nov 3,55,2026-11-03,"1 if a claimed kinetic round by either side (US strike on Iran, or IRGC-claimed hit on shipping/US/regional targets) occurs Oct 5–Nov 3",,,sum of three war rows
-deal_prenov3,2026-10-04,Signed US-Iran deal before Nov 3,5,2026-11-03,1 if a signed deal or agreed text is announced by Nov 3,,,
-gas_nat_450,2026-10-04,AAA national regular >= $4.50 on Nov 3,38,2026-11-03,AAA national regular as shown on Nov 3,,,derived from scenario rows x gas bands
-gas_nat_475,2026-10-04,AAA national regular >= $4.75 on Nov 3,9,2026-11-03,AAA national regular as shown on Nov 3,,,
-gas_nat_500,2026-10-04,AAA national regular >= $5.00 on Nov 3,4,2026-11-03,AAA national regular as shown on Nov 3,,,
-gas_nat_lt400,2026-10-04,AAA national regular < $4.00 on Nov 3,8,2026-11-03,AAA national regular as shown on Nov 3,,,
-gas_nyc_475,2026-10-04,AAA NYC metro regular >= $4.75 on Nov 3,25,2026-11-03,AAA NYC metro regular as shown on Nov 3,,,
-gas_nyc_500,2026-10-04,AAA NYC metro regular >= $5.00 on Nov 3,7,2026-11-03,AAA NYC metro regular as shown on Nov 3,,,
-gas_diesel_650,2026-10-04,AAA national diesel >= $6.50 on Nov 3,35,2026-11-03,AAA national diesel as shown on Nov 3,,,
-saudi_strike_nov3,2026-10-04,Strike on a Saudi shuttle or STS-zone ship by Nov 3,30,2026-11-03,1 if a confirmed hit on a Saudi-shuttle or Sohar/Fujairah STS-loop vessel,,,
+war_nov3,2026-10-04,War scenario (any) by Nov 3,55,2026-11-03,"1 if a claimed kinetic round by either side (US strike on Iran, or IRGC-claimed hit on shipping/US/regional targets) occurs Oct 5–Nov 3",void,2026-10-07,"sum of three war rows; void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+deal_prenov3,2026-10-04,Signed US-Iran deal before Nov 3,5,2026-11-03,1 if a signed deal or agreed text is announced by Nov 3,void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+gas_nat_450,2026-10-04,AAA national regular >= $4.50 on Nov 3,38,2026-11-03,AAA national regular as shown on Nov 3,void,2026-10-07,"derived from scenario rows x gas bands; void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+gas_nat_475,2026-10-04,AAA national regular >= $4.75 on Nov 3,9,2026-11-03,AAA national regular as shown on Nov 3,void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+gas_nat_500,2026-10-04,AAA national regular >= $5.00 on Nov 3,4,2026-11-03,AAA national regular as shown on Nov 3,void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+gas_nat_lt400,2026-10-04,AAA national regular < $4.00 on Nov 3,8,2026-11-03,AAA national regular as shown on Nov 3,void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+gas_nyc_475,2026-10-04,AAA NYC metro regular >= $4.75 on Nov 3,25,2026-11-03,AAA NYC metro regular as shown on Nov 3,void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+gas_nyc_500,2026-10-04,AAA NYC metro regular >= $5.00 on Nov 3,7,2026-11-03,AAA NYC metro regular as shown on Nov 3,void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+gas_diesel_650,2026-10-04,AAA national diesel >= $6.50 on Nov 3,35,2026-11-03,AAA national diesel as shown on Nov 3,void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+saudi_strike_nov3,2026-10-04,Strike on a Saudi shuttle or STS-zone ship by Nov 3,30,2026-11-03,1 if a confirmed hit on a Saudi-shuttle or Sohar/Fujairah STS-loop vessel,void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
 houthi_yanbu_nov3,2026-10-04,Houthi hit (not intercepted) on Yanbu/East-West by Nov 3,40,2026-11-03,1 if a confirmed non-intercepted Houthi strike on Yanbu or the East-West line,void,2026-10-05,"voided Oct 7: the Khurais strike happened the day the forecast was made, so it can't be scored. Khurais pumping station hit Oct 4 (Houthi-claimed); flow briefly halted then restored. Event coincided with made_on"
-houthi_shipping_nov3,2026-10-04,Houthi hit on non-Saudi shipping by Nov 3,20,2026-11-03,1 if a confirmed Houthi hit on a non-Saudi commercial vessel,,,
-us_vs_houthis_nov3,2026-10-04,US joins strikes on Houthis by Nov 3,10,2026-11-03,1 if US forces strike Houthi targets,,,
-surge_nov3,2026-10-04,Real US surge before Nov 3,10,2026-11-03,"1 if 3 carriers on station simultaneously, Diego Garcia bombers, or extra air defense deployed",,,
-blink10_blink,2026-10-04,Blink #10 resolves as a blink,38,2026-12-31,See state/taco.md Blink #10 definition,,,Blink #10 outcomes sum to 100
-blink10_noblink,2026-10-04,Blink #10 resolves as no blink,38,2026-12-31,See state/taco.md Blink #10 definition,,,
-blink10_open,2026-10-04,Blink #10 unresolved on Dec 31,24,2026-12-31,See state/taco.md Blink #10 definition,,,
-deal_ye2026,2026-10-04,War-ending deal by end-2026,16,2026-12-31,1 if a signed war-ending deal by Dec 31 2026,,,= ye2026 deal in odds.csv
-war_ye2026,2026-10-04,War resumed by end-2026,48,2026-12-31,1 if a claimed kinetic round occurs by Dec 31 2026,,,
-surge_ye2026,2026-10-04,Real US surge by end-2026,45,2026-12-31,"1 if 3 carriers on station simultaneously, Diego Garcia bombers, or extra air defense deployed",,,
-nuke_deal_2026,2026-10-04,Comprehensive nuclear deal in 2026,6,2026-12-31,1 if a deal includes verifiable enrichment cap / IAEA access at Pickaxe,,,<= deal_ye2026 x P(IAEA term)
-deal_ye2027,2026-10-04,War-ending deal by end-2027,34,2027-12-31,1 if a signed war-ending deal by Dec 31 2027,,,
+houthi_shipping_nov3,2026-10-04,Houthi hit on non-Saudi shipping by Nov 3,20,2026-11-03,1 if a confirmed Houthi hit on a non-Saudi commercial vessel,void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+us_vs_houthis_nov3,2026-10-04,US joins strikes on Houthis by Nov 3,10,2026-11-03,1 if US forces strike Houthi targets,void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+surge_nov3,2026-10-04,Real US surge before Nov 3,10,2026-11-03,"1 if 3 carriers on station simultaneously, Diego Garcia bombers, or extra air defense deployed",void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+blink10_blink,2026-10-04,Blink #10 resolves as a blink,38,2026-12-31,See state/taco.md Blink #10 definition,void,2026-10-07,"Blink #10 outcomes sum to 100; void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+blink10_noblink,2026-10-04,Blink #10 resolves as no blink,38,2026-12-31,See state/taco.md Blink #10 definition,void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+blink10_open,2026-10-04,Blink #10 unresolved on Dec 31,24,2026-12-31,See state/taco.md Blink #10 definition,void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+deal_ye2026,2026-10-04,War-ending deal by end-2026,16,2026-12-31,1 if a signed war-ending deal by Dec 31 2026,void,2026-10-07,"= ye2026 deal in odds.csv; void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+war_ye2026,2026-10-04,War resumed by end-2026,48,2026-12-31,1 if a claimed kinetic round occurs by Dec 31 2026,void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+surge_ye2026,2026-10-04,Real US surge by end-2026,45,2026-12-31,"1 if 3 carriers on station simultaneously, Diego Garcia bombers, or extra air defense deployed",void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+nuke_deal_2026,2026-10-04,Comprehensive nuclear deal in 2026,6,2026-12-31,1 if a deal includes verifiable enrichment cap / IAEA access at Pickaxe,void,2026-10-07,"<= deal_ye2026 x P(IAEA term); void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
+deal_ye2027,2026-10-04,War-ending deal by end-2027,34,2027-12-31,1 if a signed war-ending deal by Dec 31 2027,void,2026-10-07,"void: backdated (made_on Oct 4 predates the first commit, Oct 5 18:07Z)"
 hormuz_20_ye2027,2026-10-04,Hormuz back to ~20 Mbd (all liquids monthly) by end-2027,20,2027-12-31,1 if a Kpler/Vortexa monthly figure >= 19.5 Mbd,void,2026-10-06,voided: replaced by hormuz_20_ye2026
 war_nov3,2026-10-05,War scenario (any) by Nov 3,60,2026-11-03,"1 if a claimed kinetic round by either side (US strike on Iran, or IRGC-claimed hit on shipping/US/regional targets) occurs Oct 5–Nov 3",,,sum of three war rows; infra +3 after Khurais hit; pm: +2 tw_uae_third (Uhud)
 deal_prenov3,2026-10-05,Signed US-Iran deal before Nov 3,4,2026-11-03,1 if a signed deal or agreed text is announced by Nov 3,,,Pezeshkian: talks meaningless
@@ -69,3 +69,9 @@ blink10_noblink,2026-10-07,Blink #10 resolves as no blink,30,2026-12-31,See stat
 blink10_open,2026-10-07,Blink #10 unresolved on Dec 31,0,2026-12-31,See state/taco.md Blink #10 definition,,,the definition always resolves on Dec 31 (neither deal nor campaign = blink)
 deal_ye2026,2026-10-07,War-ending deal by end-2026,13,2026-12-31,1 if a signed war-ending deal by Dec 31 2026,,,"-2: Vance (Reuters, Oct 5-6) makes a 'meaningful' cut in enrichment capacity a US condition, raising the bar for any signed deal"
 deal_ye2027,2026-10-07,War-ending deal by end-2027,31,2027-12-31,1 if a signed war-ending deal by Dec 31 2027,,,-2 with the 2026 deal (Vance enrichment-capacity condition)
+saudi_strike_nov3,2026-10-07,Strike on a Saudi shuttle or STS-zone ship by Nov 3,30,2026-11-03,1 if a confirmed hit on a Saudi-shuttle or Sohar/Fujairah STS-loop vessel,,,"re-recorded Oct 7 at the same p: the Oct 4 version predates the repo (first commit Oct 5), so it counts from today"
+houthi_shipping_nov3,2026-10-07,Houthi hit on non-Saudi shipping by Nov 3,20,2026-11-03,1 if a confirmed Houthi hit on a non-Saudi commercial vessel,,,"re-recorded Oct 7 at the same p: the Oct 4 version predates the repo (first commit Oct 5), so it counts from today"
+us_vs_houthis_nov3,2026-10-07,US joins strikes on Houthis by Nov 3,10,2026-11-03,1 if US forces strike Houthi targets,,,"re-recorded Oct 7 at the same p: the Oct 4 version predates the repo (first commit Oct 5), so it counts from today"
+surge_nov3,2026-10-07,Real US surge before Nov 3,10,2026-11-03,"1 if 3 carriers on station simultaneously, Diego Garcia bombers, or extra air defense deployed",,,"re-recorded Oct 7 at the same p: the Oct 4 version predates the repo (first commit Oct 5), so it counts from today"
+surge_ye2026,2026-10-07,Real US surge by end-2026,45,2026-12-31,"1 if 3 carriers on station simultaneously, Diego Garcia bombers, or extra air defense deployed",,,"re-recorded Oct 7 at the same p: the Oct 4 version predates the repo (first commit Oct 5), so it counts from today"
+nuke_deal_2026,2026-10-07,Comprehensive nuclear deal in 2026,6,2026-12-31,1 if a deal includes verifiable enrichment cap / IAEA access at Pickaxe,,,"re-recorded Oct 7 at the same p: the Oct 4 version predates the repo (first commit Oct 5), so it counts from today"

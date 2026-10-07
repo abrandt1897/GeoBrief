@@ -14,6 +14,7 @@ Tracker for the US–Iran war: canonical odds, event log, dated forecasts, calib
 | `data/gas.csv`, `data/markets.csv`       | AAA prices; Brent, Dated Brent, rial                                   |
 | `data/forecasts.csv`                     | Every resolvable forecast and its outcome (Brier)                      |
 | `data/tripwires.csv`                     | Tripwire registry                                                      |
+| `data/rescores.csv`                      | Days the odds moved because a definition changed, not news (charted)   |
 | `data/deal_terms.csv`, `data/blinks.csv` | P(term \| deal); TACO history                                          |
 | `dashboard/`                             | `template.html` + `build.py` → `dist/index.html`                       |
 

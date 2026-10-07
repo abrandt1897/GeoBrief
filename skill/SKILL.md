@@ -149,6 +149,8 @@ _Snapshot of `state/current.md` in the GeoBrief repo, which is canonical; copy i
 
 Oct 7 (review follow-up): **Vance (Reuters, Oct 5–6) makes a "meaningful" cut in enrichment capacity a US condition** for any deal, a floor above Rubio's "no nuclear weapon" → year-end deal 15 → 13, by 2027 33 → 31; a signed deal more likely carries a Rubio term (IAEA/enrichment-cap term 40 → 50%), so year-end comprehensive holds at 8 and MOU-style 16 → 14 (limited 66). Nov 3 MOU-style 11 → 10 (limited 82): Iran soft-rejected the counter and calls talks "meaningless." **War by Nov 3 60 → 45** under the stricter claim rule: one official claim (Cape Dao, Sept 23) against ~8 unclaimed hits since, no US strike since Sept 10, and the WSJ says bombing resumes after the election. **Blink #10 re-derived** from the year-end odds (blink 70, no blink 30, unresolved 0). Tripwires merged, made disjoint and filled in (below).
 
+Oct 7 (Adam, later still): **odds history before Oct 7 removed.** It was scored on earlier scenario definitions, so the chart now starts Oct 7 (marked in `data/rescores.csv`); pre-Oct 7 `scen_*` forecasts are void, and the Oct 4 seed forecasts (made before the repo's first commit) are void and re-recorded Oct 7 at the same p. Tripwire targets are now moves, not levels.
+
 Oct 7 (Adam, afternoon): **status-quo price sub-bands recentred on the forwards.** The limited war / limbo sub-bands had the war premium priced into the status quo (gas median $4.45 vs $4.37 today and falling; Brent median $102 vs January $97.59). Recentred on RBOB-implied gas ~$4.25–4.35, diesel $6.32 and falling, ICE January Brent $97.59 and ICE December JKM $25.84 (Oct 6 settlements). Medians now gas $4.31, diesel $6.23, Brent $97.5, JKM $25.8. The Brent and LNG charts now also plot the resolving contract itself (dashed), so the line and the bands compare like for like.
 
 Oct 7 (Adam, later): **escalated narrowed to steps the war hasn't taken yet** (ground forces in Iran, strikes on Iranian civilian infrastructure, or a major Gulf export hub, power or desalination plant out 7+ days). A July-scale campaign on military targets now counts as limited war. Nov 3 escalated 14 → 7: the sustained-campaign 7 moves to limited war / limbo (81); the 7 left is a hub/plant outage ~4, civilian-infrastructure strikes ~2, ground forces ~2, less overlap. Year-end escalated 20 → 12 (limited 64): post-election escalation gets cheaper and the TR ARG (2,000 Marines) arrives in Nov, but a July-style campaign no longer counts. Brent series now matches Trading Economics.
@@ -188,23 +190,24 @@ P(signed deal by YE) 13% sits between comprehensive (8) and MOU + comprehensive 
 
 ### Live Tripwires
 
-Registry and targets: `data/tripwires.csv` (`targets` = the numbers each would move to; `build.py` fails if a target is within 2 of the current value).
+Registry and targets: `data/tripwires.csv`. Targets are moves from today's odds (`key+=n` / `key-=n`), or a level (`key=v`) for a resolution; the dashboard fills the levels in. The list below is printed by `python3 dashboard/build.py --tripwire-lines`; a test checks it matches.
 
-- Iran's armed forces (IRGC or Artesh) officially claim a specific attack that is independently confirmed → war by Nov 3 resolves yes; escalated ~10%.
-- Iran formally accepts US sequencing / round 2 scheduled with text → YE deal ~21%, war by Nov 3 ~36%, MOU-style ~16%.
-- Iran ends strait tolls and permits, or declares Hormuz open to all shipping (Rubio #2) → MOU-style ~20%, YE deal ~20%, YE comprehensive ~12%.
-- Iran offers a concrete enrichment-capacity cut (Vance's condition) → YE deal ~19%, YE comprehensive ~12%; a flat refusal on the record → YE deal ~11%.
-- East-West line or Yanbu offline 3+ days by any attacker, incl. a repeat of the Sept Iraqi-militia shutdown (loadings-confirmed) → escalated ~10% (a pipeline outage alone doesn't count; a Yanbu terminal hit out 7+ days does); gas ≥$4.75 ~17%.
-- Strike in the Fujairah/Sohar STS zone, incl. on a Saudi STS-loop ship → escalated ~11%, war by Nov 3 ~52%.
-- Saudi shuttle ship hit outside the STS zone → war by Nov 3 ~55%, escalated ~10%.
-- Direct Iran–Israel exchange (Iranian fire at Israel, or an Israeli strike inside Iran) → escalated ~11%, war by Nov 3 ~60%.
-- Houthis declare Bab el-Mandeb closed, or hit a non-Saudi ship there → Brent (Jan.) ≥$100 ~55%, gas ≥$4.50 ~25%.
-- AAA national regular below $4.20 before Nov 3 → gas ≥$4.50 ~5%, <$4.00 ~16%.
-- B-1Bs reappear at Diego Garcia/Gulf, B-2/B-52s forward-deploy, or three carriers on station (GHWB back in the AOR while TR arrives) → Blink #10 no-blink ~40%, escalated ~10%.
-- US blockade easing → MOU-style ~19%; before signing = a Blink #10 blink.
-- Trump–Pezeshkian meeting → MOU-style ~14%, YE deal ~16%.
-- CENTCOM-confirmed US deaths from an Iranian attack, or US strike on Pickaxe → war by Nov 3 ~90%, escalated ~13%.
-  Retired Oct 7: the Kpler monthly (lands after Nov 3) and the separate carriers tripwire (merged into bombers).
+- Iran formally accepts US sequencing, or round two is scheduled with text → YE deal +8, war by Nov 3 −9, MOU-style by Nov 3 +6.
+- Iran's armed forces (IRGC or Artesh) officially claim a specific attack on shipping, US forces or regional targets that is independently confirmed (UKMTO, CENTCOM, vessel ID or imagery) → war by Nov 3 resolves yes, escalated by Nov 3 +3.
+- Saudi shuttle ship hit outside the Fujairah/Sohar STS zone → war by Nov 3 +10, escalated by Nov 3 +3.
+- B-1Bs reappear at Diego Garcia/Gulf, B-2/B-52s forward-deploy, or three carriers on station (GHWB back in the AOR after its Phuket port visit while TR arrives) → Blink #10 no-blink +10, escalated by Nov 3 +3.
+- US blockade easing → MOU-style by Nov 3 +9.
+- Trump–Pezeshkian meeting → MOU-style by Nov 3 +4, YE deal +3.
+- CENTCOM-confirmed US deaths from an Iranian attack, or a US strike on Pickaxe → war by Nov 3 to 90, escalated by Nov 3 +6.
+- East-West line or Yanbu loadings offline 3+ days, by any attacker incl. a repeat of the Sept Iraqi-militia shutdown (confirmed by Kpler, Vortexa or TankerTrackers) → escalated by Nov 3 +3, gas ≥$4.75 +10.
+- Strike in the Fujairah/Sohar STS zone, including on a Saudi STS-loop ship → escalated by Nov 3 +4, war by Nov 3 +7.
+- Iran ends strait tolls and permits, or declares Hormuz open to all shipping (Rubio #2) → MOU-style by Nov 3 +10, YE deal +7, YE comprehensive +4.
+- Iran offers a concrete cut in enrichment capacity (Vance's condition), in text or on the record → YE deal +6, YE comprehensive +4.
+- Direct Iran–Israel exchange: Iranian missiles or drones fired at Israel, or an Israeli strike inside Iran → escalated by Nov 3 +4, war by Nov 3 +15.
+- Houthis declare Bab el-Mandeb closed, or hit a non-Saudi ship in the strait (confirmed by UKMTO) → Brent (Jan.) ≥$100 +18, gas ≥$4.50 +12.
+- AAA national regular below $4.20 on any day before Nov. 3 → gas ≥$4.50 −8, gas <$4.00 +7.
+
+Retired Oct 7: the Kpler monthly (lands after Nov 3) and the separate carriers tripwire (merged into bombers). Past tripwires sit in the dashboard's collapsed section.
 
 ### Structural
 

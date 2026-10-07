@@ -107,7 +107,7 @@ date,nat_regular,nat_diesel,ny_regular,ny_diesel,nyc_regular,nyc_diesel,source
 2026-09-15,4.33,6.27,,,,,backfill: AAA Oregon/Idaho weekly
 2026-09-17,4.439,6.396,,,,,backfill: AAA national weekly (gasprices.aaa.com); diesel: archived AAA page (web.archive.org)
 2026-09-21,4.47,6.51,,,4.48,,backfill: AAA Northeast weekly + NPR citing AAA; NPR: diesel more than $6.51
-2026-09-22,,6.53,,,,,AAA record diesel
+2026-09-22,4.475,6.528,,,,,"archived AAA page (web.archive.org, 9/22 snapshot); record diesel"
 2026-09-24,4.483,6.514,,,,,backfill: AAA national weekly (gasprices.aaa.com); diesel: archived AAA page (web.archive.org)
 2026-09-26,4.49,6.484,4.49,6.52,,,backfill: FingerLakes1 citing AAA; diesel: archived AAA page (web.archive.org)
 2026-09-27,4.48,6.471,,,,,AAA week-ago figure as shown Oct 4; diesel: archived AAA page (web.archive.org)

@@ -331,23 +331,143 @@ def current_value(odds: list[Row], latest_f: dict[str, Row], key: str) -> float 
     return float(latest_f[key]["p"]) if key in latest_f else None
 
 
+def parse_target(part: str) -> tuple[str, str, float]:
+    """One tripwire target: `key=v` (absolute level), or `key+=n` / `key-=n` (a move from the current value)."""
+    m = re.fullmatch(r"\s*([^=+\-\s]+)\s*([+-]?=)\s*(\d+(?:\.\d+)?)\s*", part)
+    if not m:
+        raise ValueError(f"bad tripwire target {part!r}")
+    return m.group(1), m.group(2), float(m.group(3))
+
+
+def target_values(odds: list[Row], latest_f: dict[str, Row], targets: str) -> dict[str, float | None]:
+    """Each target key -> the level it would move to (relative moves applied to today's value, kept in 0..100)."""
+    out: dict[str, float | None] = {}
+    for part in filter(str.strip, targets.split(";")):
+        key, op, val = parse_target(part)
+        cur = current_value(odds, latest_f, key)
+        if op == "=":
+            out[key] = val
+        else:
+            out[key] = None if cur is None else min(100.0, max(0.0, cur + (val if op == "+=" else -val)))
+    return out
+
+
+PLACEHOLDER = re.compile(r"\{([^{}]+)\}")
+
+
+def render_effect(text: str, values: dict[str, float | None]) -> str:
+    """Fill `{key}` placeholders in a tripwire or bet effect with the target levels, rounded."""
+
+    def fill(m: re.Match[str]) -> str:
+        v = values.get(m.group(1))
+        return m.group(0) if v is None else f"{v:.0f}"
+
+    return PLACEHOLDER.sub(fill, text)
+
+
 def check_tripwires(odds: list[Row], latest_f: dict[str, Row], trips: list[Row]) -> list[str]:
-    """Armed tripwires must name targets that exist and would move them at least 2 points."""
+    """Armed tripwires must name targets that exist and would move them at least 2 points.
+
+    Effects may quote targets as `{key}` placeholders, filled at build time, so relative targets never need
+    rebasing by hand. Fired and expired tripwires are a record: their effect text must be plain.
+    """
     errors: list[str] = []
     for t in trips:
+        holes = PLACEHOLDER.findall(t.get("effect", ""))
         if t["status"] != "armed":
+            if holes:
+                errors.append(f"tripwires.csv {t['id']}: {t['status']} tripwire still has placeholders {holes}")
             continue
         if not t["targets"]:
             errors.append(f"tripwires.csv {t['id']}: armed tripwire has no targets")
             continue
-        for part in t["targets"].split(";"):
-            key, _, val = part.strip().partition("=")
+        try:
+            values = target_values(odds, latest_f, t["targets"])
+        except ValueError as e:
+            errors.append(f"tripwires.csv {t['id']}: {e}")
+            continue
+        for key, val in values.items():
             cur = current_value(odds, latest_f, key)
-            if cur is None:
+            if cur is None or val is None:
                 errors.append(f"tripwires.csv {t['id']}: unknown target {key}")
-            elif abs(float(val) - cur) < 2:
-                errors.append(f"tripwires.csv {t['id']}: target {key}={val} is within 2 of the current {cur:g}")
+            elif abs(val - cur) < 2:
+                errors.append(f"tripwires.csv {t['id']}: target {key}={val:g} is within 2 of the current {cur:g}")
+        bad = [h for h in holes if h not in values]
+        errors += [f"tripwires.csv {t['id']}: effect placeholder {{{h}}} is not a target" for h in bad]
     return errors
+
+
+TARGET_LABELS = {
+    "war_nov3": "war by Nov 3",
+    "deal_ye2026": "YE deal",
+    "blink10_noblink": "Blink #10 no-blink",
+    "nov3:escalated_war": "escalated by Nov 3",
+    "nov3:mou_deal": "MOU-style by Nov 3",
+    "ye2026:comprehensive_deal": "YE comprehensive",
+    "gas_nat_450": "gas ≥$4.50",
+    "gas_nat_475": "gas ≥$4.75",
+    "gas_nat_lt400": "gas <$4.00",
+    "brent_100": "Brent (Jan.) ≥$100",
+}
+
+
+MINUS = "\u2212"  # typographic minus for the prose
+
+
+def tripwire_line(t: Row) -> str:
+    """The Markdown bullet for an armed tripwire in state/current.md: its condition and the moves it implies.
+
+    Moves (not levels) are quoted so the prose stays true when the odds move; `--tripwire-lines` prints them all.
+    """
+    moves = []
+    for part in filter(str.strip, t["targets"].split(";")):
+        key, op, val = parse_target(part)
+        label = TARGET_LABELS.get(key, key)
+        if op == "=":
+            moves.append(f"{label} resolves yes" if val == 100 else f"{label} to {val:g}")
+        else:
+            moves.append(f"{label} {'+' if op == '+=' else MINUS}{val:g}")
+    return f"- {t['condition']} → {', '.join(moves)}."
+
+
+def check_bets(brief: Brief, trips: list[Row]) -> list[str]:
+    """A bet with placeholders names the armed tripwire whose targets fill them."""
+    by_id = {t["id"]: t for t in trips}
+    errors: list[str] = []
+    for bet in brief["bets"]:
+        holes = PLACEHOLDER.findall(bet["effect"])
+        tw = by_id.get(bet.get("tripwire", ""))
+        if bet.get("tripwire") and not tw:
+            errors.append(f"brief.json bet names unknown tripwire {bet['tripwire']}")
+        elif holes and not tw:
+            errors.append(f"brief.json bet {bet['cond'][:40]!r} has placeholders but no tripwire")
+        elif tw:
+            keys = {parse_target(p)[0] for p in filter(str.strip, tw["targets"].split(";"))}
+            bad = [h for h in holes if h not in keys]
+            errors += [f"brief.json bet placeholder {{{h}}} is not a target of {tw['id']}" for h in bad]
+    return errors
+
+
+def rendered_trips(odds: list[Row], forecasts: list[Row], trips: list[Row]) -> list[Row]:
+    latest_f = latest_forecasts(forecasts)
+    out: list[Row] = []
+    for t in trips:
+        armed = t["status"] == "armed" and t["targets"]
+        effect = render_effect(t["effect"], target_values(odds, latest_f, t["targets"])) if armed else t["effect"]
+        out.append({**t, "effect": effect})
+    return out
+
+
+def rendered_brief(brief: Brief, odds: list[Row], forecasts: list[Row], trips: list[Row]) -> Brief:
+    """brief.json with bet placeholders filled from the targets of the tripwire each bet names."""
+    latest_f = latest_forecasts(forecasts)
+    by_id = {t["id"]: t for t in trips}
+    bets = []
+    for bet in brief["bets"]:
+        tw = by_id.get(bet.get("tripwire", ""))
+        values = target_values(odds, latest_f, tw["targets"]) if tw and tw["targets"] else {}
+        bets.append({**bet, "effect": render_effect(bet["effect"], values)})
+    return cast(Brief, {**brief, "bets": bets})
 
 
 def check(odds: list[Row], forecasts: list[Row], terms: list[Row], brief: Brief) -> list[str]:
@@ -371,15 +491,17 @@ def check_derived(odds: list[Row], forecasts: list[Row], scenarios: list[Row], t
 
 
 def render(brief: Brief, odds: list[Row], forecasts: list[Row], terms: list[Row]) -> str:
+    trips = rows("tripwires.csv")
     payload = {
-        "brief": brief,
+        "brief": rendered_brief(brief, odds, forecasts, trips),
         "odds": [{**r, "p": float(r["p"])} for r in odds],
         "scenarios": rows("scenarios.csv"),
         "gas": numeric(rows("gas.csv")),
         "markets": numeric(rows("markets.csv")),
         "energy": numeric(rows("energy.csv")),
         "forecasts": [{**r, "p": float(r["p"]), "outcome": outcome(r["outcome"])} for r in forecasts],
-        "tripwires": rows("tripwires.csv"),
+        "tripwires": rendered_trips(odds, forecasts, trips),
+        "rescores": rows("rescores.csv"),
         "terms": [{**t, "p": float(t["p"])} for t in terms],
         "blinks": rows("blinks.csv"),
         "events": load_events(),
@@ -420,14 +542,20 @@ def main() -> None:
     terms = rows("deal_terms.csv")
     brief = cast(Brief, json.loads((ROOT / "state" / "brief.json").read_text(encoding="utf-8")))
 
-    errors = check(odds, forecasts, terms, brief) + check_derived(
-        odds, forecasts, rows("scenarios.csv"), rows("tripwires.csv")
+    trips = rows("tripwires.csv")
+    errors = (
+        check(odds, forecasts, terms, brief)
+        + check_derived(odds, forecasts, rows("scenarios.csv"), trips)
+        + check_bets(brief, trips)
     )
     for e in errors:
         print("CHECK FAILED:", e, file=sys.stderr)
     if errors:
         sys.exit(1)
     print("Consistency checks passed.")
+    if "--tripwire-lines" in sys.argv:
+        print("\n".join(tripwire_line(t) for t in trips if t["status"] == "armed"))
+        return
     if "--check" in sys.argv:
         return
 
