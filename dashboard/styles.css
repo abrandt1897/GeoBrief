@@ -183,20 +183,6 @@ header.top {
   white-space: nowrap;
 }
 
-.secnav {
-  display: flex;
-  flex-wrap: wrap;
-  column-gap: 28px;
-  font-family: var(--sans);
-  font-size: 15px;
-}
-
-.secnav a {
-  text-decoration: none;
-  padding: 10px 0 12px;
-  flex: none;
-}
-
 .drawer {
   position: absolute;
   left: 0;
@@ -622,14 +608,6 @@ main {
   font-family: var(--sans);
 }
 
-.tip div.src {
-  display: block;
-  max-width: 260px;
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
 .supply-note {
   margin-top: 18px;
   padding: 14px 16px;
@@ -985,11 +963,6 @@ footer.method {
 @media (width <= 560px) {
   .brand span.name {
     font-size: 16px;
-  }
-
-  /* The menu button covers these links on phones. */
-  .secnav {
-    display: none;
   }
 
   .tabs {

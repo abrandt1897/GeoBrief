@@ -64,7 +64,6 @@
  * @property {EndLabel[]} [endLabels]
  * @property {Band[]} [bands]
  * @property {Annotation[]} [annotations]
- * @property {(d: string) => string} [tipExtra]
  * @property {string | null} [endMark] label for the dashed line at the right edge (default "Election Day"; null for none)
  * @property {Annotation[]} [vlines] labelled vertical markers drawn inside the plot
  * @property {number} [annoRows] rows the annotation captions cycle through (default 2)
@@ -347,7 +346,7 @@
           rowsHtml += `<div><span class="k" style="--c:${cv(s.color)}">${esc(s.name)}</span><span class="v">${o.yFmt(p.v, true)}</span></div>`;
         } else dot.style.display = "none";
       });
-      tip.innerHTML = `<b>${fmtDate(d)}</b>${rowsHtml || '<div class="muted">No reading</div>'}${o.tipExtra ? o.tipExtra(d) : ""}`;
+      tip.innerHTML = `<b>${fmtDate(d)}</b>${rowsHtml || '<div class="muted">No reading</div>'}`;
       tip.hidden = false;
       const hostW = host.clientWidth;
       const px = (x / W) * hostW;
@@ -724,58 +723,83 @@
       .join("")}</div>`;
   }
 
-  /** Physical-supply series in draw order; the colour follows the series, never its rank. */
-  const SUPPLY_SERIES = [
-    // Colour = what is measured; dotted = Kpler crude-only basis, solid = IEA total oil (crude, NGLs, products).
-    { key: "gulf_iea", name: "Gulf exports · IEA total oil", color: "--fg", width: 3.5 },
-    { key: "gulf_kpler", name: "Gulf exports · Kpler crude", color: "--fg", width: 2.5, dash: "1 5" },
-    { key: "hormuz_iea", name: "Hormuz · IEA total oil", color: "--war", width: 3 },
-    { key: "hormuz_kpler", name: "Hormuz · Kpler crude", color: "--war", width: 2.5, dash: "1 5" },
+  /** Physical-supply data sources; the button picks which one the Gulf and Hormuz lines use. */
+  const SUPPLY_SOURCES = {
+    iea: { label: "IEA", unit: "IEA total oil: crude, NGLs and products." },
+    kpler: { label: "Kpler", unit: "Kpler crude only." },
+  };
+  /** @typedef {keyof typeof SUPPLY_SOURCES} SupplySource */
+  /** @type {SupplySource} */
+  let supplySource = "iea";
+
+  /**
+   * Physical-supply series in draw order; the colour follows the series, never its rank.
+   * @param {SupplySource} src
+   */
+  const supplySeries = (src) => [
+    { key: `gulf_${src}`, name: "Gulf exports", color: "--fg", width: 3.5 },
+    { key: `hormuz_${src}`, name: "Hormuz flows", color: "--war", width: 3 },
     { key: "eastwest", name: "East-West pipeline", color: "--calm", width: 2.5 },
   ];
 
   /** @param {HTMLElement} el */
   function supplyPanel(el) {
+    const cols = supplySeries(supplySource);
+    const keys = new Set(cols.map((c) => c.key));
     // Single-source readings stay in supply.csv for the record but aren't plotted until confirmed.
     const rowsS = D.supply
-      .filter((r) => r.mbd != null && r.kind !== "unconfirmed")
+      .filter((r) => r.mbd != null && r.kind !== "unconfirmed" && keys.has(r.series))
       .sort((a, b) => (a.date < b.date ? -1 : 1));
     const dates = [...new Set(rowsS.map((r) => r.date))];
     const lastDate = dates[dates.length - 1] ?? D.brief.updated;
     /** @type {Series[]} */
-    const series = SUPPLY_SERIES.map((c) => ({
+    const series = cols.map((c) => ({
       name: c.name,
       color: c.color,
       width: c.width,
-      ...(c.dash ? { dash: c.dash } : {}),
       points: rowsS.filter((r) => r.series === c.key).map((r) => ({ d: r.date, v: r.mbd })),
     }));
-    const maxV = Math.max(20, ...rowsS.map((r) => r.mbd ?? 0));
+    // Same y-axis for both sources so switching doesn't rescale the chart.
+    const maxV = Math.max(20, ...D.supply.map((r) => (r.kind !== "unconfirmed" ? (r.mbd ?? 0) : 0)));
     const yMax = Math.ceil((maxV + 1) / 5) * 5;
     /** @type {number[]} */
     const ticks = [];
     for (let t = 0; t < yMax; t += 5) ticks.push(t);
-    const latestOf = SUPPLY_SERIES.flatMap((c) => {
+    const latestOf = cols.flatMap((c) => {
       const r = rowsS.filter((x) => x.series === c.key).pop();
       return r && r.mbd != null ? [{ c, r, v: r.mbd }] : [];
     });
     const legend = `<div class="legend" style="margin-top:10px">${latestOf
       .map(
         ({ c, r, v }) =>
-          `<span><span class="sw" style="${c.dash ? `background:repeating-linear-gradient(90deg,${cv(c.color)} 0 3px,transparent 3px 6px)` : `background:${cv(c.color)}`}"></span>${esc(c.name)} <b>${v.toFixed(1)}</b> <span class="muted">(${fmtDate(r.date)})</span></span>`,
+          `<span><span class="sw" style="background:${cv(c.color)}"></span>${esc(c.name)} <b>${v.toFixed(1)}</b> <span class="muted">(${fmtDate(r.date)})</span></span>`,
       )
       .join("")}</div>`;
     const sn = D.supply_note;
     const note = sn
       ? `<div class="supply-note"><h3>${esc(sn.title)}</h3>${sn.lead}${sn.more ? `<details><summary>Full note</summary>${sn.more}</details>` : ""}</div>`
       : "";
+    const ids = /** @type {SupplySource[]} */ (Object.keys(SUPPLY_SOURCES));
     el.innerHTML =
-      `<div class="controls"><div style="font-size:13px" class="muted">Million barrels a day. Monthly averages are plotted mid-month; dots are individual readings.</div></div>` +
+      `<div class="controls"><div class="seg" role="group" aria-label="Data source">${ids
+        .map(
+          (k) =>
+            `<button type="button" id="src-${k}" aria-pressed="${k === supplySource}">${SUPPLY_SOURCES[k].label}</button>`,
+        )
+        .join(
+          "",
+        )}</div><div style="font-size:13px" class="muted">Million barrels a day. ${SUPPLY_SOURCES[supplySource].unit} Monthly averages are plotted mid-month; dots are individual readings.</div></div>` +
       legend +
       '<div class="chart" style="margin-top:30px"></div>' +
       note;
+    for (const k of ids) {
+      $(`src-${k}`).onclick = () => {
+        supplySource = k;
+        render();
+      };
+    }
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
-      label: "Line chart of Gulf crude exports, Hormuz flows and Saudi East-West pipeline throughput since January",
+      label: `Line chart of Gulf exports, Hormuz flows (${SUPPLY_SOURCES[supplySource].label}) and Saudi East-West pipeline throughput since January`,
       start: "2026-01-01",
       end: isoOf(day(lastDate) + 30),
       dates,
@@ -786,11 +810,6 @@
       yFmt: (v, tip) => (tip ? `${v.toFixed(1)} mb/d` : v === ticks[ticks.length - 1] ? `${v} mb/d` : `${v}`),
       endMark: null,
       vlines: [{ date: WAR_START, text: "War begins" }],
-      tipExtra: (d) =>
-        rowsS
-          .filter((r) => r.date === d)
-          .map((r) => `<div class="src">${esc(r.source)}${r.note ? ` · ${esc(r.note)}` : ""}</div>`)
-          .join(""),
     });
   }
 
@@ -1037,13 +1056,6 @@
     document.getElementById(`tab-${tab}`)?.focus();
     e.preventDefault();
   });
-
-  for (const a of document.querySelectorAll(".secnav a[data-tab]")) {
-    a.addEventListener("click", () => {
-      const id = /** @type {HTMLElement} */ (a).dataset.tab;
-      if (id && id !== tab) selectTab(id);
-    });
-  }
 
   // ---------- menu ----------
   const drawerItems = [
