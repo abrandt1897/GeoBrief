@@ -36,3 +36,11 @@ date,horizon,scenario,p,note
 2026-10-06,ye2026,escalated_war,20,~40% of war_resumed 49; Nov bombing intent and ~45% real surge by YE
 2026-10-06,ye2026,mou_deal,18,9 of deal 15 (enhanced-MOU style) + iran_folds 9
 2026-10-06,ye2026,comprehensive_deal,6,= nuke_deal_2026; signed deal conceding a Rubio term
+2026-10-07,nov3,limited_war,74,+7 from escalated: short infrastructure hits (Khurais restored within a day) no longer count as escalated; renamed Limited war / Limbo
+2026-10-07,nov3,escalated_war,14,"re-scored on the 7-day rule: export infrastructure offline 7+ days ~7, sustained 5+ day US campaign ~7"
+2026-10-07,nov3,mou_deal,11,
+2026-10-07,nov3,comprehensive_deal,1,
+2026-10-07,ye2026,limited_war,56,renamed Limited war / Limbo
+2026-10-07,ye2026,escalated_war,20,
+2026-10-07,ye2026,mou_deal,16,-2 to comprehensive: signed deals with no Rubio term (15 - 8 = 7) + Iran folds 9
+2026-10-07,ye2026,comprehensive_deal,8,"+2: P(deal) 15 x P(at least one Rubio term | deal) ~50%; was pinned to the IAEA-only nuclear-deal forecast (6)"

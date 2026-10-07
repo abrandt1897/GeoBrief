@@ -17,7 +17,7 @@ date,series,mbd,kind,source,note
 2026-04-15,gulf_iea,10.5,monthly,IEA Oil Market Report (May),total oil; all routes
 2026-04-15,hormuz_iea,2.7,monthly,IEA Oil Market Report (May),total oil; IEA Jun 22 commentary gives 2.7 as the Mar–May average
 2026-05-15,gulf_iea,9.6,monthly,IEA Oil Market Report (Jun/Jul),total oil; the May low
-2026-05-15,gulf_kpler,7.0,estimate,Kpler (via Reuters/Profit),"approx.; June was >3 higher at 10.07"
+2026-05-15,gulf_kpler,7.0,estimate,Kpler (via Reuters/Profit),approx.; June was >3 higher at 10.07
 2026-06-15,gulf_iea,16.1,monthly,IEA Oil Market Report (Jul),total oil; all routes
 2026-06-15,gulf_kpler,10.07,monthly,Kpler (via Reuters),"SA, UAE, KW, IQ, IR crude+condensate; Vortexa 10.2"
 2026-07-15,gulf_iea,15.0,monthly,IEA Oil Market Report (Aug),total oil; all routes
@@ -33,4 +33,4 @@ date,series,mbd,kind,source,note
 2026-09-28,hormuz_kpler,13.5,7d,Kpler (via CNBC),7-day average; crude+products 14.2
 2026-09-30,eastwest,2.65,daily,Kpler (via Egypt Oil & Gas),trade sources ~2.0
 2026-10-01,gulf_kpler,18.5,7d,Kpler (via Reuters/gCaptain),7-day average; daily highs 19.5–22.5 Sept 24–29
-2026-10-02,eastwest,6.0,daily,Bloomberg (one unnamed source),"close to 6, >80% of 7 nameplate; Oct 4 Khurais strike: status contested, not plotted"
+2026-10-02,eastwest,6.0,unconfirmed,Bloomberg (one unnamed source),"single unnamed source; not plotted until Kpler/Vortexa/TankerTrackers confirm. close to 6, >80% of 7 nameplate; Oct 4 Khurais strike: status contested, not plotted"

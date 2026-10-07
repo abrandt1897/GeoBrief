@@ -1,8 +1,8 @@
 horizon,scenario,label,group,gas_band,diesel_band,brent_band,lng_band,driver
-nov3,limited_war,Limited war,limited_war,4.20-4.60,6.05-6.65,95-112,24-28,"No settlement: strait shut or Iran-controlled, tanker and proxy hits, occasional US–Iran rounds"
-nov3,escalated_war,Escalated war,escalated_war,4.55-5.10,6.60-7.40,110-130,28-34,Sustained US campaign (5+ straight days of strikes) or Gulf export infrastructure offline 7+ days
-nov3,mou_deal,MOU-style deal,mou_deal,3.90-4.25,5.60-6.15,80-96,18-23,"Interim truce or enhanced MOU, or unsigned concessions; no signed comprehensive deal"
-nov3,comprehensive_deal,Comprehensive deal,comprehensive_deal,3.85-4.05,5.55-5.85,76-88,15-19,Signed deal in which Iran concedes at least one of Rubio's three terms
+nov3,limited_war,Limited war / Limbo,limited_war,4.40-4.60:46|4.20-4.40:19|4.00-4.25:9,6.35-6.65:46|6.05-6.35:19|5.75-6.15:9,100-109:46|92-102:19|83-93:9,26-29:46|24-27:19|21-24:9,"No settlement: strait shut or Iran-controlled, tanker and proxy hits, short infrastructure outages, occasional US–Iran rounds, or limbo"
+nov3,escalated_war,Escalated war,escalated_war,4.75-5.10:7|4.55-4.75:7,6.90-7.40:7|6.60-6.90:7,115-127:7|107-115:7,30-34:7|28-31:7,Sustained US campaign (5+ straight days of strikes) or Gulf export infrastructure offline 7+ days
+nov3,mou_deal,MOU-style deal,mou_deal,3.90-4.10:8|3.85-4.05:3,5.60-5.90:8|5.55-5.85:3,77-87:8|73-85:3,18-23,"Interim truce or enhanced MOU, or unsigned concessions; no signed comprehensive deal"
+nov3,comprehensive_deal,Comprehensive deal,comprehensive_deal,3.85-4.05,5.55-5.85,73-85,15-19,Signed deal in which Iran concedes at least one of Rubio's three terms
 nov3,war_limited,Limited war round,limited_war,4.40-4.60,6.35-6.65,103-112,,Iran holds strait-first; claimed hit or US strike
 nov3,war_infra,Oil-infrastructure hit,escalated_war,4.75-5.10,6.90-7.40,118-130,,"Yanbu, Abqaiq, Khurais, Sohar/Fujairah STS or Kharg"
 nov3,war_sustained,Sustained campaign,escalated_war,4.55-4.75,6.60-6.90,110-118,,Interceptor-limited; early start to Nov buildup
@@ -11,7 +11,7 @@ nov3,limbo,Limbo / extensions,limited_war,4.20-4.40,6.05-6.35,95-105,,Mediators 
 nov3,half_open,Half-open strait,limited_war,4.00-4.25,5.75-6.15,86-96,,Escorted crude near prewar; Yanbu ramp; G7 release
 nov3,iran_folds,Iran folds,mou_deal,3.90-4.10,5.60-5.90,80-90,,"Rial ~2.7M, 70-90% inflation; accepts US sequencing"
 nov3,deal,Deal,mou_deal,3.85-4.05,5.55-5.85,76-88,,Iran accepts the US text as a basis
-ye2026,limited_war,Limited war,limited_war,,,,,"No settlement: strait shut or Iran-controlled, tanker and proxy hits, occasional US–Iran rounds"
+ye2026,limited_war,Limited war / Limbo,limited_war,,,,,"No settlement: strait shut or Iran-controlled, tanker and proxy hits, short infrastructure outages, occasional US–Iran rounds, or limbo"
 ye2026,escalated_war,Escalated war,escalated_war,,,,,Sustained US campaign (5+ straight days of strikes) or Gulf export infrastructure offline 7+ days
 ye2026,mou_deal,MOU-style deal,mou_deal,,,,,"Interim truce or enhanced MOU, or unsigned concessions; no signed comprehensive deal"
 ye2026,comprehensive_deal,Comprehensive deal,comprehensive_deal,,,,,Signed deal in which Iran concedes at least one of Rubio's three terms

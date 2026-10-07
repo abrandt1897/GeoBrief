@@ -36,7 +36,7 @@ In a cloud session, Chromium is preinstalled: run e2e with `CHROMIUM_PATH=/opt/p
 ## Rules
 
 - When a `build.py` check fails, fix the data, never the check.
-- Append-only: `log/events.md`, `data/odds.csv`, `data/forecasts.csv`. Never edit a past forecast `p`; re-forecast with a new row (same `id`, new `made_on`).
+- Append-only: `log/events.md`, `data/odds.csv`, `data/forecasts.csv`. Never edit a past forecast `p`; re-forecast with a new row (same `id`, new `made_on`). A same-day revision replaces that day's row. Unscorable or replaced forecasts get `outcome=void` (not scored).
 - `dashboard/dist/` is generated and not committed.
 - `data/` is excluded from Prettier; run `npx prettier --write state log` after editing Markdown there so CI's format check passes.
 - Commit straight to `main` (`run: YYYY-MM-DD am|pm — <summary>` for scheduled runs). CI runs on every push; Pages deploys only after CI passes.

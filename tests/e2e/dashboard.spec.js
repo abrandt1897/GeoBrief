@@ -32,12 +32,13 @@ test.beforeEach(async ({ page }) => {
 test("renders headline, scenario table, dispatches and ticker without errors", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto(PAGE);
-  await expect(page.locator("h1")).toHaveText(/Will the War Resume/);
+  await expect(page.locator("h1")).toHaveText(/Iran War Odds Through 2026/);
   await expect(page.locator("#dateline")).toContainText("days to Election Day");
   await expect(page.locator("#scen-body tr")).toHaveCount(4);
-  await expect(page.locator("#scen-body tr").first()).toContainText("67%");
+  await expect(page.locator("#scen-body tr").first()).toContainText("Limited war / Limbo");
   await expect(page.locator("#disp .disp")).toHaveCount(6);
   await expect(page.locator("#ticker")).toContainText("ESCALATED WAR BY NOV. 3");
+  await expect(page.locator("#ticker")).toContainText("WAR BY NOV. 3 60%");
   await expect(page.locator("#ticker")).toContainText("AAA NATIONAL");
   expect(errors).toEqual([]);
 });
@@ -184,7 +185,7 @@ test("Brent and LNG buttons swap in their series, bands and ranges", async ({ pa
 test("tab deep link via #hash", async ({ page }) => {
   await page.goto(`${PAGE}#tripwires`);
   await expect(page.locator("#panel-title")).toHaveText("What Would Move The Odds");
-  await expect(page.locator(".trip")).toHaveCount(13);
+  await expect(page.locator(".trip")).toHaveCount(15);
   await expect(page.locator(".trip").first()).toContainText("FIRED");
 });
 

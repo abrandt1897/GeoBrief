@@ -69,6 +69,12 @@ def num(v: str | None) -> float | None:
     return float(v) if v else None
 
 
+def outcome(v: str) -> float | str | None:
+    """Forecast outcome: 1, 0, "void" (not scored) or None (open)."""
+    v = v.strip()
+    return v if v == "void" else num(v)
+
+
 def numeric(rs: list[Row], text_cols: tuple[str, ...] = ("date", "source")) -> list[dict[str, str | float | None]]:
     return [{k: (v if k in text_cols else num(v)) for k, v in r.items()} for r in rs]
 
@@ -200,6 +206,131 @@ def check_war(odds: list[Row], latest_f: dict[str, Row]) -> list[str]:
     return []
 
 
+def band_segments(band: str) -> list[tuple[float, float, float]]:
+    """Parse a price band into (lo, hi, weight) segments with weights summing to 1.
+
+    A band is either "lo-hi" or weighted sub-ranges "lo-hi:w|lo-hi:w" (w = relative weight, e.g. the
+    pre-merge scenario odds), so a merged scenario keeps the price mix of the paths inside it.
+    """
+    band = band.strip()
+    if not band:
+        return []
+    segs: list[tuple[float, float, float]] = []
+    for part in band.split("|"):
+        rng, _, w = part.partition(":")
+        lo, _, hi = rng.partition("-")
+        segs.append((float(lo), float(hi), float(w) if w else 1.0))
+    total = sum(w for _, _, w in segs)
+    return [(lo, hi, w / total) for lo, hi, w in segs]
+
+
+def p_at_least(segs: list[tuple[float, float, float]], x: float) -> float:
+    """P(price >= x) for one scenario, uniform within each segment."""
+    p = 0.0
+    for lo, hi, w in segs:
+        if x <= lo:
+            p += w
+        elif x < hi:
+            p += w * (hi - x) / (hi - lo)
+    return p
+
+
+# Forecast id -> (scenarios.csv band column, ">=" or "<", threshold, offset added to the band price).
+# NYC metro lines use the national gas band plus the NYC premium.
+NYC_PREMIUM = 0.19
+PRICE_LINES: dict[str, tuple[str, str, float]] = {
+    "gas_nat_lt400": ("gas_band", "<", 4.00),
+    "gas_nat_450": ("gas_band", ">=", 4.50),
+    "gas_nat_475": ("gas_band", ">=", 4.75),
+    "gas_nat_500": ("gas_band", ">=", 5.00),
+    "gas_nyc_475": ("gas_band", ">=", 4.75 - NYC_PREMIUM),
+    "gas_nyc_500": ("gas_band", ">=", 5.00 - NYC_PREMIUM),
+    "gas_diesel_lt600": ("diesel_band", "<", 6.00),
+    "gas_diesel_650": ("diesel_band", ">=", 6.50),
+    "gas_diesel_675": ("diesel_band", ">=", 6.75),
+    "gas_diesel_700": ("diesel_band", ">=", 7.00),
+    "brent_lt90": ("brent_band", "<", 90),
+    "brent_100": ("brent_band", ">=", 100),
+    "brent_110": ("brent_band", ">=", 110),
+    "brent_120": ("brent_band", ">=", 120),
+    "lng_jkm_lt20": ("lng_band", "<", 20),
+    "lng_jkm_25": ("lng_band", ">=", 25),
+    "lng_jkm_28": ("lng_band", ">=", 28),
+    "lng_jkm_31": ("lng_band", ">=", 31),
+}
+
+
+def implied_price_line(odds: list[Row], scenarios: list[Row], fid: str) -> float | None:
+    """A Nov. 3 price line implied by the latest scenario odds and their bands, in percent."""
+    col, op, x = PRICE_LINES[fid]
+    nov = latest_odds(odds, "nov3")
+    bands = {s["scenario"]: s[col] for s in scenarios if s["horizon"] == "nov3"}
+    total = 0.0
+    for k, p in nov.items():
+        segs = band_segments(bands.get(k, ""))
+        if not segs:
+            return None
+        ge = p_at_least(segs, x)
+        total += p * (ge if op == ">=" else 1 - ge)
+    return total
+
+
+def check_price_lines(odds: list[Row], scenarios: list[Row], latest_f: dict[str, Row]) -> list[str]:
+    """Every Nov. 3 price forecast equals scenario odds x bands (rounded), so the bars and ranges agree."""
+    errors: list[str] = []
+    for fid in PRICE_LINES:
+        if fid not in latest_f:
+            continue
+        want = implied_price_line(odds, scenarios, fid)
+        if want is None:
+            errors.append(f"{fid}: a current nov3 scenario has no band for it")
+            continue
+        got = float(latest_f[fid]["p"])
+        if abs(got - want) > 1:
+            errors.append(f"forecasts.csv {fid} = {got:g}, but scenario odds x bands give {want:.1f}")
+    return errors
+
+
+def check_scenario_forecasts(odds: list[Row], latest_f: dict[str, Row]) -> list[str]:
+    """The scored scenario forecasts (scen_<horizon>_<scenario>) match the latest odds."""
+    errors: list[str] = []
+    for horizon in ("nov3", "ye2026"):
+        for k, p in latest_odds(odds, horizon).items():
+            fid = f"scen_{horizon}_{k}"
+            if fid not in latest_f:
+                errors.append(f"forecasts.csv has no {fid} row for the latest {horizon} odds")
+            elif float(latest_f[fid]["p"]) != p:
+                errors.append(f"forecasts.csv {fid} = {latest_f[fid]['p']} but odds.csv says {p:g}")
+    return errors
+
+
+def current_value(odds: list[Row], latest_f: dict[str, Row], key: str) -> float | None:
+    """A tripwire target's current value: a forecast id, or horizon:scenario from odds.csv."""
+    if ":" in key:
+        horizon, scen = key.split(":", 1)
+        return latest_odds(odds, horizon).get(scen)
+    return float(latest_f[key]["p"]) if key in latest_f else None
+
+
+def check_tripwires(odds: list[Row], latest_f: dict[str, Row], trips: list[Row]) -> list[str]:
+    """Armed tripwires must name targets that exist and would move them at least 2 points."""
+    errors: list[str] = []
+    for t in trips:
+        if t["status"] != "armed":
+            continue
+        if not t["targets"]:
+            errors.append(f"tripwires.csv {t['id']}: armed tripwire has no targets")
+            continue
+        for part in t["targets"].split(";"):
+            key, _, val = part.strip().partition("=")
+            cur = current_value(odds, latest_f, key)
+            if cur is None:
+                errors.append(f"tripwires.csv {t['id']}: unknown target {key}")
+            elif abs(float(val) - cur) < 2:
+                errors.append(f"tripwires.csv {t['id']}: target {key}={val} is within 2 of the current {cur:g}")
+    return errors
+
+
 def check(odds: list[Row], forecasts: list[Row], terms: list[Row], brief: Brief) -> list[str]:
     latest_f = latest_forecasts(forecasts)
     return (
@@ -207,6 +338,16 @@ def check(odds: list[Row], forecasts: list[Row], terms: list[Row], brief: Brief)
         + check_blink10(latest_f, brief)
         + check_deal(odds, latest_f, terms, brief)
         + check_war(odds, latest_f)
+    )
+
+
+def check_derived(odds: list[Row], forecasts: list[Row], scenarios: list[Row], trips: list[Row]) -> list[str]:
+    """Checks on numbers derived from the odds: price lines, scored scenarios and tripwire targets."""
+    latest_f = latest_forecasts(forecasts)
+    return (
+        check_price_lines(odds, scenarios, latest_f)
+        + check_scenario_forecasts(odds, latest_f)
+        + check_tripwires(odds, latest_f, trips)
     )
 
 
@@ -218,7 +359,7 @@ def render(brief: Brief, odds: list[Row], forecasts: list[Row], terms: list[Row]
         "gas": numeric(rows("gas.csv")),
         "markets": numeric(rows("markets.csv")),
         "energy": numeric(rows("energy.csv")),
-        "forecasts": [{**r, "p": float(r["p"]), "outcome": num(r["outcome"])} for r in forecasts],
+        "forecasts": [{**r, "p": float(r["p"]), "outcome": outcome(r["outcome"])} for r in forecasts],
         "tripwires": rows("tripwires.csv"),
         "terms": [{**t, "p": float(t["p"])} for t in terms],
         "blinks": rows("blinks.csv"),
@@ -260,7 +401,9 @@ def main() -> None:
     terms = rows("deal_terms.csv")
     brief = cast(Brief, json.loads((ROOT / "state" / "brief.json").read_text(encoding="utf-8")))
 
-    errors = check(odds, forecasts, terms, brief)
+    errors = check(odds, forecasts, terms, brief) + check_derived(
+        odds, forecasts, rows("scenarios.csv"), rows("tripwires.csv")
+    )
     for e in errors:
         print("CHECK FAILED:", e, file=sys.stderr)
     if errors:

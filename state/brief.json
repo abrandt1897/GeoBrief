@@ -1,20 +1,20 @@
 {
-  "updated": "2026-10-06",
-  "headline": "Will the War Resume Before the Midterms? Latest Odds",
+  "updated": "2026-10-07",
+  "headline": "Iran War Odds Through 2026",
   "status": "A Panama-flagged tanker, the On Peace, was hit by an unknown projectile in Hormuz, wounding 12 crew; no one claimed it. Qatar says US–Iran messages are still moving through Doha. Trump says the US must finish with Iran \"the nice way or the not-so-nice way.\" Houthis claimed strikes on Riyadh's airport and the Rabigh refinery; the East-West line is moving oil to Yanbu. Brent dipped below $100.",
-  "change_note": "Since Oct. 5: no change. No IRGC-claimed hit and no new Saudi- or UAE-linked ship struck. War by Nov. 3 holds at 60%.",
+  "change_note": "Oct. 7: escalated war re-scored on its 7-day rule (21% → 14%; Khurais was back within a day), and Limited war is now Limited war / Limbo. War by Nov. 3 (a confirmed, claimed strike by either side) holds at 60%. Year-end comprehensive deal 6% → 8%.",
   "bets": [
     {
-      "cond": "The IRGC claims a hit, lays mines or strikes infrastructure",
-      "effect": "War by Nov. 3 → ~60%"
+      "cond": "The IRGC officially claims a confirmed hit, lays mines or strikes infrastructure",
+      "effect": "War by Nov. 3 resolves yes; escalated ~18%"
     },
     {
       "cond": "Iran accepts US sequencing, or round two is set with text",
       "effect": "Year-end deal → ~23%"
     },
     {
-      "cond": "A strike hits the Fujairah/Sohar transfer zone, or the East-West line is offline for days",
-      "effect": "Gas ≥ $4.75 on Nov. 3 → ~17%"
+      "cond": "The East-West line or Yanbu is offline 3+ days",
+      "effect": "Escalated war → ~24%; gas ≥ $4.75 on Nov. 3 → ~17%"
     }
   ],
   "blink10": {

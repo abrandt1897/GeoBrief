@@ -28,7 +28,7 @@ SCHEMAS: dict[str, list[str]] = {
         "driver",
     ],
     "gas.csv": ["date", "nat_regular", "nat_diesel", "ny_regular", "ny_diesel", "nyc_regular", "nyc_diesel", "source"],
-    "markets.csv": ["date", "brent_ice_front", "dated_brent", "rial_per_usd", "source"],
+    "markets.csv": ["date", "brent_ice_front", "dated_brent", "dated_floor", "rial_per_usd", "source"],
     "energy.csv": ["date", "brent_front", "brent_spot", "jkm_front", "source"],
     "forecasts.csv": [
         "id",
@@ -41,7 +41,7 @@ SCHEMAS: dict[str, list[str]] = {
         "resolved_on",
         "notes",
     ],
-    "tripwires.csv": ["id", "condition", "effect", "status", "set_on", "fired_on", "evidence"],
+    "tripwires.csv": ["id", "condition", "effect", "status", "set_on", "fired_on", "evidence", "targets"],
     "deal_terms.csv": ["term", "p", "rubio"],
     "blinks.csv": ["date", "end_date", "label", "detail", "type"],
     "supply.csv": ["date", "series", "mbd", "kind", "source", "note"],
@@ -115,18 +115,20 @@ def test_odds_have_no_duplicate_scenarios_per_update() -> None:
         seen.add(key)
 
 
-def test_scenarios_have_valid_groups_and_gas_bands() -> None:
+BAND_SEG = re.compile(r"^\d+(\.\d+)?-\d+(\.\d+)?(:\d+(\.\d+)?)?$")
+
+
+def test_scenarios_have_valid_groups_and_bands() -> None:
+    limits = {"gas_band": (2, 8), "diesel_band": (2, 10), "brent_band": (30, 250), "lng_band": (3, 80)}
     for s in load("scenarios.csv"):
         assert s["group"] in {"limited_war", "escalated_war", "mou_deal", "comprehensive_deal", ""}
-        if s["gas_band"]:
-            lo, hi = (float(x) for x in s["gas_band"].split("-"))
-            assert 2 < lo < hi < 8, f"implausible gas band {s['gas_band']}"
-        if s["diesel_band"]:
-            lo, hi = (float(x) for x in s["diesel_band"].split("-"))
-            assert 2 < lo < hi < 10, f"implausible diesel band {s['diesel_band']}"
-        if s["lng_band"]:
-            lo, hi = (float(x) for x in s["lng_band"].split("-"))
-            assert 3 < lo < hi < 80, f"implausible LNG band {s['lng_band']}"
+        for col, (floor, ceil) in limits.items():
+            if not s[col]:
+                continue
+            for seg in s[col].split("|"):
+                assert BAND_SEG.match(seg), f"{s['scenario']} {col}: malformed segment {seg!r}"
+                lo, hi = (float(x) for x in seg.split(":")[0].split("-"))
+                assert floor < lo < hi < ceil, f"implausible {col} {s[col]}"
 
 
 def test_gas_one_row_per_date_and_plausible_prices() -> None:
@@ -159,7 +161,7 @@ def test_forecasts_valid_p_outcome_and_unique_versions() -> None:
     seen: set[tuple[str, str]] = set()
     for r in load("forecasts.csv"):
         assert 0 <= float(r["p"]) <= 100
-        assert r["outcome"] in {"", "0", "1"}, f"{r['id']}: outcome must be 0, 1 or blank"
+        assert r["outcome"] in {"", "0", "1", "void"}, f"{r['id']}: outcome must be 0, 1, void or blank"
         if r["outcome"]:
             assert is_date(r["resolved_on"]), f"{r['id']}: resolved forecast needs resolved_on"
         key = (r["id"], r["made_on"])
@@ -177,6 +179,7 @@ def test_tripwire_status_rules() -> None:
             assert t["evidence"], f"{t['id']}: fired tripwire needs evidence"
         if t["status"] == "armed":
             assert not t["fired_on"], f"{t['id']}: armed tripwire can't have fired_on"
+            assert t["targets"], f"{t['id']}: armed tripwire needs targets (id=p;horizon:scenario=p)"
 
 
 def test_deal_terms() -> None:
@@ -230,7 +233,7 @@ def test_supply_series_are_sourced_plausible_and_unique() -> None:
     seen: set[tuple[str, str]] = set()
     for r in rows:
         assert r["series"] in series, f"unknown series {r['series']!r}"
-        assert r["kind"] in {"baseline", "monthly", "daily", "7d", "estimate"}, f"bad kind {r['kind']!r}"
+        assert r["kind"] in {"baseline", "monthly", "daily", "7d", "estimate", "unconfirmed"}, f"bad kind {r['kind']!r}"
         assert 0 <= float(r["mbd"]) <= 25, f"{r['date']} {r['series']}: implausible {r['mbd']} mb/d"
         assert r["source"], f"{r['date']} {r['series']}: every reading needs a source"
         key = (r["date"], r["series"])

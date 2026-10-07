@@ -221,3 +221,65 @@ def test_main_check_only_writes_nothing(tmp_path: Path, monkeypatch: pytest.Monk
     monkeypatch.setattr("sys.argv", ["build.py", "--check"])
     build.main()
     assert not (tmp_path / "dist").exists()
+
+
+# ---------- price lines, scored scenarios, tripwires ----------
+
+SCEN: list[Row] = [
+    {"horizon": "nov3", "scenario": "limited_war", "gas_band": "4.40-4.60:3|4.00-4.20:1"},
+    {"horizon": "nov3", "scenario": "escalated_war", "gas_band": "4.60-5.00"},
+    {"horizon": "nov3", "scenario": "mou_deal", "gas_band": "3.90-4.10"},
+    {"horizon": "nov3", "scenario": "comprehensive_deal", "gas_band": "3.80-4.00"},
+]
+
+
+def test_band_segments_normalise_weights() -> None:
+    assert build.band_segments("4.40-4.60:3|4.00-4.20:1") == [(4.4, 4.6, 0.75), (4.0, 4.2, 0.25)]
+    assert build.band_segments("3.90-4.10") == [(3.9, 4.1, 1.0)]
+    assert build.band_segments("") == []
+
+
+def test_p_at_least_is_uniform_within_segments() -> None:
+    segs = build.band_segments("4.40-4.60:3|4.00-4.20:1")
+    assert build.p_at_least(segs, 4.5) == pytest.approx(0.375)
+    assert build.p_at_least(segs, 3.0) == pytest.approx(1.0)
+    assert build.p_at_least(segs, 5.0) == pytest.approx(0.0)
+
+
+def test_implied_price_line_weights_scenarios() -> None:
+    # limited 67 x 0.375 + escalated 21 x 1 = 46.1
+    assert build.implied_price_line(GOOD_ODDS, SCEN, "gas_nat_450") == pytest.approx(46.125)
+
+
+def test_price_line_check_flags_stale_forecast() -> None:
+    fc = build.latest_forecasts([forecast("gas_nat_450", 41)])
+    errs = build.check_price_lines(GOOD_ODDS, SCEN, fc)
+    assert len(errs) == 1
+    assert "gas_nat_450" in errs[0]
+    assert build.check_price_lines(GOOD_ODDS, SCEN, build.latest_forecasts([forecast("gas_nat_450", 46)])) == []
+
+
+def test_scenario_forecasts_must_match_odds() -> None:
+    fc = build.latest_forecasts([forecast(f"scen_{r['horizon']}_{r['scenario']}", float(r["p"])) for r in GOOD_ODDS])
+    assert build.check_scenario_forecasts(GOOD_ODDS, fc) == []
+    fc["scen_nov3_escalated_war"] = forecast("scen_nov3_escalated_war", 25)
+    assert any("scen_nov3_escalated_war" in e for e in build.check_scenario_forecasts(GOOD_ODDS, fc))
+
+
+def trip(targets: str, status: str = "armed") -> Row:
+    return {"id": "tw_x", "status": status, "targets": targets}
+
+
+def test_tripwire_targets_must_move_the_odds() -> None:
+    fc = build.latest_forecasts([forecast("war_nov3", 60)])
+    assert build.check_tripwires(GOOD_ODDS, fc, [trip("war_nov3=75;nov3:escalated_war=25")]) == []
+    assert any("within 2" in e for e in build.check_tripwires(GOOD_ODDS, fc, [trip("war_nov3=60")]))
+    assert any("unknown target" in e for e in build.check_tripwires(GOOD_ODDS, fc, [trip("nope=50")]))
+    assert any("no targets" in e for e in build.check_tripwires(GOOD_ODDS, fc, [trip("")]))
+    assert build.check_tripwires(GOOD_ODDS, fc, [trip("war_nov3=60", status="fired")]) == []
+
+
+def test_void_outcome_is_kept_as_text() -> None:
+    assert build.outcome("void") == "void"
+    assert build.outcome("1") == 1.0
+    assert build.outcome("") is None

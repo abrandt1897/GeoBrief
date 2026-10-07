@@ -56,10 +56,10 @@ GeoBrief/
 `date, nat_regular, nat_diesel, ny_regular, ny_diesel, nyc_regular, nyc_diesel, source`
 
 **forecasts.csv** — one row per resolvable claim
-`id, made_on, question, p, resolves_on, resolution_rule, outcome (1|0|blank), resolved_on, notes`
+`id, made_on, question, p, resolves_on, resolution_rule, outcome (1|0|void|blank), resolved_on, notes`
 
 - Same question re-forecast → new row, same `question`, new `made_on`. Never edit a past `p`.
-- Brier = mean((p − outcome)²) over resolved rows; also bucketed for a reliability plot.
+- Brier = mean((p − outcome)²) over the latest version of each resolved forecast (void excluded); also bucketed for a reliability plot.
 
 **tripwires.csv**
 `id, condition, effect, status (armed|fired|expired), set_on, fired_on, evidence`

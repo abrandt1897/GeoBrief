@@ -5,9 +5,9 @@
 /** @typedef {{ date: string, horizon: string, scenario: string, p: number, note: string }} OddsRow */
 /** @typedef {{ horizon: string, scenario: string, label: string, group: Group | "", gas_band: string, diesel_band: string, brent_band: string, lng_band: string, driver: string }} Scenario */
 /** @typedef {{ date: string, source: string, nat_regular: number | null, nat_diesel: number | null, ny_regular: number | null, ny_diesel: number | null, nyc_regular: number | null, nyc_diesel: number | null }} GasRow */
-/** @typedef {{ date: string, source: string, brent_ice_front: number | null, dated_brent: number | null, rial_per_usd: number | null }} MarketRow */
+/** @typedef {{ date: string, source: string, brent_ice_front: number | null, dated_brent: number | null, dated_floor: number | null, rial_per_usd: number | null }} MarketRow */
 /** @typedef {{ date: string, source: string, brent_front: number | null, brent_spot: number | null, jkm_front: number | null }} EnergyRow */
-/** @typedef {{ id: string, made_on: string, question: string, p: number, resolves_on: string, resolution_rule: string, outcome: number | null, resolved_on: string, notes: string }} Forecast */
+/** @typedef {{ id: string, made_on: string, question: string, p: number, resolves_on: string, resolution_rule: string, outcome: number | "void" | null, resolved_on: string, notes: string }} Forecast */
 /** @typedef {{ id: string, condition: string, effect: string, status: "armed" | "fired" | "expired", set_on: string, fired_on: string, evidence: string }} Tripwire */
 /** @typedef {{ term: string, p: number, rubio: string }} Term */
 /** @typedef {{ date: string, end_date: string, label: string, detail: string, type: "blink" | "non_blink" | "pending" | "unscored" }} Blink */
@@ -114,6 +114,15 @@
   };
   /** @param {string} tok @returns {string} */
   const cv = (tok) => `var(${tok})`;
+  /**
+   * Overall range of a price band: "lo-hi" or weighted sub-ranges "lo-hi:w|lo-hi:w".
+   * @param {string} band @returns {[number, number] | null}
+   */
+  const bandRange = (band) => {
+    if (!band) return null;
+    const segs = band.split("|").map((part) => (part.split(":")[0] ?? "").split("-").map(Number));
+    return [Math.min(...segs.map(([lo = 0]) => lo)), Math.max(...segs.map(([, hi = 0]) => hi))];
+  };
 
   /** @type {Record<Group, string>} */
   const GROUP_COLORS = {
@@ -126,7 +135,7 @@
   const colorOf = (k) => GROUP_COLORS[/** @type {Group} */ (k)] ?? "--muted";
   /** @type {Record<Group, string>} */
   const GROUP_NAMES = {
-    limited_war: "Limited war",
+    limited_war: "Limited war / Limbo",
     escalated_war: "Escalated war",
     mou_deal: "MOU-style deal",
     comprehensive_deal: "Comprehensive deal",
@@ -568,7 +577,7 @@
           ["brent_120", 120],
         ],
       ],
-      note: `${BANDS_NOTE} Bands and ranges are for the futures price. Futures are the ICE front month, the price most headlines quote; spot is EIA’s daily Europe Brent FOB, which prices physical cargoes now and runs well above futures when prompt barrels are scarce. EIA spot lags a few days.`,
+      note: `${BANDS_NOTE} Bands and ranges are for the January contract, the front month on Nov. 3 after December expires Oct. 30; they sit about $3 under December for backwardation. Futures are the ICE front month, the price most headlines quote; spot is EIA’s daily Europe Brent FOB, which prices physical cargoes now and runs well above futures when prompt barrels are scarce. EIA spot lags a few days.`,
     },
     lng: {
       label: "LNG",
@@ -587,7 +596,7 @@
           ["lng_jkm_31", 31],
         ],
       ],
-      note: `${BANDS_NOTE} JKM is the Asian spot LNG benchmark and the one most exposed to Hormuz, since Qatar ships about a fifth of the world’s LNG through it. The series is the continuous front-month future, so it steps when the contract rolls mid-month.`,
+      note: `${BANDS_NOTE} JKM is the Asian spot LNG benchmark and the one most exposed to Hormuz, since Qatar ships about a fifth of the world’s LNG through it. The series is the continuous front-month future, so it steps when the contract rolls mid-month; bands and ranges are for the December contract, the front month on Nov. 3.`,
     },
   };
   /** @type {Fuel} */
@@ -680,10 +689,11 @@
     return Object.keys(latest.v).flatMap((k) => {
       const s = meta.get(`nov3:${k}`);
       const p = latest.v[k] ?? 0;
-      const band = s ? field(s) : "";
-      if (!s || !band) return [];
-      const [lo = 0, hi = 0] = band.split("-").map(Number);
-      return [{ lo, hi, w: Math.max(6, p * 2.2), color: colorOf(k), title: `${s.label}: ${f(lo)}–${f(hi)} (${p}%)` }];
+      const range = s ? bandRange(field(s)) : null;
+      if (!s || !range) return [];
+      const [lo, hi] = range;
+      // Width scales with probability and fits the 92-unit gutter right of Election Day (100% → 88).
+      return [{ lo, hi, w: Math.max(6, p * 0.88), color: colorOf(k), title: `${s.label}: ${f(lo)}–${f(hi)} (${p}%)` }];
     });
   }
 
@@ -726,7 +736,10 @@
 
   /** @param {HTMLElement} el */
   function supplyPanel(el) {
-    const rowsS = D.supply.filter((r) => r.mbd != null).sort((a, b) => (a.date < b.date ? -1 : 1));
+    // Single-source readings stay in supply.csv for the record but aren't plotted until confirmed.
+    const rowsS = D.supply
+      .filter((r) => r.mbd != null && r.kind !== "unconfirmed")
+      .sort((a, b) => (a.date < b.date ? -1 : 1));
     const dates = [...new Set(rowsS.map((r) => r.date))];
     const lastDate = dates[dates.length - 1] ?? D.brief.updated;
     /** @type {Series[]} */
@@ -877,15 +890,17 @@
 
   /** @param {HTMLElement} el */
   function calPanel(el) {
-    const res = D.forecasts.filter((f) => f.outcome === 0 || f.outcome === 1);
+    // Score the latest version of each forecast once; void ones (unscorable or replaced) are left out.
+    const current = [...latestF.values()].filter((f) => f.outcome !== "void");
+    const res = current.filter((f) => f.outcome === 0 || f.outcome === 1);
     const brier = res.length
-      ? (res.reduce((a, f) => a + (f.p / 100 - (f.outcome ?? 0)) ** 2, 0) / res.length).toFixed(3)
+      ? (res.reduce((a, f) => a + (f.p / 100 - Number(f.outcome)) ** 2, 0) / res.length).toFixed(3)
       : "—";
     /** @type {Map<number, number[]>} */
     const buckets = new Map();
     for (const f of res) {
       const b = Math.min(9, Math.floor(f.p / 10));
-      buckets.set(b, [...(buckets.get(b) ?? []), f.outcome ?? 0]);
+      buckets.set(b, [...(buckets.get(b) ?? []), Number(f.outcome)]);
     }
     const dots = [...buckets]
       .map(([b, xs]) => {
@@ -893,8 +908,8 @@
         return `<circle cx="${30 + (b + 0.5) * 18}" cy="${190 - obs * 180}" r="${3 + Math.sqrt(xs.length) * 2}" style="fill:var(--war)"/>`;
       })
       .join("");
-    const open = D.forecasts.length - res.length;
-    const next = D.forecasts
+    const open = current.length - res.length;
+    const next = current
       .filter((f) => f.outcome == null)
       .map((f) => f.resolves_on)
       .sort()[0];
@@ -1072,20 +1087,25 @@
 
   // ---------- static sections ----------
   $("headline").textContent = D.brief.headline;
-  const daysLeft = day(election) - day(D.brief.updated);
-  $("dateline").textContent =
-    `Updated ${fmtDate(D.brief.updated)}, ${D.brief.updated.slice(0, 4)} · ${daysLeft} days to Election Day`;
+  // Count down from the reader's today (Eastern), not from the last update, so the number never goes stale.
+  const todayET = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  const daysLeft = day(election) - day(todayET);
+  const countdown =
+    daysLeft > 1
+      ? `${daysLeft} days to Election Day`
+      : daysLeft === 1
+        ? "1 day to Election Day"
+        : daysLeft === 0
+          ? "Election Day"
+          : "Election Day has passed";
+  $("dateline").textContent = `Updated ${fmtDate(D.brief.updated)}, ${D.brief.updated.slice(0, 4)} · ${countdown}`;
   $("status").textContent = D.brief.status;
   $("change-note").textContent = D.brief.change_note;
   $("scen-body").innerHTML = keysByP(latest.v)
     .map((k) => {
       const s = scen("nov3", k);
-      const band = s.gas_band
-        ? `$${s.gas_band
-            .split("-")
-            .map((v) => Number(v).toFixed(2))
-            .join("–")}`
-        : "—";
+      const range = bandRange(s.gas_band);
+      const band = range ? `$${range.map((v) => v.toFixed(2)).join("–")}` : "—";
       return `<tr><td style="font-weight:600"><span style="display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:8px;background:${cv(colorOf(k))}"></span>${esc(s.label)}</td><td class="num"><span class="pill" style="background:${cv(colorOf(k))}">${latest.v[k] ?? 0}%</span></td><td style="white-space:nowrap">${band}</td><td>${esc(s.driver)}</td></tr>`;
     })
     .join("");
@@ -1146,10 +1166,25 @@
   const natP = nth(natR, 1);
   const nyc = nth(readings(gasRows, (r) => r.nyc_regular));
   const dsl = nth(readings(gasRows, (r) => r.nat_diesel));
-  const brR = readings(mkRows, (r) => r.brent_ice_front);
+  // Brent: daily settles in energy.csv (the chart's series), not the occasional markets.csv readings.
+  const brR = readings(enRows, (r) => r.brent_front);
   const br = nth(brR);
   const brP = nth(brR, 1);
-  const dated = nth(readings(mkRows, (r) => r.dated_brent));
+  // Physical price: the newer of a Dated Brent reading (markets.csv, possibly a floor) and EIA spot (energy.csv).
+  const datedM = mkRows.filter((r) => r.dated_brent != null).pop();
+  const spotE = enRows.filter((r) => r.brent_spot != null).pop();
+  const phys =
+    datedM && (!spotE || datedM.date >= spotE.date)
+      ? { date: datedM.date, v: Number(datedM.dated_brent), floor: Boolean(datedM.dated_floor), name: "DATED BRENT" }
+      : spotE
+        ? { date: spotE.date, v: Number(spotE.brent_spot), floor: false, name: "BRENT SPOT" }
+        : null;
+  const futOn = phys
+    ? readings(enRows, (r) => r.brent_front)
+        .filter((r) => r.date <= phys.date)
+        .pop()
+    : null;
+  const warF = latestF.get("war_nov3");
   const rial = nth(readings(mkRows, (r) => r.rial_per_usd));
   const tw = { armed: 0, fired: 0, expired: 0 };
   for (const t of D.tripwires) tw[t.status]++;
@@ -1158,8 +1193,18 @@
     ["ESCALATED WAR BY NOV. 3", `${Math.round(escNow)}%`, delta(escNow, gPrev?.escalated_war, 0)],
     ["DEAL BY YE", `${D.brief.deal_p.ye2026}%`, ["", ""]],
   ];
+  if (warF) items.unshift(["WAR BY NOV. 3", `${warF.p}%`, ["", ""]]);
   if (br) items.push(["BRENT", `$${br.v.toFixed(2)}`, delta(br.v, brP?.v, 2)]);
-  if (dated) items.push(["DATED BRENT", `>$${dated.v.toFixed(0)}`, ["SQUEEZE", "var(--tick-up)"]]);
+  if (phys) {
+    const gap = futOn ? phys.v - futOn.v : null;
+    items.push([
+      `${phys.name} (${fmtDate(phys.date).toUpperCase()})`,
+      `${phys.floor ? ">" : ""}$${phys.v.toFixed(0)}`,
+      gap != null && gap >= 5
+        ? [`${phys.floor ? "AT LEAST " : ""}$${gap.toFixed(0)} OVER FUTURES`, "var(--tick-up)"]
+        : ["", ""],
+    ]);
+  }
   if (nat) items.push(["AAA NATIONAL", `$${nat.v.toFixed(2)}`, delta(nat.v, natP?.v, 2)]);
   if (nyc) items.push(["NYC METRO", `$${nyc.v.toFixed(2)}`, ["", ""]]);
   if (dsl) items.push(["DIESEL", `$${dsl.v.toFixed(2)}`, ["", ""]]);
