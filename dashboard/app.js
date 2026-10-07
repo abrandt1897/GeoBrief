@@ -552,7 +552,7 @@
     },
     brent: {
       label: "Brent",
-      unit: "ICE Brent futures and EIA Brent spot, $ per barrel",
+      unit: "Brent front-month futures (Trading Economics) and EIA Brent spot, $ per barrel",
       chartLabel: "Brent crude futures and spot prices with Nov. 3 scenario price bands",
       lines: () => [
         { name: "Brent futures", color: "--fg", pts: readings(enRows, (r) => r.brent_front) },
@@ -576,7 +576,7 @@
           ["brent_120", 120],
         ],
       ],
-      note: `${BANDS_NOTE} Bands and ranges are for the January contract, the front month on Nov. 3 after December expires Oct. 30; they sit about $3 under December for backwardation. Futures are the ICE front month, the price most headlines quote; spot is EIA’s daily Europe Brent FOB, which prices physical cargoes now and runs well above futures when prompt barrels are scarce. EIA spot lags a few days.`,
+      note: `${BANDS_NOTE} Bands and ranges are for the January contract, the front month on Nov. 3 after December expires Oct. 30; they sit about $3 under December for backwardation. Futures are the front month as Trading Economics shows it, the price most headlines quote; spot is EIA’s daily Europe Brent FOB, which prices physical cargoes now and runs well above futures when prompt barrels are scarce. EIA spot lags a few days.`,
     },
     lng: {
       label: "LNG",

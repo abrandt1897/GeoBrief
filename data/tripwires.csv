@@ -1,16 +1,16 @@
 id,condition,effect,status,set_on,fired_on,evidence,targets
 tw_reject,Iran formally rejects the counter or mediators declare talks suspended,Nov 3 war ~60%,fired,2026-09-30,2026-10-04,Partial: Baghaei soft rejection (strait first; no nuclear talks). Applied ~+2 war.,
 tw_accept,"Iran formally accepts US sequencing, or round two is scheduled with text",Year-end deal ~23%; war by Nov. 3 ~51%; MOU-style by Nov. 3 ~16%,armed,2026-10-04,,,deal_ye2026=23;war_nov3=51;nov3:mou_deal=16
-tw_irgc_claim,"IRGC officially claims a confirmed hit, lays mines, or strikes infrastructure",War by Nov. 3 resolves yes; escalated ~18%,armed,2026-10-04,,,war_nov3=100;nov3:escalated_war=18
+tw_irgc_claim,"IRGC officially claims a confirmed hit, lays mines, or strikes infrastructure",War by Nov. 3 resolves yes; escalated ~10%,armed,2026-10-04,,,war_nov3=100;nov3:escalated_war=10
 tw_saudi_infra,Iranian or proxy hit on Yanbu/East-West/Abqaiq confirmed (not intercepted),Infra hit ~14%; Nov 3 >= $4.75 ~16%,fired,2026-10-04,2026-10-05,Houthi-claimed strike on Khurais PS-2 (East-West line) Oct 4; satellite-confirmed large fire. Brief halt confirmed; flow status contested (AFP: stopped; Bloomberg/Reuters: flowing) — leans flowing,
-tw_saudi_ship,Saudi shuttle or STS-loop ship hit,War by Nov. 3 ~72%; escalated ~19%,armed,2026-10-04,,,war_nov3=72;nov3:escalated_war=19
+tw_saudi_ship,Saudi shuttle or STS-loop ship hit,War by Nov. 3 ~72%; escalated ~10%,armed,2026-10-04,,,war_nov3=72;nov3:escalated_war=10
 tw_uae_third,Third UAE-linked hit or Fujairah/Sohar STS-zone strike,"Infra +2, half-open -2",fired,2026-10-04,2026-10-05,"Vanguard (via Seatrade, Oct 5): Panama-flagged products tanker Uhud, managed by Emirates Shipping (UAE; reg. owner Master Energy), hit outbound Oct 2, continued to Fujairah. 3rd UAE-linked after Cape Dao and Al Ruwais. Unclaimed.",
 tw_kpler,Kpler monthly Hormuz crude >12 Mbd in Oct,Gas ≥ $4.50 on Nov. 3 ~32%; MOU-style ~14%,armed,2026-10-04,,,gas_nat_450=32;nov3:mou_deal=14
-tw_bombers,"B-1Bs reappear at Diego Garcia/Gulf, or B-2/B-52s forward-deploy",Blink #10 no-blink ~48%; escalated by Nov. 3 ~17%,armed,2026-10-04,,,blink10_noblink=48;nov3:escalated_war=17
-tw_carriers,"GHWB returns to the AOR while TR arrives (3 on station), or Diego Garcia bombers",Blink #10 no-blink ~48%; escalated by Nov. 3 ~17%,armed,2026-10-04,,,blink10_noblink=48;nov3:escalated_war=17
+tw_bombers,"B-1Bs reappear at Diego Garcia/Gulf, or B-2/B-52s forward-deploy",Blink #10 no-blink ~48%; escalated by Nov. 3 ~10%,armed,2026-10-04,,,blink10_noblink=48;nov3:escalated_war=10
+tw_carriers,"GHWB returns to the AOR while TR arrives (3 on station), or Diego Garcia bombers",Blink #10 no-blink ~48%; escalated by Nov. 3 ~10%,armed,2026-10-04,,,blink10_noblink=48;nov3:escalated_war=10
 tw_blockade,US blockade easing,MOU-style by Nov. 3 ~19%; before signing = Blink #10,armed,2026-10-04,,,nov3:mou_deal=19
 tw_meeting,Trump–Pezeshkian meeting,MOU-style by Nov. 3 ~14%; year-end deal ~18%,armed,2026-10-04,,,nov3:mou_deal=14;deal_ye2026=18
-tw_us_deaths,"CENTCOM-confirmed US deaths from an Iranian attack, or a US strike on Pickaxe",War by Nov. 3 ~90% (a US strike resolves it); escalated ~25%,armed,2026-10-04,,,war_nov3=90;nov3:escalated_war=25
+tw_us_deaths,"CENTCOM-confirmed US deaths from an Iranian attack, or a US strike on Pickaxe",War by Nov. 3 ~90% (a US strike resolves it); escalated ~13%,armed,2026-10-04,,,war_nov3=90;nov3:escalated_war=13
 tw_rezaei,"Rezaei ""4-5 days"" window (to Sep 28-29)",IRGC-claimed escalation,expired,2026-09-23,,Window passed: four unclaimed hits but no claimed escalation step.,
-tw_eastwest_offline,"East-West line or Yanbu loadings offline 3+ days (confirmed by Kpler, Vortexa or TankerTrackers)",Escalated by Nov. 3 ~24% (7+ days resolves it); gas ≥ $4.75 ~17%,armed,2026-10-07,,,nov3:escalated_war=24;gas_nat_475=17
-tw_sts_strike,Strike in the Fujairah/Sohar STS zone,Escalated by Nov. 3 ~17%; war by Nov. 3 ~66%,armed,2026-10-07,,,nov3:escalated_war=17;war_nov3=66
+tw_eastwest_offline,"East-West line or Yanbu loadings offline 3+ days (confirmed by Kpler, Vortexa or TankerTrackers)","Escalated by Nov. 3 ~10% (a pipeline outage alone doesn't count; a Yanbu terminal hit out 7+ days does); gas ≥ $4.75 ~17%",armed,2026-10-07,,,nov3:escalated_war=10;gas_nat_475=17
+tw_sts_strike,Strike in the Fujairah/Sohar STS zone,Escalated by Nov. 3 ~11%; war by Nov. 3 ~66%,armed,2026-10-07,,,nov3:escalated_war=11;war_nov3=66
