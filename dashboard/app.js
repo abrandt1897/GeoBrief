@@ -53,7 +53,7 @@
 /** @typedef {{ v: number, value: string, name: string, color: string, boxW: number }} EndLabel */
 /** @typedef {{ lo: number, hi: number, w: number, color: string, title: string }} Band */
 /** @typedef {{ date: string, text: string }} Annotation */
-/** @typedef {{ date: string, text: string, note: string }} Marker */
+/** @typedef {{ date: string, note: string }} Marker */
 /**
  * @typedef {object} ChartOpts
  * @property {string} label
@@ -70,7 +70,7 @@
  * @property {Annotation[]} [annotations]
  * @property {string | null} [endMark] label for the dashed line at the right edge (default "Election Day"; null for none)
  * @property {Annotation[]} [vlines] labelled vertical markers drawn inside the plot
- * @property {Marker[]} [markers] subtle dashed markers (re-scores) with a small label and a hover note
+ * @property {Marker[]} [markers] faint unlabelled dashed lines (re-scores); the readout gives the note
  * @property {number} [annoRows] rows the annotation captions cycle through (default 2)
  * @property {number} [maxGap] break a line where consecutive readings are more than this many days apart
  */
@@ -281,20 +281,10 @@
       h += `<line x1="${X(v.date)}" x2="${X(v.date)}" y1="${T}" y2="${B}" style="stroke:var(--war)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
       h += `<text x="${X(v.date) + 6}" y="${T + 16}" font-size="13" font-weight="700" style="fill:var(--war)">${esc(v.text)}</text>`;
     }
-    // Re-score markers: the dashed line sits under the series; its label goes on top (after the hit area) so
-    // hovering it shows the note. The label sits right of the line, or left of it when the marker is on the
-    // latest date (the end labels live right of that) or would run past the plot; never outside [L, R].
-    let markerTop = "";
+    // Re-score markers: a faint dashed line under the series, no label; the readout for that date gives the note.
     for (const mk of o.markers ?? []) {
       const mx = Math.max(L, Math.min(R, X(mk.date)));
-      const lw = mk.text.length * 8.4 + 4;
-      const right = Math.abs(mx - lastX) < 1 ? mx - 5 - lw < L : mx + 5 + lw <= R;
-      const tx = right ? mx + 5 : mx - 5;
       h += `<line class="rescore-line" x1="${mx}" x2="${mx}" y1="${T}" y2="${B}" style="stroke:var(--muted)" stroke-width="1.25" stroke-dasharray="2 4"/>`;
-      markerTop +=
-        `<g class="rescore" data-date="${esc(mk.date)}"><title>${esc(`${fmtDate(mk.date)}: ${mk.note}`)}</title>` +
-        `<rect x="${right ? mx : mx - lw - 10}" y="${T}" width="${lw + 10}" height="22" fill="transparent"/>` +
-        `<text x="${tx}" y="${T + 15}" font-size="12" font-weight="700" letter-spacing="0.06em" text-anchor="${right ? "start" : "end"}" paint-order="stroke" style="fill:var(--muted);stroke:var(--panel);stroke-width:4px;stroke-linejoin:round">${esc(mk.text)}</text></g>`;
     }
     for (const b of o.bands ?? []) {
       h += `<rect x="${R + 8}" y="${Y(b.hi)}" width="${b.w}" height="${Y(b.lo) - Y(b.hi)}" style="fill:${cv(b.color)}" fill-opacity=".9"><title>${esc(b.title)}</title></rect>`;
@@ -342,7 +332,6 @@
     }
     h += `<g class="hover" style="display:none"><line y1="${T}" y2="${B}" style="stroke:var(--fg)" stroke-dasharray="2 3"/></g>`;
     h += `<rect class="hit" x="${L}" y="${T - 14}" width="${R - L}" height="${B - T + 14}" fill="transparent"/>`;
-    h += markerTop;
     svg.innerHTML = h;
     host.appendChild(svg);
 
@@ -389,7 +378,7 @@
       });
       const notes = (o.markers ?? [])
         .filter((mk) => mk.date === d)
-        .map((mk) => `<div class="tip-note">${esc(mk.text)}: ${esc(mk.note)}</div>`)
+        .map((mk) => `<div class="tip-note">Re-scored: ${esc(mk.note)}</div>`)
         .join("");
       tip.innerHTML = `<b>${fmtDate(d)}</b>${rowsHtml || '<div class="muted">No reading</div>'}${notes}`;
       tip.hidden = false;
@@ -526,12 +515,12 @@
       endMark: o.endMark,
       markers: rescoresFor(o.horizon)
         .filter((r) => r.date >= start && r.date <= cur.date)
-        .map((r) => ({ date: r.date, text: "RE-SCORED", note: r.note })),
+        .map((r) => ({ date: r.date, note: r.note })),
     });
   }
 
   const RESCORE_NOTE =
-    "A dashed RE-SCORED line marks a day the odds moved because a scenario definition changed, not because of news; hover it for the reason. Definitions were settled on Oct. 7 and odds on earlier definitions were removed, so the lines start there.";
+    "A faint dashed line marks a day the odds moved because a scenario definition changed, not because of news; the readout for that day gives the reason. Definitions were settled on Oct. 7 and odds on earlier definitions were removed, so the lines start there.";
 
   /** @param {HTMLElement} el */
   function oddsPanel(el) {
@@ -807,12 +796,12 @@
 
   /** Physical-supply data sources; the button picks which one the Gulf and Hormuz lines use. */
   const SUPPLY_SOURCES = {
-    iea: { label: "IEA", unit: "IEA total oil: crude, NGLs and products." },
     kpler: { label: "Kpler", unit: "Kpler crude only." },
+    iea: { label: "IEA", unit: "IEA total oil: crude, NGLs and products." },
   };
   /** @typedef {keyof typeof SUPPLY_SOURCES} SupplySource */
   /** @type {SupplySource} */
-  let supplySource = "iea";
+  let supplySource = "kpler";
 
   /**
    * Physical-supply series in draw order; the colour follows the series, never its rank.

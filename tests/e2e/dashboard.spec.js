@@ -126,9 +126,7 @@ const SCENARIO_CHARTS = [
   ["yearend", "ye2026"],
 ];
 for (const [tab, horizon] of SCENARIO_CHARTS) {
-  test(`${tab} chart: a dashed RE-SCORED marker per re-score, inside the plot, with the note on hover`, async ({
-    page,
-  }) => {
+  test(`${tab} chart: an unlabelled dashed line per re-score, with the note in the readout`, async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto(`${PAGE}#${tab}`);
     const dates = oddsDates(horizon);
@@ -137,22 +135,10 @@ for (const [tab, horizon] of SCENARIO_CHARTS) {
     const start = Math.min(dayOf(dates[0] ?? last), dayOf(last) - 35);
     const want = rescoresFor(horizon).filter((r) => dayOf(r.date) >= start && r.date <= last);
     const svg = page.locator("#panel svg");
-    const marks = svg.locator("g.rescore");
-    await expect(marks).toHaveCount(want.length);
+    await expect(svg.locator("g.rescore")).toHaveCount(0);
+    await expect(svg).not.toContainText("RE-SCORED");
     await expect(svg.locator("line.rescore-line")).toHaveCount(want.length);
     await expect(svg.locator("line.rescore-line").first()).toHaveAttribute("stroke-dasharray", /\d/);
-    const svgBox = await svg.boundingBox();
-    if (!svgBox) throw new Error("chart not rendered");
-    for (const [i, r] of want.entries()) {
-      const m = marks.nth(i);
-      await expect(m).toHaveAttribute("data-date", r.date);
-      await expect(m.locator("text")).toHaveText("RE-SCORED");
-      expect(await m.locator("title").textContent()).toContain(r.note);
-      const b = await m.locator("text").boundingBox();
-      if (!b) throw new Error("marker label not rendered");
-      expect(b.x).toBeGreaterThanOrEqual(svgBox.x);
-      expect(b.x + b.width).toBeLessThanOrEqual(svgBox.x + svgBox.width);
-    }
     // The chart's readout for a re-scored date carries the note too (for touch and keyboard readers).
     const scored = want.find((r) => r.date === last);
     if (scored) {
@@ -208,14 +194,16 @@ for (const [id, title] of TABS) {
   });
 }
 
-test("physical supply chart switches source, shows the war start and the latest supply note", async ({ page }) => {
+test("physical supply chart defaults to Kpler, switches source, shows the war start and the latest supply note", async ({
+  page,
+}) => {
   const errors = collectErrors(page);
   await page.goto(`${PAGE}#supply`);
   await expect(page.locator("#panel-title")).toHaveText("How Much Oil Is Getting Out");
   await expect(page.locator(".legend > span")).toHaveCount(3);
-  await expect(page.locator("#src-iea")).toHaveAttribute("aria-pressed", "true");
-  await page.click("#src-kpler");
   await expect(page.locator("#src-kpler")).toHaveAttribute("aria-pressed", "true");
+  await page.click("#src-iea");
+  await expect(page.locator("#src-iea")).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator(".legend > span")).toHaveCount(3);
   await expect(page.locator("#panel svg")).toContainText("War begins");
   await expect(page.locator(".annos > div")).toHaveCount(0);

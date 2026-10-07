@@ -418,10 +418,6 @@ main {
   font-size: 12px;
 }
 
-.chart svg g.rescore {
-  cursor: help;
-}
-
 .tip span.k::before {
   content: "";
   display: inline-block;
