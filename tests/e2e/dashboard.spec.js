@@ -123,7 +123,8 @@ test("physical supply chart shows five series, the war start and the latest supp
   await expect(page.locator("#panel-title")).toHaveText("How Much Oil Is Getting Out");
   await expect(page.locator(".legend > span")).toHaveCount(5);
   await expect(page.locator("#panel svg")).toContainText("War begins");
-  await expect(page.locator(".annos > div").first()).toBeVisible();
+  await expect(page.locator(".annos > div")).toHaveCount(0);
+  await expect(page.locator("#panel-dek")).toBeHidden();
   await expect(page.locator(".supply-note h3")).not.toBeEmpty();
   await expect(page.locator(".supply-note details")).not.toHaveAttribute("open");
   await page.click(".supply-note summary");

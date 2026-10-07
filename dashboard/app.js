@@ -773,7 +773,6 @@
       `<div class="controls"><div style="font-size:13px" class="muted">Million barrels a day. Monthly averages are plotted mid-month; dots are individual readings.</div></div>` +
       legend +
       '<div class="chart" style="margin-top:30px"></div>' +
-      '<div class="note">Two bases, never mixed on one line: IEA counts total oil (crude, NGLs and products), Kpler counts crude only, so IEA runs higher. "Gulf exports" covers every route; "Hormuz" is only what passes the strait; the East-West pipeline carries Saudi crude to Yanbu on the Red Sea, bypassing it. Every point carries its source and vintage (hover or tap); revised figures replace preliminary ones (Kpler Sept. went from 12.8 to 16.3). Dots are readings; the lines between them are straight connections, not data, so a long stretch between dots (Hormuz May–July, the pipeline May–August) has no reading behind it. Totals did not dip during the Sept. 11–22 pipeline shutdown: Saudi Arabia rerouted crude through Hormuz (Ras Tanura and Juaymah loadings reached ~4 mb/d within a week; Saudi loadings hit 8.8 mb/d in the week to Sept. 27, per Kpler), which is why the Hormuz lines climb as the pipeline line drops to zero. The Oct. 4 Khurais strike is not plotted because its effect on flow is contested.</div>' +
       note;
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
       label: "Line chart of Gulf crude exports, Hormuz flows and Saudi East-West pipeline throughput since January",
@@ -787,8 +786,6 @@
       yFmt: (v, tip) => (tip ? `${v.toFixed(1)} mb/d` : v === ticks[ticks.length - 1] ? `${v} mb/d` : `${v}`),
       endMark: null,
       vlines: [{ date: WAR_START, text: "War begins" }],
-      annotations: D.supply_events.filter((e) => e.date !== WAR_START).map((e) => ({ date: e.date, text: e.label })),
-      annoRows: 4,
       tipExtra: (d) =>
         rowsS
           .filter((r) => r.date === d)
@@ -941,7 +938,7 @@
       id: "supply",
       label: "Physical Supply",
       title: "How Much Oil Is Getting Out",
-      dek: "Gulf crude exports, flows through the Strait of Hormuz and Saudi Arabia's East-West bypass pipeline, from January through the war. Ship counts aren't barrels, and a daily snapshot isn't a monthly average.",
+      dek: "",
       render: supplyPanel,
     },
     {
@@ -1006,6 +1003,7 @@
     $("panel-sub").textContent = cur.sub ?? "";
     $("panel-sub").hidden = !cur.sub;
     $("panel-dek").textContent = cur.dek;
+    $("panel-dek").hidden = !cur.dek;
     const p = $("panel");
     p.innerHTML = "";
     cur.render(p);
