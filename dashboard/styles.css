@@ -234,12 +234,6 @@ main {
   max-width: 820px;
 }
 
-.lede p {
-  margin: 0;
-  font-size: 19px;
-  max-width: 68ch;
-}
-
 .dateline {
   font-family: var(--sans);
   font-size: 15px;

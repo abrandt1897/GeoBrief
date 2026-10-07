@@ -1109,7 +1109,6 @@
           ? "Election Day"
           : "Election Day has passed";
   $("dateline").textContent = `Updated ${fmtDate(D.brief.updated)}, ${D.brief.updated.slice(0, 4)} · ${countdown}`;
-  $("status").textContent = D.brief.status;
   $("change-note").textContent = D.brief.change_note;
   $("scen-body").innerHTML = keysByP(latest.v)
     .map((k) => {
