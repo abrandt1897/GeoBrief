@@ -34,21 +34,21 @@ GeoBrief is a flat-file repo. Text and CSV files are the database, one Python sc
 
 ## Sources of truth
 
-| File                                             | Read by build? | Role                                                                                                  |
-| ------------------------------------------------ | -------------- | ----------------------------------------------------------------------------------------------------- |
-| `state/brief.json`                               | yes            | Top-of-page text and headline numbers; typed as `Brief` in `build.py`                                 |
-| `data/odds.csv`                                  | yes            | Scenario probabilities per update date and horizon (`nov3`, `ye2026`)                                 |
-| `data/scenarios.csv`                             | yes            | Scenario labels, groups, gas and Brent bands; `group` maps pre-Oct 6 scenarios onto the current four  |
-| `data/forecasts.csv`                             | yes            | Every resolvable forecast; latest row per `id` wins; outcomes feed calibration                        |
-| `data/deal_terms.csv`                            | yes            | P(term \| deal), with Rubio-term flags                                                                |
-| `data/gas.csv`, `data/markets.csv`               | yes            | AAA prices; Brent, Dated Brent, rial                                                                  |
-| `data/energy.csv`                                | yes            | Daily ICE Brent front month, EIA Brent spot and JKM LNG front month for the Brent and LNG charts      |
-| `data/supply.csv`, `supply_events.csv`           | yes            | Physical supply series and chart markers                                                              |
-| `data/tripwires.csv`, `data/blinks.csv`          | yes            | Tripwire board; TACO history                                                                          |
-| `log/events.md`                                  | yes            | Parsed as `- YYYY-MM-DD \| text [chart: label]`; older `[chart:]` tags are parsed but no longer drawn |
-| `log/physical-supply.md`                         | yes            | Only the last level-2 section, rendered to HTML as the supply note                                    |
-| `state/current.md`, `taco.md`, `deal-tracker.md` | no             | Reasoning for humans and Claude; must agree with the CSVs but aren't parsed                           |
-| `skill/SKILL.md`                                 | no             | Mirror of the `geo-brief` skill (method only), kept here for versioning                               |
+| File                                             | Read by build? | Role                                                                                                      |
+| ------------------------------------------------ | -------------- | --------------------------------------------------------------------------------------------------------- |
+| `state/brief.json`                               | yes            | Top-of-page text and headline numbers; typed as `Brief` in `build.py`                                     |
+| `data/odds.csv`                                  | yes            | Scenario probabilities per update date and horizon (`nov3`, `ye2026`)                                     |
+| `data/scenarios.csv`                             | yes            | Scenario labels, groups, gas, diesel, Brent and LNG bands; `group` maps pre-Oct 6 scenarios onto the four |
+| `data/forecasts.csv`                             | yes            | Every resolvable forecast; latest row per `id` wins; outcomes feed calibration                            |
+| `data/deal_terms.csv`                            | yes            | P(term \| deal), with Rubio-term flags                                                                    |
+| `data/gas.csv`, `data/markets.csv`               | yes            | AAA prices; Brent, Dated Brent, rial                                                                      |
+| `data/energy.csv`                                | yes            | Daily ICE Brent front month, EIA Brent spot and JKM LNG front month for the Brent and LNG charts          |
+| `data/supply.csv`, `supply_events.csv`           | yes            | Physical supply series and chart markers                                                                  |
+| `data/tripwires.csv`, `data/blinks.csv`          | yes            | Tripwire board; TACO history                                                                              |
+| `log/events.md`                                  | yes            | Parsed as `- YYYY-MM-DD \| text [chart: label]`; older `[chart:]` tags are parsed but no longer drawn     |
+| `log/physical-supply.md`                         | yes            | Only the last level-2 section, rendered to HTML as the supply note                                        |
+| `state/current.md`, `taco.md`, `deal-tracker.md` | no             | Reasoning for humans and Claude; must agree with the CSVs but aren't parsed                               |
+| `skill/SKILL.md`                                 | no             | Mirror of the `geo-brief` skill (method only), kept here for versioning                                   |
 
 ## Build (`dashboard/build.py`)
 

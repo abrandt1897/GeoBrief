@@ -1011,15 +1011,3 @@ footer.method {
     border-color: var(--fg);
   }
 }
-
-.subchart {
-  margin-top: 40px;
-  padding-top: 20px;
-  border-top: 1px solid var(--rule);
-}
-
-.subchart h3 {
-  margin: 0 0 4px;
-  font-family: var(--sans);
-  font-size: 19px;
-}

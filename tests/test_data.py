@@ -16,7 +16,17 @@ ISO = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 SCHEMAS: dict[str, list[str]] = {
     "odds.csv": ["date", "horizon", "scenario", "p", "note"],
-    "scenarios.csv": ["horizon", "scenario", "label", "group", "gas_band", "diesel_band", "brent_band", "driver"],
+    "scenarios.csv": [
+        "horizon",
+        "scenario",
+        "label",
+        "group",
+        "gas_band",
+        "diesel_band",
+        "brent_band",
+        "lng_band",
+        "driver",
+    ],
     "gas.csv": ["date", "nat_regular", "nat_diesel", "ny_regular", "ny_diesel", "nyc_regular", "nyc_diesel", "source"],
     "markets.csv": ["date", "brent_ice_front", "dated_brent", "rial_per_usd", "source"],
     "energy.csv": ["date", "brent_front", "brent_spot", "jkm_front", "source"],
@@ -114,6 +124,9 @@ def test_scenarios_have_valid_groups_and_gas_bands() -> None:
         if s["diesel_band"]:
             lo, hi = (float(x) for x in s["diesel_band"].split("-"))
             assert 2 < lo < hi < 10, f"implausible diesel band {s['diesel_band']}"
+        if s["lng_band"]:
+            lo, hi = (float(x) for x in s["lng_band"].split("-"))
+            assert 3 < lo < hi < 80, f"implausible LNG band {s['lng_band']}"
 
 
 def test_gas_one_row_per_date_and_plausible_prices() -> None:

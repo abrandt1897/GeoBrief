@@ -3,7 +3,7 @@
 
 /** @typedef {"limited_war" | "escalated_war" | "mou_deal" | "comprehensive_deal"} Group */
 /** @typedef {{ date: string, horizon: string, scenario: string, p: number, note: string }} OddsRow */
-/** @typedef {{ horizon: string, scenario: string, label: string, group: Group | "", gas_band: string, diesel_band: string, brent_band: string, driver: string }} Scenario */
+/** @typedef {{ horizon: string, scenario: string, label: string, group: Group | "", gas_band: string, diesel_band: string, brent_band: string, lng_band: string, driver: string }} Scenario */
 /** @typedef {{ date: string, source: string, nat_regular: number | null, nat_diesel: number | null, ny_regular: number | null, ny_diesel: number | null, nyc_regular: number | null, nyc_diesel: number | null }} GasRow */
 /** @typedef {{ date: string, source: string, brent_ice_front: number | null, dated_brent: number | null, rial_per_usd: number | null }} MarketRow */
 /** @typedef {{ date: string, source: string, brent_front: number | null, brent_spot: number | null, jkm_front: number | null }} EnergyRow */
@@ -486,65 +486,176 @@
     });
   }
 
-  /** @type {"gas" | "diesel"} */
+  /** @typedef {"gas" | "diesel" | "brent" | "lng"} Fuel */
+  /** @typedef {{ name: string, color: string, width?: number, dash?: string, pts: Reading[] }} FuelLine */
+  /**
+   * @typedef {object} FuelCfg
+   * @property {string} label button text
+   * @property {string} unit
+   * @property {string} chartLabel
+   * @property {() => FuelLine[]} lines
+   * @property {(s: Scenario) => string} band
+   * @property {number} dp decimals for prices
+   * @property {number} [step] y-axis step; omitted = 25¢ or 50¢ by range
+   * @property {[string, number, [string, number][]]} buckets "<" forecast id, its price, then ">=" ids and prices
+   * @property {string} note
+   */
+  /** @param {(r: GasRow) => number | null} get @param {string} name @returns {FuelLine[]} */
+  const gasLine = (get, name) => [{ name, color: "--fg", pts: readings(gasRows, get) }];
+  const BANDS_NOTE =
+    "Bars right of Election Day show each scenario’s Nov. 3 range; bar width is proportional to its probability. The ranges under the chart don’t overlap, so they sum to 100%.";
+  /** @type {Record<Fuel, FuelCfg>} */
+  const FUELS = {
+    gas: {
+      label: "Gas",
+      unit: "AAA national regular, $ per gallon",
+      chartLabel: "AAA national regular gas prices with Nov. 3 scenario price bands",
+      lines: () => gasLine((r) => r.nat_regular, "Regular"),
+      band: (sc) => sc.gas_band,
+      dp: 2,
+      buckets: [
+        "gas_nat_lt400",
+        4,
+        [
+          ["gas_nat_450", 4.5],
+          ["gas_nat_475", 4.75],
+          ["gas_nat_500", 5],
+        ],
+      ],
+      note: `${BANDS_NOTE} Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.`,
+    },
+    diesel: {
+      label: "Diesel",
+      unit: "AAA national diesel, $ per gallon",
+      chartLabel: "AAA national diesel prices with Nov. 3 scenario price bands",
+      lines: () => gasLine((r) => r.nat_diesel, "Diesel"),
+      band: (sc) => sc.diesel_band,
+      dp: 2,
+      buckets: [
+        "gas_diesel_lt600",
+        6,
+        [
+          ["gas_diesel_650", 6.5],
+          ["gas_diesel_675", 6.75],
+          ["gas_diesel_700", 7],
+        ],
+      ],
+      note: `${BANDS_NOTE} Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.`,
+    },
+    brent: {
+      label: "Brent",
+      unit: "ICE Brent futures and EIA Brent spot, $ per barrel",
+      chartLabel: "Brent crude futures and spot prices with Nov. 3 scenario price bands",
+      lines: () => [
+        { name: "Brent futures", color: "--fg", pts: readings(enRows, (r) => r.brent_front) },
+        {
+          name: "Brent spot (EIA)",
+          color: "--muted",
+          width: 2.5,
+          dash: "1 5",
+          pts: readings(enRows, (r) => r.brent_spot),
+        },
+      ],
+      band: (sc) => sc.brent_band,
+      dp: 2,
+      step: 10,
+      buckets: [
+        "brent_lt90",
+        90,
+        [
+          ["brent_100", 100],
+          ["brent_110", 110],
+          ["brent_120", 120],
+        ],
+      ],
+      note: `${BANDS_NOTE} Bands and ranges are for the futures price. Futures are the ICE front month, the price most headlines quote; spot is EIA’s daily Europe Brent FOB, which prices physical cargoes now and runs well above futures when prompt barrels are scarce. EIA spot lags a few days.`,
+    },
+    lng: {
+      label: "LNG",
+      unit: "Asian spot LNG (Platts JKM front month), $ per million Btu",
+      chartLabel: "JKM Asian LNG prices with Nov. 3 scenario price bands",
+      lines: () => [{ name: "JKM", color: "--fg", pts: readings(enRows, (r) => r.jkm_front) }],
+      band: (sc) => sc.lng_band,
+      dp: 2,
+      step: 5,
+      buckets: [
+        "lng_jkm_lt20",
+        20,
+        [
+          ["lng_jkm_25", 25],
+          ["lng_jkm_28", 28],
+          ["lng_jkm_31", 31],
+        ],
+      ],
+      note: `${BANDS_NOTE} JKM is the Asian spot LNG benchmark and the one most exposed to Hormuz, since Qatar ships about a fifth of the world’s LNG through it. The series is the continuous front-month future, so it steps when the contract rolls mid-month.`,
+    },
+  };
+  /** @type {Fuel} */
   let gasFuel = "gas";
 
   /** @param {HTMLElement} el */
   function gasPanel(el) {
-    const isDsl = gasFuel === "diesel";
-    /** @param {GasRow} r */
-    const get = (r) => (isDsl ? r.nat_diesel : r.nat_regular);
-    const name = isDsl ? "Diesel" : "Regular";
-    const allDates = gasRows.filter((r) => get(r) != null).map((r) => r.date);
+    const cfg = FUELS[gasFuel];
+    const lines = cfg.lines();
+    const allDates = [...new Set(lines.flatMap((l) => l.pts.map((r) => r.date)))].sort();
     const lastDate = allDates[allDates.length - 1] ?? latest.date;
     const start = `${lastDate.slice(0, 4)}-01-01`;
-    const shown = gasRows.filter((r) => r.date >= start);
-    const priceR = readings(shown, get);
     const dates = allDates.filter((d) => d >= start);
-    const cur = nth(priceR);
+    /** @param {number} v */
+    const money = (v) => `$${v.toFixed(cfg.dp)}`;
     /** @type {Series[]} */
-    const series = [{ name, color: "--fg", points: shown.map((r) => ({ d: r.date, v: get(r) })) }];
-    const bands = scenarioBands(
-      (sc) => (isDsl ? sc.diesel_band : sc.gas_band),
-      (v) => `$${v.toFixed(2)}`,
-    );
-    const vals = [...priceR.map((r) => r.v), ...bands.flatMap((b) => [b.lo, b.hi])];
-    const step = Math.max(...vals) - Math.min(...vals) > 2.5 ? 0.5 : 0.25;
-    const yMin = Math.floor((Math.min(...vals) - 0.05) / step) * step;
-    const yMax = Math.ceil((Math.max(...vals) + 0.05) / step) * step;
+    const series = lines.map((l) => ({
+      name: l.name,
+      color: l.color,
+      ...(l.width ? { width: l.width } : {}),
+      ...(l.dash ? { dash: l.dash } : {}),
+      points: l.pts.filter((r) => r.date >= start).map((r) => ({ d: r.date, v: r.v })),
+    }));
+    const bands = scenarioBands(cfg.band, money);
+    const vals = [
+      ...series.flatMap((x) => x.points.flatMap((pt) => (pt.v == null ? [] : [pt.v]))),
+      ...bands.flatMap((b) => [b.lo, b.hi]),
+    ];
+    const step = cfg.step ?? (Math.max(...vals) - Math.min(...vals) > 2.5 ? 0.5 : 0.25);
+    const pad = step / 5;
+    const yMin = Math.floor((Math.min(...vals) - pad) / step) * step;
+    const yMax = Math.ceil((Math.max(...vals) + pad) / step) * step;
     /** @type {number[]} */
     const ticks = [];
-    for (let t = yMin; t <= yMax - step + 0.01; t += step) ticks.push(Number(t.toFixed(2)));
-    const figs = isDsl
-      ? priceBuckets("gas_diesel_lt600", 6, [
-          ["gas_diesel_650", 6.5],
-          ["gas_diesel_675", 6.75],
-          ["gas_diesel_700", 7],
-        ])
-      : priceBuckets("gas_nat_lt400", 4, [
-          ["gas_nat_450", 4.5],
-          ["gas_nat_475", 4.75],
-          ["gas_nat_500", 5],
-        ]);
-    const legend = cur
-      ? `<div class="legend" style="margin-top:10px"><span><span class="sw" style="background:var(--fg)"></span>${name} <b>$${cur.v.toFixed(2)}</b> <span class="muted">(${fmtDate(cur.date)})</span></span></div>`
-      : "";
+    for (let t = yMin; t <= yMax - step + step / 25; t += step) ticks.push(Number(t.toFixed(2)));
+    const [ltId, low, ge] = cfg.buckets;
+    const legend = `<div class="legend" style="margin-top:10px">${lines
+      .flatMap((l) => {
+        const cur = nth(l.pts);
+        if (!cur) return [];
+        const sw = l.dash
+          ? `background:repeating-linear-gradient(90deg,${cv(l.color)} 0 3px,transparent 3px 6px)`
+          : `background:${cv(l.color)}`;
+        return [
+          `<span><span class="sw" style="${sw}"></span>${esc(l.name)} <b>${money(cur.v)}</b> <span class="muted">(${fmtDate(cur.date)})</span></span>`,
+        ];
+      })
+      .join("")}</div>`;
+    const ids = /** @type {Fuel[]} */ (Object.keys(FUELS));
     el.innerHTML =
-      `<div class="controls"><div class="seg" role="group" aria-label="Fuel"><button type="button" id="seg-gas" aria-pressed="${!isDsl}">Gas</button><button type="button" id="seg-diesel" aria-pressed="${isDsl}">Diesel</button></div><div style="font-size:13px" class="muted">AAA national ${isDsl ? "diesel" : "regular"}, $ per gallon</div></div>` +
+      `<div class="controls"><div class="seg" role="group" aria-label="Price">${ids
+        .map(
+          (k) =>
+            `<button type="button" id="seg-${k}" data-fuel="${k}" aria-pressed="${k === gasFuel}">${FUELS[k].label}</button>`,
+        )
+        .join("")}</div><div style="font-size:13px" class="muted">${esc(cfg.unit)}</div></div>` +
       legend +
       '<div class="chart" style="margin-top:30px"></div>' +
-      figs +
-      `<div class="note">Bars right of Election Day show each scenario’s Nov. 3 ${isDsl ? "diesel" : "regular"} price range; bar width is proportional to its probability. The ranges under the chart don’t overlap, so they sum to 100%. Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.</div>`;
-    $("seg-gas").onclick = () => {
-      gasFuel = "gas";
-      render();
-    };
-    $("seg-diesel").onclick = () => {
-      gasFuel = "diesel";
-      render();
-    };
+      priceBuckets(ltId, low, ge, cfg.step ? (v) => `$${v}` : money) +
+      `<div class="note">${esc(cfg.note)}</div>`;
+    for (const k of ids) {
+      $(`seg-${k}`).onclick = () => {
+        gasFuel = k;
+        render();
+      };
+    }
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
-      label: `AAA national ${isDsl ? "diesel" : "regular gas"} prices with Nov. 3 scenario price bands`,
+      label: cfg.chartLabel,
       start,
       end: election,
       dates,
@@ -552,37 +663,10 @@
       yMin,
       yMax,
       yTicks: ticks,
-      yFmt: (v) => `$${v.toFixed(2)}`,
+      yFmt: (v, tip) => (tip || step < 1 ? `$${v.toFixed(2)}` : `$${v.toFixed(0)}`),
       bands,
       ...(day(start) < day(WAR_START) ? { vlines: [{ date: WAR_START, text: "War begins" }] } : {}),
       maxGap: 21,
-    });
-    energyChart(el, {
-      title: "Brent Crude",
-      unit: "ICE Brent front-month futures and EIA Brent spot, $ per barrel",
-      start,
-      series: [
-        { key: "brent_front", name: "Brent futures", color: "--fg" },
-        { key: "brent_spot", name: "Brent spot (EIA)", color: "--muted", width: 2.5, dash: "1 5" },
-      ],
-      bands: scenarioBands(
-        (sc) => sc.brent_band,
-        (v) => `$${v.toFixed(0)}`,
-      ),
-      step: 10,
-      fmt: (v) => `$${v.toFixed(0)}`,
-      tipFmt: (v) => `$${v.toFixed(2)}`,
-      note: "Futures are the ICE front month, the price most headlines quote; spot is EIA’s daily Europe Brent FOB, which prices physical cargoes now and runs well above futures when prompt barrels are scarce. EIA spot lags a few days. Bars right of Election Day show each scenario’s Nov. 3 Brent range, sized by probability.",
-    });
-    energyChart(el, {
-      title: "LNG (Asia JKM)",
-      unit: "Platts JKM front-month futures, $ per million British thermal units",
-      start,
-      series: [{ key: "jkm_front", name: "JKM", color: "--fg" }],
-      step: 5,
-      fmt: (v) => `$${v.toFixed(0)}`,
-      tipFmt: (v) => `$${v.toFixed(2)}`,
-      note: "JKM is the Asian spot LNG benchmark, the one most exposed to Hormuz since Qatar ships about a fifth of the world’s LNG through it. The series is the continuous front-month future, so it steps when the contract rolls mid-month. There are no scenario bands for LNG yet.",
     });
   }
 
@@ -608,13 +692,13 @@
    * @param {string} ltId forecast id for "below low"
    * @param {number} low
    * @param {[string, number][]} ge forecast ids for "at or above" each threshold, ascending
+   * @param {(v: number) => string} f price format
    * @returns {string}
    */
-  function priceBuckets(ltId, low, ge) {
+  function priceBuckets(ltId, low, ge, f) {
     const lt = latestF.get(ltId);
     const ps = ge.map(([id]) => latestF.get(id)?.p);
     if (!lt || ps.some((p) => p == null)) return "";
-    const f = (/** @type {number} */ v) => `$${v.toFixed(2)}`;
     const at = /** @type {number[]} */ (ps);
     const first = ge[0]?.[1] ?? low;
     const cells = [
@@ -628,68 +712,6 @@
     return `<div class="figs">${cells
       .map(([label, p]) => `<div><small>${label} on Nov. 3</small><strong>${Math.round(Number(p))}%</strong></div>`)
       .join("")}</div>`;
-  }
-
-  /**
-   * A daily market-price chart drawn under the gas chart, on the same dates.
-   * @param {HTMLElement} el
-   * @param {{ title: string, unit: string, start: string, series: { key: "brent_front" | "brent_spot" | "jkm_front", name: string, color: string, width?: number, dash?: string }[], bands?: Band[], step: number, fmt: (v: number) => string, tipFmt: (v: number) => string, note: string }} o
-   */
-  function energyChart(el, o) {
-    const shown = enRows.filter((r) => r.date >= o.start);
-    const dates = shown.filter((r) => o.series.some((c) => r[c.key] != null)).map((r) => r.date);
-    /** @type {Series[]} */
-    const series = o.series.map((c) => ({
-      name: c.name,
-      color: c.color,
-      ...(c.width ? { width: c.width } : {}),
-      ...(c.dash ? { dash: c.dash } : {}),
-      points: shown.map((r) => ({ d: r.date, v: r[c.key] })),
-    }));
-    const vals = [
-      ...shown.flatMap((r) => o.series.flatMap((c) => (r[c.key] == null ? [] : [Number(r[c.key])]))),
-      ...(o.bands ?? []).flatMap((b) => [b.lo, b.hi]),
-    ];
-    if (!vals.length) return;
-    const yMin = Math.floor(Math.min(...vals) / o.step) * o.step;
-    const yMax = Math.ceil(Math.max(...vals) / o.step) * o.step;
-    /** @type {number[]} */
-    const ticks = [];
-    for (let t = yMin; t < yMax; t += o.step) ticks.push(t);
-    const legend = o.series
-      .flatMap((c) => {
-        const r = readings(shown, (x) => x[c.key]).pop();
-        if (!r) return [];
-        const sw = c.dash
-          ? `background:repeating-linear-gradient(90deg,${cv(c.color)} 0 3px,transparent 3px 6px)`
-          : `background:${cv(c.color)}`;
-        return [
-          `<span><span class="sw" style="${sw}"></span>${esc(c.name)} <b>${o.tipFmt(r.v)}</b> <span class="muted">(${fmtDate(r.date)})</span></span>`,
-        ];
-      })
-      .join("");
-    const box = document.createElement("section");
-    box.className = "subchart";
-    box.innerHTML =
-      `<h3>${esc(o.title)}</h3><div style="font-size:13px;font-family:var(--sans)" class="muted">${esc(o.unit)}</div>` +
-      `<div class="legend" style="margin-top:10px">${legend}</div>` +
-      '<div class="chart" style="margin-top:30px"></div>' +
-      `<div class="note">${esc(o.note)}</div>`;
-    el.appendChild(box);
-    lineChart(/** @type {HTMLElement} */ (q(box, ".chart")), {
-      label: `${o.title}: ${o.unit}`,
-      start: o.start,
-      end: election,
-      dates,
-      series,
-      yMin,
-      yMax,
-      yTicks: ticks,
-      yFmt: (v, tip) => (tip ? o.tipFmt(v) : o.fmt(v)),
-      ...(o.bands ? { bands: o.bands } : {}),
-      ...(day(o.start) < day(WAR_START) ? { vlines: [{ date: WAR_START, text: "War begins" }] } : {}),
-      maxGap: 21,
-    });
   }
 
   /** Physical-supply series in draw order; the colour follows the series, never its rank. */
@@ -896,8 +918,8 @@
     {
       id: "gas",
       label: "Gas Prices",
-      title: "Gas Prices Against The Scenarios",
-      dek: "AAA national average regular, with the price range each scenario implies on Nov. 3. Prices rise 2–4¢ a day after a shock and fall 1–1.5¢ a day after it passes.",
+      title: "Energy Prices Against The Scenarios",
+      dek: "Gas, diesel, Brent crude and Asian LNG, each with the price range every scenario implies on Nov. 3. Pump prices rise 2–4¢ a day after a shock and fall 1–1.5¢ a day after it passes.",
       render: gasPanel,
     },
     {

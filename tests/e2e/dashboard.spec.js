@@ -95,7 +95,7 @@ test("odds chart shows one line per scenario and no toggle", async ({ page }) =>
 /** @type {[string, string][]} */
 const TABS = [
   ["odds", "The Odds Through Election Day"],
-  ["gas", "Gas Prices Against The Scenarios"],
+  ["gas", "Energy Prices Against The Scenarios"],
   ["supply", "How Much Oil Is Getting Out"],
   ["blinks", "The TACO Tracker"],
   ["tripwires", "What Would Move The Odds"],
@@ -137,50 +137,47 @@ test("gas chart: Gas by default, Diesel button swaps the series, bands and odds"
   const errors = collectErrors(page);
   await page.goto(`${PAGE}#gas`);
   await expect(page.locator("#seg-gas")).toHaveAttribute("aria-pressed", "true");
-  const gasSvg = page.locator("#panel svg").first();
+  const gasSvg = page.locator("#panel svg");
   await expect(gasSvg).toContainText("JAN.");
   await expect(gasSvg).toContainText("War begins");
-  await expect(page.locator(".legend").first()).toContainText("Regular");
+  await expect(page.locator(".legend")).toContainText("Regular");
   await expect(page.locator(".figs")).toContainText("$4.50–$4.75");
   await expect(page.locator("#panel")).not.toContainText("NYC");
   await page.click("#seg-diesel");
   await expect(page.locator("#seg-diesel")).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator(".legend").first()).toContainText("Diesel");
+  await expect(page.locator(".legend")).toContainText("Diesel");
   await expect(page.locator(".figs > div")).toHaveCount(5);
   await expect(page.locator(".figs")).toContainText("$7.00 or more");
   await expect(page.locator("#panel svg polyline").first()).not.toHaveAttribute("stroke-dasharray", /.*/);
   expect(errors).toEqual([]);
 });
 
-test("gas price ranges are exclusive and sum to 100%", async ({ page }) => {
+test("gas price ranges are exclusive and sum to 100% for every fuel", async ({ page }) => {
   await page.goto(`${PAGE}#gas`);
-  for (const fuel of ["#seg-gas", "#seg-diesel"]) {
+  for (const fuel of ["#seg-gas", "#seg-diesel", "#seg-brent", "#seg-lng"]) {
     await page.click(fuel);
+    await expect(page.locator(fuel)).toHaveAttribute("aria-pressed", "true");
     const ps = await page.locator(".figs strong").allTextContents();
     expect(ps).toHaveLength(5);
     expect(ps.reduce((a, t) => a + Number(t.replace("%", "")), 0)).toBe(100);
   }
 });
 
-test("Brent and LNG charts sit under the gas chart on the same dates", async ({ page }) => {
+test("Brent and LNG buttons swap in their series, bands and ranges", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto(`${PAGE}#gas`);
-  const subs = page.locator(".subchart");
-  await expect(subs).toHaveCount(2);
-  await expect(subs.nth(0).locator("h3")).toHaveText("Brent Crude");
-  await expect(subs.nth(1).locator("h3")).toHaveText("LNG (Asia JKM)");
-  for (const i of [0, 1]) {
-    const svg = subs.nth(i).locator("svg");
-    await expect(svg).toContainText("JAN.");
-    await expect(svg).toContainText("Election Day");
-  }
-  await expect(
-    subs
-      .nth(0)
-      .locator("svg rect[style*='fill']")
-      .filter({ has: page.locator("title") }),
-  ).toHaveCount(4);
-  await expect(subs.nth(1).locator(".legend")).toContainText("JKM");
+  await page.click("#seg-brent");
+  const svg = page.locator("#panel svg");
+  await expect(svg).toContainText("JAN.");
+  await expect(svg).toContainText("War begins");
+  await expect(page.locator(".legend")).toContainText("Brent futures");
+  await expect(page.locator(".legend")).toContainText("Brent spot (EIA)");
+  await expect(svg.locator("rect title")).toHaveCount(4);
+  await expect(page.locator(".figs")).toContainText("$120 or more");
+  await page.click("#seg-lng");
+  await expect(page.locator(".legend")).toContainText("JKM");
+  await expect(svg.locator("rect title")).toHaveCount(4);
+  await expect(page.locator(".figs")).toContainText("Under $20");
   expect(errors).toEqual([]);
 });
 
