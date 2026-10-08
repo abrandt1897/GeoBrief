@@ -1,6 +1,6 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-10-08 (am run, no change; 2026-10-07: escalated narrowed to new steps; review fixes: weighted price bands, tripwires rebased; review follow-up: Vance condition, war_nov3, Blink #10, tripwires merged and filled in)._
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-10-08 (pm run, no change; am run, no change; 2026-10-07: escalated narrowed to new steps; review fixes: weighted price bands, tripwires rebased; review follow-up: Vance condition, war_nov3, Blink #10, tripwires merged and filled in)._
 
 ## Canonical Odds (Oct 7)
 
@@ -12,6 +12,8 @@ _Overwritten each update. Tabular data lives in `data/*.csv`; this file holds th
 - **Comprehensive deal:** a _signed_ deal in which Iran concedes at least one of Rubio's three terms. Must stay below MOU-style.
 - **Resolution (what is in force on the horizon date):** a signed deal wins (comprehensive if it concedes a Rubio term, else MOU-style); otherwise an interim truce or enhanced MOU in force that day is MOU-style, even after earlier strikes; otherwise escalated if any escalated step occurred from Oct 7; otherwise limited war / limbo. Scored as `scen_<horizon>_<scenario>` in `data/forecasts.csv`.
 - **War by Nov 3 (`war_nov3`, 45%)** is a separate question: a US strike on Iran, or an official IRGC/Artesh claim of a specific attack that is independently confirmed (UKMTO, CENTCOM, vessel ID, imagery). Unnamed media tallies (Fars "13 violators") and denied, unconfirmed claims (Oct 6 helicopter) don't count. It has no fixed relation to the scenarios: escalated can come from a Houthi or militia outage with no US strike or claim, and MOU-style can follow strikes.
+
+Oct 8 (pm run): no change. Trump pledges no US attack on Iran before the midterms (Truth Social), after The Atlantic reported a request for pre-election strike options; weak evidence that matches the election-calendar constraint already in war by Nov 3 (45). Tanker hits spread beyond the strait: Acers (51 nm N of Qatar, UKMTO, casualties) and Dhalgout (fire ~40 km off Fujairah, not in UKMTO, cause unclear; would fire `tw_sts_strike` only if a strike in the STS zone is confirmed). Both unclaimed. Araghchi: reply to the US "within a few days." Houthis tell Saudi oil workers to evacuate. Treasury sanctions 17 shadow-fleet tankers. Brent $103.48.
 
 Oct 8 (am run): no change. IRGC adviser Naqdi says Iran will soon close the "illegal routes" (the US-escorted southern lane along Oman's coast); an undated adviser threat, not an official attack claim, so no tripwire fires, but it is the main thing to watch. Kpler: seven commodity vessels crossed on Oct 6, the fewest since July 23. Houthis claim another missile at Riyadh airport. AAA $4.36 / diesel $6.28.
 
