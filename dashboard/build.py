@@ -470,10 +470,25 @@ def rendered_brief(brief: Brief, odds: list[Row], forecasts: list[Row], trips: l
     return cast(Brief, {**brief, "bets": bets})
 
 
+def check_dispatches(events: list[Event]) -> list[str]:
+    """A scheduled run writes one dispatch, so each date has at most one `(am, run)` and one `(pm, run)` line."""
+    seen: set[tuple[str, str]] = set()
+    errors = []
+    for e in events:
+        m = re.match(r"\((am|pm), run\)", e["text"])
+        if m:
+            key = (e["date"], m.group(1))
+            if key in seen:
+                errors.append(f"log/events.md has two {m.group(1)} run dispatches on {e['date']}; merge them into one")
+            seen.add(key)
+    return errors
+
+
 def check(odds: list[Row], forecasts: list[Row], terms: list[Row], brief: Brief) -> list[str]:
     latest_f = latest_forecasts(forecasts)
     return (
         check_sums(odds)
+        + check_dispatches(load_events())
         + check_blink10(latest_f, brief)
         + check_deal(odds, latest_f, terms, brief)
         + check_blink10_scenarios(odds, brief)

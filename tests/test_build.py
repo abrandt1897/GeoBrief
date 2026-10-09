@@ -76,6 +76,15 @@ def test_load_events_parses_chart_tags() -> None:
         assert "[chart:" not in e["text"]
 
 
+def test_check_dispatches_flags_a_second_dispatch_from_one_run() -> None:
+    def ev(text: str, date: str = "2026-10-08") -> build.Event:
+        return {"date": date, "text": text, "chart": None}
+
+    ok = [ev("(am, run) a"), ev("(pm, run) b"), ev("(am, run) c", "2026-10-09"), ev("(late) d"), ev("e")]
+    assert build.check_dispatches(ok) == []
+    assert len(build.check_dispatches([*ok, ev("(pm, run) f")])) == 1
+
+
 # ---------- consistency checks ----------
 
 
