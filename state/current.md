@@ -1,6 +1,6 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-10-09 (pm run, war by Nov 3 45 → 55; am run, no change); 2026-10-08 (pm run, no change; am run, no change; 2026-10-07: escalated narrowed to new steps; review fixes: weighted price bands, tripwires rebased; review follow-up: Vance condition, war_nov3, Blink #10, tripwires merged and filled in)._
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-10-10 (am run, no change); 2026-10-09 (pm run, war by Nov 3 45 → 55; am run, no change); 2026-10-08 (pm run, no change; am run, no change; 2026-10-07: escalated narrowed to new steps; review fixes: weighted price bands, tripwires rebased; review follow-up: Vance condition, war_nov3, Blink #10, tripwires merged and filled in)._
 
 ## Canonical Odds (Oct 7)
 
@@ -12,6 +12,8 @@ _Overwritten each update. Tabular data lives in `data/*.csv`; this file holds th
 - **Comprehensive deal:** a _signed_ deal in which Iran concedes at least one of Rubio's three terms. Must stay below MOU-style.
 - **Resolution (what is in force on the horizon date):** a signed deal wins (comprehensive if it concedes a Rubio term, else MOU-style); otherwise an interim truce or enhanced MOU in force that day is MOU-style, even after earlier strikes; otherwise escalated if any escalated step occurred from Oct 7; otherwise limited war / limbo. Scored as `scen_<horizon>_<scenario>` in `data/forecasts.csv`.
 - **War by Nov 3 (`war_nov3`, 55%)** is a separate question: a US strike on Iran, or an official IRGC/Artesh claim of a specific attack that is independently confirmed (UKMTO, CENTCOM, vessel ID, imagery). Unnamed media tallies (Fars "13 violators") and denied, unconfirmed claims (Oct 6 helicopter) don't count. It has no fixed relation to the scenarios: escalated can come from a Houthi or militia outage with no US strike or claim, and MOU-style can follow strikes.
+
+Oct 10 (am run): no change. The NV Sunshine claim is still unconfirmed (no UKMTO or Vanguard match) and no new hit overnight, so `tw_irgc_claim` stays armed. Trump again calls talks "productive"; Iran still reviewing the US reply; Brent ~$104.4 (Fri). Al Arabiya military source: Houthis laid many mines at Bab el-Mandeb; single-source, no declared closure, so `tw_bab` stays armed. AAA $4.37 / diesel $6.28.
 
 Oct 9 (pm run): **war by Nov 3 45 → 55**; scenarios unchanged, no tripwire fired. The IRGC Navy officially claimed a named ship, the Vietnam-flagged LPG carrier NV Sunshine on the southern route off Oman, and vowed region-wide pursuit of ships on "unauthorised" routes and sanctions on firms cooperating with the US. The claim is not yet independently confirmed (the UKMTO hit that day, 13 nm W of Al Jazira, UAE, was the VLCC Gem No.2 per Vanguard), so `tw_irgc_claim` has not fired; but Iran is putting its name to specific attacks again (first since Cape Dao, Sept 23), so a confirmed claim before Nov 3 is likelier. Trump: Russia to release 300k t of diesel. Saudi-led coalition launches a large operation against the Houthis. Brent $104.43.
 
