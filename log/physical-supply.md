@@ -42,3 +42,11 @@ _Cite source, metric and vintage on every figure. Append new readings at the bot
 **Uhud (3rd UAE-linked hit, Oct 2):** ~46k DWT products tanker, built 2003, Panama flag; registered owner Master Energy LLC, commercial/ISM manager Emirates Shipping LLC (UAE) (MagicPort). Regional product trader (Fujairah, Hamriya, Khor Fakkan, Sohar, Port Sudan) — **not** a Saudi shuttle or STS-loop VLCC, so tw_saudi_ship does not fire.
 
 **Oct 6 update:** Iran International reports the East-West line delivered 5.8M bbl to Yanbu by Tuesday morning — a cumulative/single-source figure, not a rate; supports "flowing" but still no Kpler/Vortexa Yanbu loadings. Houthis claim a strike on the Rabigh refinery (fed by an East-West spur); unconfirmed.
+
+## Hormuz flows fall back as tanker attacks peak (Oct 11)
+
+Kpler's weekly Hormuz figure has dropped from the late-September high: crude ran about 10.3 Mbd in the seven days to Oct 3 (about 76% of prewar) and about 8.5 Mbd in the week to Oct 7 (about 40% below prewar, per CNBC). Middle East crude exports fell to 15.3 Mbd in the week to Oct 7, from 18.5 a week earlier, as attacks on tankers reached a wartime high (JMIC: at least 12 between Sept 28 and Oct 2). Kpler counted only seven commodity carriers through the strait on Oct 6, the fewest since late July, with the sharpest drop in ship-to-ship transfer traffic off the Gulf of Oman.
+
+- Products are still scarce: about 1.3 Mbd, 11% of Hormuz flows against more than 20% prewar, which keeps diesel tight while crude recovers.
+- East-West/Yanbu is still unplotted: the Saudi figure of 5.8M bbl delivered is cumulative, and no tracker has given a post-Khurais loading rate.
+- The two Kpler weekly figures don't share a stated basis (crude vs crude and products); read them as direction, not a precise level.
