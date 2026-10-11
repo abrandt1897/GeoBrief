@@ -69,7 +69,7 @@
  * @property {Annotation[]} [annotations]
  * @property {string | null} [endMark] label for the dashed line at the right edge (default "Election Day"; null for none)
  * @property {Annotation[]} [vlines] labelled vertical markers drawn inside the plot
- * @property {Marker[]} [markers] faint unlabelled dashed lines (re-scores); the readout gives the note
+ * @property {Marker[]} [markers] faint unlabelled dashed lines (re-scores)
  * @property {number} [annoRows] rows the annotation captions cycle through (default 2)
  * @property {number} [maxGap] break a line where consecutive readings are more than this many days apart
  */
@@ -280,7 +280,7 @@
       h += `<line x1="${X(v.date)}" x2="${X(v.date)}" y1="${T}" y2="${B}" style="stroke:var(--war)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
       h += `<text x="${X(v.date) + 6}" y="${T + 16}" font-size="13" font-weight="700" style="fill:var(--war)">${esc(v.text)}</text>`;
     }
-    // Re-score markers: a faint dashed line under the series, no label; the readout for that date gives the note.
+    // Re-score markers: a faint dashed line under the series, no label.
     for (const mk of o.markers ?? []) {
       const mx = Math.max(L, Math.min(R, X(mk.date)));
       h += `<line class="rescore-line" x1="${mx}" x2="${mx}" y1="${T}" y2="${B}" style="stroke:var(--muted)" stroke-width="1.25" stroke-dasharray="2 4"/>`;
@@ -375,11 +375,7 @@
           rowsHtml += `<div><span class="k" style="--c:${cv(s.color)}">${esc(s.name)}</span><span class="v">${o.yFmt(p.v, true)}</span></div>`;
         } else dot.style.display = "none";
       });
-      const notes = (o.markers ?? [])
-        .filter((mk) => mk.date === d)
-        .map((mk) => `<div class="tip-note">Re-scored: ${esc(mk.note)}</div>`)
-        .join("");
-      tip.innerHTML = `<b>${fmtDate(d)}</b>${rowsHtml || '<div class="muted">No reading</div>'}${notes}`;
+      tip.innerHTML = `<b>${fmtDate(d)}</b>${rowsHtml || '<div class="muted">No reading</div>'}`;
       tip.hidden = false;
       const hostW = host.clientWidth;
       const px = (x / W) * hostW;
@@ -467,7 +463,7 @@
   /**
    * Scenario-odds line chart for one horizon: one line per scenario.
    * @param {HTMLElement} el
-   * @param {{ horizon: string, rows: DateRow[], end: string, endMark: string, byLabel: string, note: string }} o
+   * @param {{ horizon: string, rows: DateRow[], end: string, endMark: string, byLabel: string }} o
    */
   function scenarioChart(el, o) {
     const cur = o.rows[o.rows.length - 1];
@@ -498,8 +494,7 @@
     for (let t = 0; t <= yMax - 10; t += 20) ticks.push(t);
     el.innerHTML =
       `<div class="controls"><div style="font-size:13px" class="muted">Probability of each outcome by ${esc(o.byLabel)}</div></div>` +
-      '<div class="chart" style="margin-top:30px"></div>' +
-      `<div class="note">${o.note}</div>`;
+      '<div class="chart" style="margin-top:30px"></div>';
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
       label: `Line chart of scenario probabilities by date through ${o.byLabel}`,
       start,
@@ -518,9 +513,6 @@
     });
   }
 
-  const RESCORE_NOTE =
-    "A faint dashed line marks a day the odds moved because a scenario definition changed, not because of news; the readout for that day gives the reason. Definitions were settled on Oct. 7 and odds on earlier definitions were removed, so the lines start there.";
-
   /** @param {HTMLElement} el */
   function oddsPanel(el) {
     scenarioChart(el, {
@@ -529,7 +521,6 @@
       end: election,
       endMark: "Election Day",
       byLabel: "Nov. 3",
-      note: `Each point is one update in odds.csv. ${RESCORE_NOTE} Hover or tap the chart to read any date.`,
     });
   }
 
@@ -992,7 +983,6 @@
       end: `${latestYeRow.date.slice(0, 4)}-12-31`,
       endMark: "Dec. 31",
       byLabel: "Dec. 31",
-      note: `Each point is one update in odds.csv. ${RESCORE_NOTE} Hover or tap the chart to read any date.`,
     });
   }
 

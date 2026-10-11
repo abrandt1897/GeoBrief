@@ -139,12 +139,9 @@ for (const [tab, horizon] of SCENARIO_CHARTS) {
     await expect(svg).not.toContainText("RE-SCORED");
     await expect(svg.locator("line.rescore-line")).toHaveCount(want.length);
     await expect(svg.locator("line.rescore-line").first()).toHaveAttribute("stroke-dasharray", /\d/);
-    // The chart's readout for a re-scored date carries the note too (for touch and keyboard readers).
-    const scored = want.find((r) => r.date === last);
-    if (scored) {
-      await svg.focus();
-      await expect(page.locator(".tip .tip-note")).toContainText(scored.note);
-    }
+    await svg.focus();
+    await expect(page.locator(".tip .tip-note")).toHaveCount(0);
+    await expect(page.locator("#panel .note")).toHaveCount(0);
     expect(await svg.innerHTML()).not.toMatch(/NaN|Infinity/);
     expect(errors).toEqual([]);
   });
