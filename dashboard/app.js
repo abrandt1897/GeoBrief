@@ -23,7 +23,6 @@
  * @property {string} updated
  * @property {string} headline
  * @property {string} status
- * @property {string} change_note
  * @property {Bet[]} bets
  * @property {{ blink: number, no_blink: number, unresolved: number, rubio_met: number }} blink10
  * @property {{ ye2026: number, ye2027: number }} deal_p
@@ -1405,7 +1404,6 @@
       live.classList.add("stale");
     }
   }
-  $("change-note").textContent = D.brief.change_note;
   $("scen-body").innerHTML = keysByP(latest.v)
     .map((k) => {
       const s = scen("nov3", k);

@@ -222,7 +222,7 @@ def test_events_log_is_chronological_and_well_formed() -> None:
 
 def test_brief_json_shape() -> None:
     b = json.loads((ROOT / "state" / "brief.json").read_text(encoding="utf-8"))
-    for key in ("updated", "headline", "status", "change_note", "bets", "blink10", "deal_p", "election_day"):
+    for key in ("updated", "headline", "status", "bets", "blink10", "deal_p", "election_day"):
         assert key in b, f"brief.json missing {key}"
     assert is_date(b["updated"])
     assert is_date(b["election_day"])

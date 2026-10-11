@@ -17,7 +17,6 @@ def brief(**over: object) -> build.Brief:
         "updated": "2026-10-04",
         "headline": "H",
         "status": "S",
-        "change_note": "C",
         "bets": [],
         "blink10": {"blink": 70, "no_blink": 30, "unresolved": 0, "rubio_met": 0},
         "deal_p": {"ye2026": 16, "ye2027": 34},

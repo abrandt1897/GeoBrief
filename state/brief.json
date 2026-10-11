@@ -2,22 +2,21 @@
   "updated": "2026-10-10",
   "headline": "Iran War Odds Through 2026",
   "status": "A Houthi missile hit Riyadh airport again, wounding dozens, and Trump said the US \"may\" join Saudi strikes on the Houthis and would \"take a look\" at his no-strikes-before-the-midterms pledge. The IRGC claims an unnamed supertanker hit a mine on an \"unauthorized\" Hormuz route, unconfirmed like its NV Sunshine claim. No tripwire fired and odds are unchanged; war by Nov. 3 stays at 55%.",
-  "change_note": "Oct. 9: War by Nov. 3 45% → 55% after the IRGC's first named claim since September (NV Sunshine, unconfirmed). Oct. 7: Escalated war now means a step the war hasn't taken yet: ground forces in Iran, strikes on Iranian civilian infrastructure, or a major Gulf export hub, power or desalination plant knocked out for a week. Another July-style strike campaign counts as limited war. Escalated by Nov. 3: 14% → 7%; by year-end: 20% → 12%. Vance says Iran must make a \"meaningful\" cut in enrichment capacity: year-end deal 15% → 13%, MOU-style by Nov. 3 11% → 10%. War by Nov. 3 60% → 45% under the stricter rule (an official claim of a specific, confirmed attack, or a US strike). Blink #10 re-derived: 70% blink, 30% no blink. Price ranges recentred on the futures: gas ≥ $4.50 on Nov. 3 37% → 13%, Brent (Jan.) ≥ $100 65% → 37%.",
   "bets": [
-    {
-      "cond": "The IRGC or Artesh officially claims a specific attack that is independently confirmed",
-      "effect": "War by Nov. 3 resolves yes; escalated ~{nov3:escalated_war}%",
-      "tripwire": "tw_irgc_claim"
-    },
     {
       "cond": "Iran accepts US sequencing, or round two is set with text",
       "effect": "Year-end deal → ~{deal_ye2026}%",
       "tripwire": "tw_accept"
     },
     {
-      "cond": "The East-West line or Yanbu is offline 3+ days",
-      "effect": "Escalated war → ~{nov3:escalated_war}%; gas ≥ $4.75 on Nov. 3 → ~{gas_nat_475}%",
-      "tripwire": "tw_eastwest_offline"
+      "cond": "Iran ends strait tolls and permits, or declares Hormuz open to all shipping",
+      "effect": "Year-end deal → ~{deal_ye2026}%; comprehensive deal → ~{ye2026:comprehensive_deal}%",
+      "tripwire": "tw_strait_open"
+    },
+    {
+      "cond": "Iran offers a concrete cut in enrichment capacity, in text or on the record",
+      "effect": "Year-end deal → ~{deal_ye2026}%; comprehensive deal → ~{ye2026:comprehensive_deal}%",
+      "tripwire": "tw_enrichment"
     }
   ],
   "blink10": {

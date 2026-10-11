@@ -46,7 +46,6 @@ class Brief(TypedDict):
     updated: str
     headline: str
     status: str
-    change_note: str
     bets: list[dict[str, str]]
     blink10: Blink10
     deal_p: DealP
