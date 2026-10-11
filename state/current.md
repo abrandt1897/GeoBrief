@@ -1,6 +1,6 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-10-10 (pm run, no change; am run, no change); 2026-10-09 (pm run, war by Nov 3 45 → 55; am run, no change); 2026-10-08 (pm run, no change; am run, no change; 2026-10-07: escalated narrowed to new steps; review fixes: weighted price bands, tripwires rebased; review follow-up: Vance condition, war_nov3, Blink #10, tripwires merged and filled in)._
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-10-11 (am run, no change); 2026-10-10 (pm run, no change; am run, no change); 2026-10-09 (pm run, war by Nov 3 45 → 55; am run, no change); 2026-10-08 (pm run, no change; am run, no change; 2026-10-07: escalated narrowed to new steps; review fixes: weighted price bands, tripwires rebased; review follow-up: Vance condition, war_nov3, Blink #10, tripwires merged and filled in)._
 
 ## Canonical Odds (Oct 7)
 
@@ -12,6 +12,8 @@ _Overwritten each update. Tabular data lives in `data/*.csv`; this file holds th
 - **Comprehensive deal:** a _signed_ deal in which Iran concedes at least one of Rubio's three terms. Must stay below MOU-style.
 - **Resolution (what is in force on the horizon date):** a signed deal wins (comprehensive if it concedes a Rubio term, else MOU-style); otherwise an interim truce or enhanced MOU in force that day is MOU-style, even after earlier strikes; otherwise escalated if any escalated step occurred from Oct 7; otherwise limited war / limbo. Scored as `scen_<horizon>_<scenario>` in `data/forecasts.csv`.
 - **War by Nov 3 (`war_nov3`, 55%)** is a separate question: a US strike on Iran, or an official IRGC/Artesh claim of a specific attack that is independently confirmed (UKMTO, CENTCOM, vessel ID, imagery). Unnamed media tallies (Fars "13 violators") and denied, unconfirmed claims (Oct 6 helicopter) don't count. It has no fixed relation to the scenarios: escalated can come from a Houthi or militia outage with no US strike or claim, and MOU-style can follow strikes.
+
+Oct 11 (am run): no change. Saudi GACA: Saturday's Houthi strike on Riyadh airport killed 12 and injured 309, the worst on the Saudi front; adds weight to Trump's "may join" Houthi line (still weak). CENTCOM disabled the Panama-flagged Ocean Molica (ex-Iranian port) running the blockade in the Gulf of Oman, the fourth since July; blockade enforcement on a third-country ship, not a strike on Iran, so `war_nov3` is not resolved. IRGC supertanker mine claim still unnamed and unconfirmed, `tw_irgc_claim` armed. Iran still reviewing the US reply. AAA $4.36 / diesel $6.28.
 
 Oct 10 (pm run): no change. Houthi missile hits the Riyadh airport terminal again (dozens wounded, flights halted); Trump says the US "may" join Saudi strikes on the Houthis and will "take a look" at his pre-midterm no-strike pledge (weak, but the first hedge on it). IRGC Navy claims an unnamed supertanker hit a mine leaving Hormuz by an "unauthorized" route; no name, position or independent confirmation, so `tw_irgc_claim` stays armed. Yemeni government forces push toward Bab el-Mandeb; no closure, `tw_bab` armed. Kremlin: Putin relayed Iran's views on a deal to Trump.
 
