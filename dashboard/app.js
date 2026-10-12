@@ -915,7 +915,8 @@
     }
     h += "</div>";
     const nb = D.blinks.filter((b) => b.type === "blink").length;
-    h += `<ol class="blist" aria-label="Every US threat or deadline, oldest first">${D.blinks
+    h += `<ol class="blist" aria-label="Every US threat or deadline, newest first">${[...D.blinks]
+      .reverse()
       .map((b) => {
         const [tag, color] = BLINK_TAGS[b.type];
         return `<li><span class="when">${esc(blinkDates(b))}</span><span class="what"><b>${esc(b.label)}</b><span>${esc(b.detail)}</span></span><span class="tag" style="color:${cv(color)}">${tag}</span></li>`;

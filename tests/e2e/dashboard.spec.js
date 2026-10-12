@@ -341,9 +341,9 @@ test("blink tab: short captions on the chart and a full list below it", async ({
   }
   const items = page.locator(".blist li");
   await expect(items).toHaveCount(caps.length);
-  await expect(items.first()).toContainText("April 7");
+  await expect(items.first()).toContainText("PENDING");
   await expect(page.locator(".blist .tag").getByText("CARRIED OUT", { exact: true })).toHaveCount(1);
-  await expect(items.last()).toContainText("PENDING");
+  await expect(items.last()).toContainText("April 7");
   await expect(page.locator("#panel .stack")).toHaveCount(0);
 });
 
