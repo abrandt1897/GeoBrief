@@ -811,7 +811,9 @@
     const rowsS = D.supply
       .filter((r) => r.mbd != null && r.kind !== "unconfirmed" && keys.has(r.series))
       .sort((a, b) => (a.date < b.date ? -1 : 1));
-    const dates = [...new Set(rowsS.map((r) => r.date))];
+    // Trackers publish weekly, so the axis runs to the update date and the gap since the newest reading shows.
+    const dates = [...new Set([...rowsS.map((r) => r.date), D.brief.updated])].sort();
+    const lastReading = rowsS[rowsS.length - 1]?.date ?? D.brief.updated;
     const lastDate = dates[dates.length - 1] ?? D.brief.updated;
     /** @type {Series[]} */
     const series = cols.map((c) => ({
@@ -851,6 +853,9 @@
           "",
         )}</div><div style="font-size:13px" class="muted">Million barrels a day. ${SUPPLY_SOURCES[supplySource].unit} Monthly averages are plotted mid-month; dots are individual readings.</div></div>` +
       legend +
+      (lastReading < D.brief.updated
+        ? `<div class="muted" style="font-size:13px;margin-top:6px;font-family:var(--sans)">Trackers publish weekly. Newest reading ${fmtDate(lastReading)}; checked ${fmtDate(D.brief.updated)}.</div>`
+        : "") +
       '<div class="chart" style="margin-top:30px"></div>' +
       note;
     for (const k of ids) {
