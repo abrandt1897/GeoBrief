@@ -84,6 +84,17 @@ def test_check_dispatches_flags_a_second_dispatch_from_one_run() -> None:
     assert len(build.check_dispatches([*ok, ev("(pm, run) f")])) == 1
 
 
+def test_check_daily_odds_needs_rows_on_every_run_day() -> None:
+    def ev(date: str, text: str = "(am, run) a") -> build.Event:
+        return {"date": date, "text": text, "chart": None}
+
+    odds = [odds_row(d, h, "limited_war", 100) for d in ("2026-10-06", "2026-10-07") for h in ("nov3", "ye2026")]
+    events = [ev("2026-10-05"), ev("2026-10-06"), ev("2026-10-07", "(pm, run) b"), ev("2026-10-08", "(late) c")]
+    assert build.check_daily_odds(odds, events) == []
+    missing = build.check_daily_odds(odds, [*events, ev("2026-10-08")])
+    assert len(missing) == 2 and all("2026-10-08" in m for m in missing)
+
+
 # ---------- consistency checks ----------
 
 

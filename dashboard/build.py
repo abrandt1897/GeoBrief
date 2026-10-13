@@ -483,6 +483,19 @@ def check_dispatches(events: list[Event]) -> list[str]:
     return errors
 
 
+def check_daily_odds(odds: list[Row], events: list[Event]) -> list[str]:
+    """Every day with a run dispatch has odds rows for both horizons, unchanged or not, so the charts plot each day."""
+    have = {(r["date"], r["horizon"]) for r in odds}
+    first = min((r["date"] for r in odds), default="")
+    run_days = sorted({e["date"] for e in events if re.match(r"\((am|pm), run\)", e["text"]) and e["date"] >= first})
+    return [
+        f"odds.csv has no {h} rows for {d}, a run day; copy the latest odds with note 'unchanged'"
+        for d in run_days
+        for h in ("nov3", "ye2026")
+        if (d, h) not in have
+    ]
+
+
 def check(odds: list[Row], forecasts: list[Row], terms: list[Row], brief: Brief) -> list[str]:
     latest_f = latest_forecasts(forecasts)
     return (
@@ -561,6 +574,7 @@ def main() -> None:
         check(odds, forecasts, terms, brief)
         + check_derived(odds, forecasts, rows("scenarios.csv"), trips)
         + check_bets(brief, trips)
+        + check_daily_odds(odds, load_events())
     )
     for e in errors:
         print("CHECK FAILED:", e, file=sys.stderr)
