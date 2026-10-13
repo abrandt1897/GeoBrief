@@ -203,10 +203,6 @@ test("physical supply chart defaults to Kpler, switches source, shows the war st
   await expect(page.locator(".supply-note details li").first()).toBeVisible();
   const svg = page.locator("#panel svg");
   await svg.focus();
-  // The axis runs to the update date; step back until the newest weekly reading.
-  for (let i = 0; i < 10 && !(await page.locator(".tip").textContent())?.includes("mb/d"); i++) {
-    await page.keyboard.press("ArrowLeft");
-  }
   await expect(page.locator(".tip")).toContainText("mb/d");
   await expect(page.locator(".tip .src")).toHaveCount(0);
   expect(errors).toEqual([]);

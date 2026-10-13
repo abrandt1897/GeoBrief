@@ -811,8 +811,8 @@
     const rowsS = D.supply
       .filter((r) => r.mbd != null && r.kind !== "unconfirmed" && keys.has(r.series))
       .sort((a, b) => (a.date < b.date ? -1 : 1));
-    // Trackers publish weekly, so the axis runs to the update date and the gap since the newest reading shows.
-    const dates = [...new Set([...rowsS.map((r) => r.date), D.brief.updated])].sort();
+    const dates = [...new Set(rowsS.map((r) => r.date))].sort();
+    // Trackers publish weekly; the note under the chart says when the newest reading is from.
     const lastReading = rowsS[rowsS.length - 1]?.date ?? D.brief.updated;
     const lastDate = dates[dates.length - 1] ?? D.brief.updated;
     /** @type {Series[]} */
