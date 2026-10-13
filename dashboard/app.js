@@ -613,7 +613,7 @@
           ["brent_120", 120],
         ],
       ],
-      note: `${BANDS_NOTE} Bands and ranges are for the January contract, the front month on Nov. 3 after December expires Oct. 30. The dashed line is the January contract itself (ICE settlements, recorded from Oct. 6), so it compares directly with the bands; it runs about $3 under December for backwardation, and the front-month line joins it when December expires. Futures are the front month as Trading Economics shows it, the price most headlines quote; spot is EIA’s daily Europe Brent FOB, which prices physical cargoes now and runs well above futures when prompt barrels are scarce. EIA spot lags a few days.`,
+      note: `${BANDS_NOTE} Bands and ranges are for the January contract, the front month on Nov. 3 after December expires Oct. 30. The dashed line is the January contract itself (exchange settlements from ICE and CME, recorded from Oct. 6), so it compares directly with the bands; it runs about $3 under December for backwardation, and the front-month line joins it when December expires. Futures are the front month as Trading Economics shows it, the price most headlines quote; spot is EIA’s daily Europe Brent FOB, which prices physical cargoes now and runs well above futures when prompt barrels are scarce. EIA spot lags a few days.`,
     },
     lng: {
       label: "LNG",
@@ -641,7 +641,7 @@
           ["lng_jkm_31", 31],
         ],
       ],
-      note: `${BANDS_NOTE} JKM is the Asian spot LNG benchmark and the one most exposed to Hormuz, since Qatar ships about a fifth of the world’s LNG through it. The series is the continuous front-month future, so it steps when the contract rolls mid-month; bands and ranges are for the December contract, the front month on Nov. 3. The dashed line is the December contract itself (ICE settlements, recorded from Oct. 6), so it compares directly with the bands.`,
+      note: `${BANDS_NOTE} JKM is the Asian spot LNG benchmark and the one most exposed to Hormuz, since Qatar ships about a fifth of the world’s LNG through it. The series is the continuous front-month future, so it steps when the contract rolls mid-month; bands and ranges are for the December contract, the front month on Nov. 3. The dashed line is the December contract itself (exchange settlements from ICE and CME, recorded from Oct. 6), so it compares directly with the bands.`,
     },
   };
   /** @type {Fuel} */

@@ -196,7 +196,7 @@ date,brent_front,brent_spot,jkm_front,brent_nov3,jkm_nov3,source
 2026-10-02,102.25,,25.705,,,Brent: Trading Economics; JKM: Investing.com JKMc1
 2026-10-05,100.32,,25.715,,,Brent: Trading Economics; JKM: Investing.com JKMc1
 2026-10-06,100.58,,25.880,97.59,25.84,"Brent: Trading Economics; JKM: Investing.com JKMc1; Nov. 3 contracts (Brent Jan., JKM Dec.): ICE settlements"
-2026-10-07,100.96,,25.875,,,Brent: Trading Economics; JKM: Investing.com JKMc1
-2026-10-08,103.48,,25.955,,,Brent: Trading Economics; JKM: Investing.com JKMc1
-2026-10-09,104.43,,,,,Brent: Trading Economics
-2026-10-12,105.96,,,,,Brent: Trading Economics
+2026-10-07,100.96,,25.875,97.45,26.400,"Brent: Trading Economics; JKM: Investing.com JKMc1; Nov. 3 contracts (Brent Jan., JKM Dec.): CME settlements (backfilled Oct 13)"
+2026-10-08,103.48,,25.955,100.96,26.640,"Brent: Trading Economics; JKM: Investing.com JKMc1; Nov. 3 contracts (Brent Jan., JKM Dec.): CME settlements (backfilled Oct 13)"
+2026-10-09,104.43,,25.980,101.25,27.600,"Brent: Trading Economics; JKM: Investing.com JKMc1; Nov. 3 contracts (Brent Jan., JKM Dec.): CME settlements (backfilled Oct 13)"
+2026-10-12,105.96,,26.090,103.20,28.505,"Brent: Trading Economics; JKM: Investing.com JKMc1; Nov. 3 contracts (Brent Jan., JKM Dec.): CME settlements (backfilled Oct 13)"
