@@ -145,13 +145,13 @@ _Snapshot of `state/current.md` in the GeoBrief repo, which is canonical; copy i
 - **MOU-style deal:** interim truce / enhanced MOU like the MOU week, or unsigned Iranian concessions; no signed comprehensive deal.
 - **Comprehensive deal:** a _signed_ deal in which Iran concedes at least one of Rubio's three terms. Must stay below MOU-style.
 - **Resolution (what is in force on the horizon date):** a signed deal wins (comprehensive if it concedes a Rubio term, else MOU-style); otherwise an interim truce or enhanced MOU in force that day is MOU-style, even after earlier strikes; otherwise escalated if any escalated step occurred from Oct 7; otherwise limited war / limbo. Scored as `scen_<horizon>_<scenario>` in `data/forecasts.csv`.
-- **War by Nov 3 (`war_nov3`, 55%)** is a separate question: a US strike on Iran, or an official IRGC/Artesh claim of a specific attack that is independently confirmed (UKMTO, CENTCOM, vessel ID, imagery). Unnamed media tallies (Fars "13 violators") and denied, unconfirmed claims (Oct 6 helicopter) don't count. It has no fixed relation to the scenarios: escalated can come from a Houthi or militia outage with no US strike or claim, and MOU-style can follow strikes.
+- **Strikes and claims are tripwires, not scenarios.** A US strike on Iran before Nov 3 (`tw_us_strike`) would break Trump's pre-midterm pledge and moves the odds when it fires; a strike campaign on military targets alone stays limited war, while strikes on energy or civilian infrastructure are escalated. An official IRGC/Artesh claim of a specific attack that is independently confirmed (UKMTO, CENTCOM, vessel ID, imagery) fires `tw_irgc_claim`. Unnamed media tallies (Fars "13 violators"), unclaimed hits and denied, unconfirmed claims (Oct 6 helicopter) move nothing on their own.
 
-Oct 9 (pm run): **war by Nov 3 45 → 55**; scenarios unchanged, no tripwire fired. The IRGC Navy officially claimed a named ship, the Vietnam-flagged LPG carrier NV Sunshine on the southern route off Oman, and vowed region-wide pursuit of ships on "unauthorised" routes and sanctions on firms cooperating with the US. The claim is not yet independently confirmed (the UKMTO hit that day, 13 nm W of Al Jazira, UAE, was the VLCC Gem No.2 per Vanguard), so `tw_irgc_claim` has not fired; but Iran is putting its name to specific attacks again (first since Cape Dao, Sept 23), so a confirmed claim before Nov 3 is likelier. Trump: Russia to release 300k t of diesel. Saudi-led coalition launches a large operation against the Houthis. Brent $104.43.
+Oct 9 (pm run): no change, no tripwire fired. The IRGC Navy officially claimed a named ship, the Vietnam-flagged LPG carrier NV Sunshine on the southern route off Oman, and vowed region-wide pursuit of ships on "unauthorised" routes and sanctions on firms cooperating with the US. The claim is not yet independently confirmed (the UKMTO hit that day, 13 nm W of Al Jazira, UAE, was the VLCC Gem No.2 per Vanguard), so `tw_irgc_claim` has not fired; but Iran is putting its name to specific attacks again (first since Cape Dao, Sept 23), so a confirmed claim before Nov 3 is likelier. Trump: Russia to release 300k t of diesel. Saudi-led coalition launches a large operation against the Houthis. Brent $104.43.
 
 Oct 7 (pm run): no change. Unclaimed, unnamed tanker hit by multiple projectiles 51 nm north of Qatar (UKMTO verified, casualties), the deepest Gulf strike this month; Houthi strikes on Abha and Riyadh airports kill 3; senior Iranian official calls enrichment a red line (not a flat refusal of Vance's condition); Iran's army claims US bases were targeted but names no attack. No tripwire fired.
 
-Oct 7 (review follow-up): **Vance (Reuters, Oct 5–6) makes a "meaningful" cut in enrichment capacity a US condition** for any deal, a floor above Rubio's "no nuclear weapon" → year-end deal 15 → 13, by 2027 33 → 31; a signed deal more likely carries a Rubio term (IAEA/enrichment-cap term 40 → 50%), so year-end comprehensive holds at 8 and MOU-style 16 → 14 (limited 66). Nov 3 MOU-style 11 → 10 (limited 82): Iran soft-rejected the counter and calls talks "meaningless." **War by Nov 3 60 → 45** under the stricter claim rule: one official claim (Cape Dao, Sept 23) against ~8 unclaimed hits since, no US strike since Sept 10, and the WSJ says bombing resumes after the election. **Blink #10 re-derived** from the year-end odds (blink 70, no blink 30, unresolved 0). Tripwires merged, made disjoint and filled in (below).
+Oct 7 (review follow-up): **Vance (Reuters, Oct 5–6) makes a "meaningful" cut in enrichment capacity a US condition** for any deal, a floor above Rubio's "no nuclear weapon" → year-end deal 15 → 13, by 2027 33 → 31; a signed deal more likely carries a Rubio term (IAEA/enrichment-cap term 40 → 50%), so year-end comprehensive holds at 8 and MOU-style 16 → 14 (limited 66). Nov 3 MOU-style 11 → 10 (limited 82): Iran soft-rejected the counter and calls talks "meaningless." **`tw_irgc_claim` tightened** to official claims of a specific attack that are independently confirmed: one such claim (Cape Dao, Sept 23) against ~8 unclaimed hits since, no US strike since Sept 10, and the WSJ says bombing resumes after the election. **Blink #10 re-derived** from the year-end odds (blink 70, no blink 30, unresolved 0). Tripwires merged, made disjoint and filled in (below).
 
 Oct 7 (Adam, later still): **odds history before Oct 7 removed.** It was scored on earlier scenario definitions, so the chart now starts Oct 7 (marked in `data/rescores.csv`); pre-Oct 7 `scen_*` forecasts are void, and the Oct 4 seed forecasts (made before the repo's first commit) are void and re-recorded Oct 7 at the same p. Tripwire targets are now moves, not levels.
 
@@ -163,7 +163,7 @@ Oct 7 (review fixes, no new events): **escalated re-scored on the 7-day rule** �
 
 Oct 6: no change. Houthi claims on Riyadh airport/Rabigh (Saudi confirms airport damage); East-West moving oil to Yanbu; tanker On Peace hit (unclaimed, 12 wounded); Qatar says talks continue; Brent <$100. No tripwire fired.
 
-Oct 5: **UAE-third tripwire fired** (Uhud, Emirates Shipping) → infra +2, half-open −2. **Saudi-infra tripwire fired** (Khurais PS-2; flow restored, contested) → infra +3. Pezeshkian: talks "meaningless"; Ghalibaf: strait shut until 7 conditions met → deal −1, limbo −1, half-open −1. War by Nov 3 55 → 60.
+Oct 5: **UAE-third tripwire fired** (Uhud, Emirates Shipping) → infra +2, half-open −2. **Saudi-infra tripwire fired** (Khurais PS-2; flow restored, contested) → infra +3. Pezeshkian: talks "meaningless"; Ghalibaf: strait shut until 7 conditions met → deal −1, limbo −1, half-open −1.
 
 ### Through Midterms (Nov 3)
 
@@ -196,18 +196,19 @@ P(signed deal by YE) 13% sits between comprehensive (8) and MOU + comprehensive 
 
 Registry and targets: `data/tripwires.csv`. Targets are moves from today's odds (`key+=n` / `key-=n`), or a level (`key=v`) for a resolution; the dashboard fills the levels in. The list below is printed by `python3 dashboard/build.py --tripwire-lines`; a test checks it matches.
 
-- Iran formally accepts US sequencing, or round two is scheduled with text → YE deal +8, war by Nov 3 −9, MOU-style by Nov 3 +6.
-- Iran's armed forces (IRGC or Artesh) officially claim a specific attack on shipping, US forces or regional targets that is independently confirmed (UKMTO, CENTCOM, vessel ID or imagery) → war by Nov 3 resolves yes, escalated by Nov 3 +3.
-- Saudi shuttle ship hit outside the Fujairah/Sohar STS zone → war by Nov 3 +10, escalated by Nov 3 +3.
+- Iran formally accepts US sequencing, or round two is scheduled with text → YE deal +8, MOU-style by Nov 3 +6.
+- Iran's armed forces (IRGC or Artesh) officially claim a specific attack on shipping, US forces or regional targets that is independently confirmed (UKMTO, CENTCOM, vessel ID or imagery) → escalated by Nov 3 +3, MOU-style by Nov 3 −2.
+- US strikes Iran before Nov. 3 (confirmed by CENTCOM, the Pentagon or the White House), breaking Trump's no-strikes-before-the-midterms pledge → escalated by Nov 3 +8, MOU-style by Nov 3 −6, YE escalated +8, YE deal −4, gas ≥$4.50 +12.
+- Saudi shuttle ship hit outside the Fujairah/Sohar STS zone → escalated by Nov 3 +3.
 - B-1Bs reappear at Diego Garcia/Gulf, B-2/B-52s forward-deploy, or three carriers on station (GHWB back in the AOR after its Phuket port visit while TR arrives) → Blink #10 no-blink +10, escalated by Nov 3 +3.
 - US blockade easing → MOU-style by Nov 3 +9.
 - Trump–Pezeshkian meeting → MOU-style by Nov 3 +4, YE deal +3.
-- CENTCOM-confirmed US deaths from an Iranian attack, or a US strike on Pickaxe → war by Nov 3 to 90, escalated by Nov 3 +6.
+- CENTCOM-confirmed US deaths from an Iranian attack → escalated by Nov 3 +6, MOU-style by Nov 3 −4.
 - East-West line or Yanbu loadings offline 3+ days, by any attacker incl. a repeat of the Sept Iraqi-militia shutdown (confirmed by Kpler, Vortexa or TankerTrackers) → escalated by Nov 3 +3, gas ≥$4.75 +10.
-- A Saudi STS-relay ship is hit in the Fujairah/Sohar STS zone → escalated by Nov 3 +4, war by Nov 3 +7.
+- A Saudi STS-relay ship is hit in the Fujairah/Sohar STS zone → escalated by Nov 3 +4.
 - Iran ends strait tolls and permits, or declares Hormuz open to all shipping (Rubio #2) → MOU-style by Nov 3 +10, YE deal +7, YE comprehensive +4.
 - Iran offers a concrete cut in enrichment capacity (Vance's condition), in text or on the record → YE deal +6, YE comprehensive +4.
-- Direct Iran–Israel exchange: Iranian missiles or drones fired at Israel, or an Israeli strike inside Iran → escalated by Nov 3 +4, war by Nov 3 +15.
+- Direct Iran–Israel exchange: Iranian missiles or drones fired at Israel, or an Israeli strike inside Iran → escalated by Nov 3 +4, MOU-style by Nov 3 −3.
 - Houthis declare Bab el-Mandeb closed, or hit a non-Saudi ship in the strait (confirmed by UKMTO) → Brent (Jan.) ≥$100 +18, gas ≥$4.50 +12.
 - AAA national regular below $4.20 on any day before Nov. 3 → gas ≥$4.50 −8, gas <$4.00 +7.
 

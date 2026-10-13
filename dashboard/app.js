@@ -1488,7 +1488,6 @@
         .filter((r) => r.date <= phys.date)
         .pop()
     : null;
-  const warF = latestF.get("war_nov3");
   const rial = nth(readings(mkRows, (r) => r.rial_per_usd));
   const tw = { armed: 0, fired: 0, expired: 0 };
   for (const t of D.tripwires) tw[t.status]++;
@@ -1497,7 +1496,6 @@
     ["ESCALATED WAR BY NOV. 3", `${Math.round(escNow)}%`, delta(escNow, gPrev?.escalated_war, 0)],
     ["DEAL BY YE", `${D.brief.deal_p.ye2026}%`, ["", ""]],
   ];
-  if (warF) items.unshift(["WAR BY NOV. 3", `${warF.p}%`, ["", ""]]);
   if (br) items.push(["BRENT", `$${br.v.toFixed(2)}`, delta(br.v, brP?.v, 2)]);
   if (phys) {
     const gap = futOn ? phys.v - futOn.v : null;

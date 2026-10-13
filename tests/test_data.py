@@ -319,7 +319,6 @@ def test_prose_quotes_current_forecasts(name: str) -> None:
     assert lines, f"{name}: no Nov 3 lines paragraph"
     quoted = re.findall(r"~(\d+)%", lines.group(1))
     assert quoted == [p[k] for k in NOV3_LINE_IDS], f"{name}: Nov 3 lines {quoted} != forecasts.csv"
-    assert f"(`war_nov3`, {p['war_nov3']}%)" in text, f"{name}: war_nov3 should read {p['war_nov3']}%"
     assert f"War-ending deal: {p['deal_ye2026']}% by end-2026; {p['deal_ye2027']}% by end-2027" in text
     assert f"P(signed deal by YE) {p['deal_ye2026']}%" in text
     assert f"~{p['deal_prenov3']}% signed (`deal_prenov3`)" in text

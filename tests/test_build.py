@@ -107,7 +107,7 @@ def test_latest_supply_note_renders_last_section(tmp_path: Path, monkeypatch: py
 
 
 def test_good_data_passes() -> None:
-    fc = [forecast("war_nov3", 60), forecast("deal_ye2026", 16), forecast("nuke_deal_2026", 6)]
+    fc = [forecast("deal_ye2026", 16), forecast("nuke_deal_2026", 6)]
     assert build.check(GOOD_ODDS, fc, TERMS, brief()) == []
 
 
@@ -175,7 +175,7 @@ def test_checks_use_latest_date_only() -> None:
 
 
 def test_render_fills_every_placeholder() -> None:
-    page = build.render(brief(), GOOD_ODDS, [forecast("war_nov3", 60)], TERMS)
+    page = build.render(brief(), GOOD_ODDS, [forecast("deal_ye2026", 16)], TERMS)
     for marker in ("/*__STYLES__*/", "/*__APP__*/", "__GEOBRIEF_DATA__"):
         assert marker not in page
     assert page.lstrip().startswith("<title>")
@@ -282,35 +282,36 @@ def trip(targets: str, status: str = "armed", effect: str = "") -> Row:
 
 
 def test_tripwire_targets_must_move_the_odds() -> None:
-    fc = build.latest_forecasts([forecast("war_nov3", 60)])
-    assert build.check_tripwires(GOOD_ODDS, fc, [trip("war_nov3=75;nov3:escalated_war=25")]) == []
-    assert any("within 2" in e for e in build.check_tripwires(GOOD_ODDS, fc, [trip("war_nov3=60")]))
+    fc = build.latest_forecasts([forecast("deal_ye2026", 60)])
+    assert build.check_tripwires(GOOD_ODDS, fc, [trip("deal_ye2026=75;nov3:escalated_war=25")]) == []
+    assert any("within 2" in e for e in build.check_tripwires(GOOD_ODDS, fc, [trip("deal_ye2026=60")]))
     assert any("unknown target" in e for e in build.check_tripwires(GOOD_ODDS, fc, [trip("nope=50")]))
     assert any("no targets" in e for e in build.check_tripwires(GOOD_ODDS, fc, [trip("")]))
-    assert build.check_tripwires(GOOD_ODDS, fc, [trip("war_nov3=60", status="fired")]) == []
+    assert build.check_tripwires(GOOD_ODDS, fc, [trip("deal_ye2026=60", status="fired")]) == []
 
 
 def test_relative_targets_and_effect_placeholders() -> None:
-    fc = build.latest_forecasts([forecast("war_nov3", 60)])
-    t = trip("war_nov3+=9;nov3:escalated_war-=4", effect="War ~{war_nov3}%; escalated ~{nov3:escalated_war}%")
+    fc = build.latest_forecasts([forecast("deal_ye2026", 60)])
+    t = trip("deal_ye2026+=9;nov3:escalated_war-=4", effect="Deal ~{deal_ye2026}%; escalated ~{nov3:escalated_war}%")
     assert build.check_tripwires(GOOD_ODDS, fc, [t]) == []
-    assert build.target_values(GOOD_ODDS, fc, t["targets"]) == {"war_nov3": 69, "nov3:escalated_war": 17}
-    (out,) = build.rendered_trips(GOOD_ODDS, [forecast("war_nov3", 60)], [t])
-    assert out["effect"] == "War ~69%; escalated ~17%"
-    assert any("within 2" in e for e in build.check_tripwires(GOOD_ODDS, fc, [trip("war_nov3+=1")]))
-    assert any("not a target" in e for e in build.check_tripwires(GOOD_ODDS, fc, [trip("war_nov3+=9", effect="{x}")]))
-    fired = trip("war_nov3+=9", status="fired", effect="War ~{war_nov3}%")
+    assert build.target_values(GOOD_ODDS, fc, t["targets"]) == {"deal_ye2026": 69, "nov3:escalated_war": 17}
+    (out,) = build.rendered_trips(GOOD_ODDS, [forecast("deal_ye2026", 60)], [t])
+    assert out["effect"] == "Deal ~69%; escalated ~17%"
+    assert any("within 2" in e for e in build.check_tripwires(GOOD_ODDS, fc, [trip("deal_ye2026+=1")]))
+    no_key = trip("deal_ye2026+=9", effect="{x}")
+    assert any("not a target" in e for e in build.check_tripwires(GOOD_ODDS, fc, [no_key]))
+    fired = trip("deal_ye2026+=9", status="fired", effect="Deal ~{deal_ye2026}%")
     assert any("placeholders" in e for e in build.check_tripwires(GOOD_ODDS, fc, [fired]))
-    assert build.tripwire_line(t) == f"- C → war by Nov 3 +9, escalated by Nov 3 {build.MINUS}4."
-    assert build.target_values(GOOD_ODDS, fc, "war_nov3+=50") == {"war_nov3": 100}
+    assert build.tripwire_line(t) == f"- C → YE deal +9, escalated by Nov 3 {build.MINUS}4."
+    assert build.target_values(GOOD_ODDS, fc, "deal_ye2026+=50") == {"deal_ye2026": 100}
 
 
 def test_bets_fill_from_their_tripwire() -> None:
-    tw = {**trip("war_nov3+=9"), "id": "tw_a"}
-    b = brief(bets=[{"cond": "c", "effect": "War ~{war_nov3}%", "tripwire": "tw_a"}])
+    tw = {**trip("deal_ye2026+=9"), "id": "tw_a"}
+    b = brief(bets=[{"cond": "c", "effect": "Deal ~{deal_ye2026}%", "tripwire": "tw_a"}])
     assert build.check_bets(b, [tw]) == []
-    assert build.rendered_brief(b, GOOD_ODDS, [forecast("war_nov3", 60)], [tw])["bets"][0]["effect"] == "War ~69%"
-    orphan = brief(bets=[{"cond": "c", "effect": "War ~{war_nov3}%"}])
+    assert build.rendered_brief(b, GOOD_ODDS, [forecast("deal_ye2026", 60)], [tw])["bets"][0]["effect"] == "Deal ~69%"
+    orphan = brief(bets=[{"cond": "c", "effect": "Deal ~{deal_ye2026}%"}])
     assert any("no tripwire" in e for e in build.check_bets(orphan, [tw]))
 
 

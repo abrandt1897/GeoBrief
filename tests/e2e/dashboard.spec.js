@@ -15,13 +15,6 @@ function payload() {
 }
 /** The built page's brief.updated (YYYY-MM-DD). @returns {string} */
 const briefUpdated = () => String(payload().brief.updated).slice(0, 10);
-/** Latest p of a forecast id. @param {string} id @returns {number} */
-const latestP = (id) =>
-  /** @type {{ id: string, made_on: string, p: number }[]} */ (payload().forecasts)
-    .filter((f) => f.id === id)
-    .sort((a, b) => (a.made_on < b.made_on ? -1 : 1))
-    .at(-1)?.p ?? NaN;
-
 /** @param {import("@playwright/test").Page} page @returns {string[]} */
 function collectErrors(page) {
   /** @type {string[]} */
@@ -55,7 +48,6 @@ test("renders headline, scenario table, dispatches and ticker without errors", a
   await expect(page.locator("#scen-body tr").first()).toContainText("Limited war / Limbo");
   await expect(page.locator("#disp .disp")).toHaveCount(6);
   await expect(page.locator("#ticker")).toContainText("ESCALATED WAR BY NOV. 3");
-  await expect(page.locator("#ticker")).toContainText(`WAR BY NOV. 3 ${latestP("war_nov3")}%`);
   await expect(page.locator("#ticker")).toContainText("AAA NATIONAL");
   expect(errors).toEqual([]);
 });

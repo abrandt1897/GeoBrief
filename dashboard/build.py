@@ -397,11 +397,11 @@ def check_tripwires(odds: list[Row], latest_f: dict[str, Row], trips: list[Row])
 
 
 TARGET_LABELS = {
-    "war_nov3": "war by Nov 3",
     "deal_ye2026": "YE deal",
     "blink10_noblink": "Blink #10 no-blink",
     "nov3:escalated_war": "escalated by Nov 3",
     "nov3:mou_deal": "MOU-style by Nov 3",
+    "ye2026:escalated_war": "YE escalated",
     "ye2026:comprehensive_deal": "YE comprehensive",
     "gas_nat_450": "gas ≥$4.50",
     "gas_nat_475": "gas ≥$4.75",
