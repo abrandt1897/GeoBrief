@@ -262,7 +262,14 @@ test("tab deep link via #hash", async ({ page }) => {
   await page.goto(`${PAGE}#tripwires`);
   await expect(page.locator("#panel-title")).toHaveText("What Would Move The Odds");
   await expect(page.locator(".trip")).toHaveCount(payload().tripwires.length);
-  await expect(page.locator(".trip").first()).toContainText("FIRED");
+  // Fired tripwires lead the live list for a week after firing, then move to the past section, so the first
+  // card is FIRED only while a recent one exists.
+  const { tripwires, brief } = payload();
+  const dayOf = (/** @type {string} */ s) => Date.parse(`${s.slice(0, 10)}T00:00:00Z`) / 864e5;
+  const recentFired = /** @type {{ status: string, fired_on: string }[]} */ (tripwires).some(
+    (t) => t.status === "fired" && dayOf(brief.updated) - dayOf(t.fired_on) <= 7,
+  );
+  await expect(page.locator(".trip").first()).toContainText(recentFired ? "FIRED" : "ARMED");
 });
 
 test("expired and week-old fired tripwires sit in a collapsed past section", async ({ page }) => {
