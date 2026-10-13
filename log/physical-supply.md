@@ -50,3 +50,10 @@ Kpler's weekly Hormuz figure has dropped from the late-September high: crude ran
 - Products are still scarce: about 1.3 Mbd, 11% of Hormuz flows against more than 20% prewar, which keeps diesel tight while crude recovers.
 - East-West/Yanbu is still unplotted: the Saudi figure of 5.8M bbl delivered is cumulative, and no tracker has given a post-Khurais loading rate.
 - The two Kpler weekly figures don't share a stated basis (crude vs crude and products); read them as direction, not a precise level.
+
+## East-West pipeline back near 5.8 Mbd (Oct 13)
+
+The chart now plots the East-West pipeline at about 5.8 Mbd from Oct 6. That is the Saudi energy minister's on-the-record figure ("as of this morning we're back up to 5.8 million barrels" a day, GCC forum in Manama), which he stood by at the WPC congress in Riyadh on Oct 12. It was earlier logged as a cumulative volume, which misread it. Kpler supports a quick recovery: Red Sea loadings came to about 45M bbl between Sept 17 and Oct 4 and rebounded faster than expected after the restart.
+
+- This is an official estimate, not a tracker reading; no Kpler, Vortexa or TankerTrackers rate has been published since the Oct 4 Khurais strike.
+- A Yanbu loadings figure (plus about 1 Mbd for west-coast refineries) would replace it.
