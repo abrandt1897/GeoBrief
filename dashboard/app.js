@@ -11,7 +11,7 @@
 /** @typedef {{ id: string, condition: string, effect: string, status: "armed" | "fired" | "expired", set_on: string, fired_on: string, evidence: string }} Tripwire */
 /** @typedef {{ term: string, p: number, rubio: string }} Term */
 /** @typedef {{ date: string, end_date: string, label: string, detail: string, type: "blink" | "non_blink" | "pending" | "unscored" }} Blink */
-/** @typedef {{ date: string, text: string, chart: string | null }} GBEvent */
+/** @typedef {{ date: string, text: string, chart: string | null, slot: string, head: string, body: string, src: string, titled: boolean }} GBEvent */
 /** @typedef {{ cond: string, effect: string }} Bet */
 /** @typedef {{ date: string, series: string, mbd: number | null, kind: string, source: string, note: string }} SupplyRow */
 /** @typedef {{ date: string, label: string }} SupplyEvent */
@@ -1423,28 +1423,46 @@
   $("bets").innerHTML = D.brief.bets
     .map((b) => `<div class="bet"><div class="c">${esc(b.cond)}</div><div class="e">${esc(b.effect)}</div></div>`)
     .join("");
-  // Dispatches: newest first, older ones revealed a page at a time back to the start of the war.
-  const DISP_FIRST = 6;
-  const DISP_PAGE = 8;
-  const dispAll = [...D.events].reverse();
+  // Dispatches: one card per day, newest first, each entry a headline that opens to the prose and sources.
+  // Older days are revealed a page at a time back to the start of the war; the newest entry starts open.
+  const DISP_FIRST = 4;
+  const DISP_PAGE = 7;
+  /** @type {Record<string, string>} */
+  const SLOT = { am: "Morning", pm: "Evening", late: "Late" };
+  /** @type {{ date: string, items: GBEvent[] }[]} */
+  const dispDays = [];
+  for (const e of [...D.events].reverse()) {
+    const last = dispDays[dispDays.length - 1];
+    if (last && last.date === e.date) last.items.push(e);
+    else dispDays.push({ date: e.date, items: [e] });
+  }
   let dispShown = 0;
   const dispMore = /** @type {HTMLButtonElement} */ ($("disp-more"));
+  /** @param {GBEvent} e @param {boolean} open */
+  const dispItem = (e, open) => {
+    const slot = SLOT[e.slot] ? `<span class="slot">${SLOT[e.slot]}</span>` : "";
+    const head = `${slot}<span class="h${e.titled ? "" : " untitled"}">${esc(e.head)}</span>`;
+    if (!e.body && !e.src) return `<div class="disp">${head}</div>`;
+    const body = e.body ? `<p>${esc(e.body)}</p>` : "";
+    const src = e.src ? `<p class="src">${esc(e.src)}</p>` : "";
+    return `<details class="disp"${open ? " open" : ""}><summary>${head}</summary>${body}${src}</details>`;
+  };
   /** @param {number} n */
   const showDispatches = (n) => {
-    const next = dispAll.slice(dispShown, dispShown + n);
+    const next = dispDays.slice(dispShown, dispShown + n);
     $("disp").insertAdjacentHTML(
       "beforeend",
       next
         .map(
-          (e) =>
-            `<div class="disp"><div class="d">${fmtDate(e.date)}${e.date.slice(0, 4) === D.brief.updated.slice(0, 4) ? "" : `, ${e.date.slice(0, 4)}`}</div><div>${esc(e.text)}</div></div>`,
+          (day, i) =>
+            `<div class="disp-day"><div class="d">${fmtDate(day.date)}${day.date.slice(0, 4) === D.brief.updated.slice(0, 4) ? "" : `, ${day.date.slice(0, 4)}`}</div><div class="items">${day.items.map((e, j) => dispItem(e, dispShown === 0 && i === 0 && j === 0)).join("")}</div></div>`,
         )
         .join(""),
     );
     dispShown += next.length;
-    const left = dispAll.length - dispShown;
+    const left = dispDays.length - dispShown;
     dispMore.hidden = left <= 0;
-    dispMore.textContent = `Load ${Math.min(DISP_PAGE, left)} older dispatches (${left} left)`;
+    dispMore.textContent = `Load ${Math.min(DISP_PAGE, left)} older days (${left} left)`;
   };
   dispMore.addEventListener("click", () => showDispatches(DISP_PAGE));
   showDispatches(DISP_FIRST);

@@ -84,6 +84,34 @@ def test_check_dispatches_flags_a_second_dispatch_from_one_run() -> None:
     assert len(build.check_dispatches([*ok, ev("(pm, run) f")])) == 1
 
 
+def test_split_dispatch_separates_slot_headline_body_and_sources() -> None:
+    d = build.split_dispatch("(pm, run) **Houthis hit Dhahran** A missile hit Aramco. Rear Adm. Ali spoke. (CBS/AP)")
+    assert d == {
+        "slot": "pm",
+        "head": "Houthis hit Dhahran",
+        "body": "A missile hit Aramco. Rear Adm. Ali spoke.",
+        "src": "CBS/AP",
+        "titled": True,
+    }
+    d = build.split_dispatch("(am, run) Iran spoke to Lt. Gen. Smith. Odds held (for now). (Reuters)")
+    assert (
+        d["head"] == "Iran spoke to Lt. Gen. Smith." and d["body"] == "Odds held (for now)." and d["src"] == "Reuters"
+    )
+    d = build.split_dispatch("Larak strikes begin (Aug 30-Sep 10).")
+    assert d == {"slot": "", "head": "Larak strikes begin (Aug 30-Sep 10).", "body": "", "src": "", "titled": False}
+
+
+def test_check_dispatches_needs_headline_and_no_status_line_on_new_runs() -> None:
+    def ev(date: str, text: str) -> build.Event:
+        return {"date": date, "text": text, "chart": None}
+
+    old = [ev("2026-10-14", "(am, run) Something. No tripwire fired and odds are unchanged.")]
+    assert build.check_dispatches(old) == []
+    assert build.check_dispatches([ev("2026-10-14", "(pm, run) **Head** Body.")]) == []
+    assert len(build.check_dispatches([ev("2026-10-15", "(am, run) No headline here.")])) == 1
+    assert len(build.check_dispatches([ev("2026-10-15", "(am, run) **Head** No tripwire fired.")])) == 1
+
+
 def test_check_daily_odds_needs_rows_on_every_run_day() -> None:
     def ev(date: str, text: str = "(am, run) a") -> build.Event:
         return {"date": date, "text": text, "chart": None}

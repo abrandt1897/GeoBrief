@@ -58,6 +58,14 @@ class Event(TypedDict):
     chart: str | None
 
 
+class Dispatch(TypedDict):
+    slot: str
+    head: str
+    body: str
+    src: str
+    titled: bool
+
+
 def rows(name: str) -> list[Row]:
     with (DATA / name).open(newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
@@ -88,6 +96,42 @@ def load_events() -> list[Event]:
         if m:
             out.append({"date": m.group(1), "text": m.group(2).strip(), "chart": m.group(3)})
     return out
+
+
+# Run dispatches after this (date, slot) must open with a **headline** and skip the routine status sentence.
+HEADLINE_AFTER = ("2026-10-14", "am")
+ABBREV = re.compile(
+    r"(?:\b(?:Adm|Gen|Lt|Col|Capt|Maj|Sgt|Cpl|Pvt|Sen|Rep|Gov|Mr|Mrs|Ms|Dr|St|No|Jan|Feb|Mar|Apr|Aug|Sep|Sept|Oct|Nov|Dec)|\b[A-Z])\.$"
+)
+BOILERPLATE = re.compile(r"no tripwire fired|odds (?:are|were) unchanged", re.I)
+
+
+def split_dispatch(text: str) -> Dispatch:
+    """Split an event line into its run slot, headline, body and trailing source list.
+
+    The headline is a leading **bold** span, or else the first sentence.
+    """
+    slot = ""
+    m = re.match(r"\((am|pm|late)(?:, run)?\)\s*", text)
+    if m:
+        slot, text = m.group(1), text[m.end() :]
+    src = ""
+    m = re.search(r"\s*\(([^()]+)\)$", text)
+    if m and re.search(r"[.!?\"”]$", text[: m.start()]):
+        src, text = m.group(1), text[: m.start()]
+    m = re.match(r"\*\*(.+?)\*\*\s*", text)
+    if m:
+        return {"slot": slot, "head": m.group(1).strip(), "body": text[m.end() :].strip(), "src": src, "titled": True}
+    for b in re.finditer(r"(?<=[.!?])[\"”]?\s+(?=[A-Z\"“])", text):
+        if not ABBREV.search(text[: b.start()]):
+            return {
+                "slot": slot,
+                "head": text[: b.start()].strip(),
+                "body": text[b.end() :].strip(),
+                "src": src,
+                "titled": False,
+            }
+    return {"slot": slot, "head": text.strip(), "body": "", "src": src, "titled": False}
 
 
 def md_inline(s: str) -> str:
@@ -480,6 +524,14 @@ def check_dispatches(events: list[Event]) -> list[str]:
             if key in seen:
                 errors.append(f"log/events.md has two {m.group(1)} run dispatches on {e['date']}; merge them into one")
             seen.add(key)
+            if key > HEADLINE_AFTER:
+                if not e["text"][m.end() :].lstrip().startswith("**"):
+                    errors.append(f"{e['date']} {m.group(1)} dispatch needs a **headline** after the run tag")
+                if BOILERPLATE.search(e["text"]):
+                    errors.append(
+                        f"{e['date']} {m.group(1)} dispatch repeats the status line; "
+                        "mention odds or tripwires only when one moved"
+                    )
     return errors
 
 
@@ -531,7 +583,7 @@ def render(brief: Brief, odds: list[Row], forecasts: list[Row], terms: list[Row]
         "rescores": rows("rescores.csv"),
         "terms": [{**t, "p": float(t["p"])} for t in terms],
         "blinks": rows("blinks.csv"),
-        "events": load_events(),
+        "events": [{**e, **split_dispatch(e["text"])} for e in load_events()],
         "supply": numeric(rows("supply.csv"), ("date", "series", "kind", "source", "note")),
         "supply_events": rows("supply_events.csv"),
         "supply_note": latest_supply_note(),

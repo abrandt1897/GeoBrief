@@ -826,7 +826,7 @@ td.num {
   color: var(--war);
 }
 
-.disp {
+.disp-day {
   display: grid;
   grid-template-columns: 76px minmax(0, 1fr);
   gap: 20px;
@@ -834,11 +834,60 @@ td.num {
   border-top: 1px solid var(--rule);
 }
 
-.disp .d {
+.disp-day .d {
   font-family: var(--sans);
   font-size: 14px;
   font-weight: 700;
   padding-top: 2px;
+}
+
+.disp + .disp {
+  margin-top: 10px;
+}
+
+.disp summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.disp summary::-webkit-details-marker {
+  display: none;
+}
+
+.disp .h {
+  font-weight: 600;
+}
+
+/* Older dispatches have no headline: their first sentence stands in, in body weight. */
+.disp .h.untitled {
+  font-weight: 400;
+}
+
+details.disp .h::after {
+  content: " +";
+  color: var(--muted);
+  font-weight: 400;
+}
+
+details.disp[open] .h::after {
+  content: " −";
+}
+
+.disp .slot {
+  display: block;
+  font: 600 12px var(--sans);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.disp p {
+  margin: 6px 0 0;
+}
+
+.disp .src {
+  font: 13px var(--sans);
+  color: var(--muted);
 }
 
 .more {

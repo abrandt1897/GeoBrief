@@ -3,6 +3,7 @@
 Append-only, newest last. One line per event:
 `- YYYY-MM-DD | summary (source) [chart: short label]`
 Write each summary as short prose (full sentences, not fragments or arrows); it shows as a dashboard dispatch.
+Run dispatches open with a `**bold headline**` after the run tag and skip the routine status line (no tripwire fired, odds unchanged) unless something moved.
 The optional `[chart: …]` tag marks the event on the dashboard's odds chart. Ranges use the start date.
 
 - 2026-02-28 | US-Israeli strikes open the war: almost 900 strikes in the first 12 hours; Supreme Leader Ali Khamenei killed. Iran fires missiles at Israel and at US bases in Bahrain, Qatar, Kuwait and the UAE; one killed in Abu Dhabi. A girls' school in Minab is hit (reports: 201 students killed). (Wikipedia; NBC)
