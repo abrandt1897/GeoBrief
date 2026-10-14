@@ -134,7 +134,7 @@ P(term | deal). P(deal) ≈ 13% by end-2026, 31% by end-2027 (Vance, Oct 5–6: 
 **Read:** likely deal = enhanced MOU + unfreeze + Oman-run strait; IAEA access the likeliest Rubio term (up on "concrete nuclear steps" and Vance's enrichment condition, 40 → 50%); HEU turnover unlikely. Rubio 0-for-3 → blink #10.
 **Tripwires:** Iran accepts US sequencing or round 2 scheduled with text → YE deal ~21%. Leaked text with IAEA/enrichment cap → deal +5. US delegate on Oman track → joint admin ~90%, deal +10. Unfreeze before signing → deal −5, limbo +5.
 
-## Canonical Odds (Oct 7)
+## Canonical Odds (Oct 14)
 
 _Snapshot of `state/current.md` in the GeoBrief repo, which is canonical; copy it here on every update so the skill never quotes an older set._
 
@@ -169,16 +169,16 @@ Oct 5: **UAE-third tripwire fired** (Uhud, Emirates Shipping) → infra +2, half
 
 | Scenario            | P   | Gas (AAA reg.) | Brent (Jan.) | Key Driver                                                                                                     |
 | ------------------- | --- | -------------- | ------------ | -------------------------------------------------------------------------------------------------------------- |
-| Limited war / Limbo | 82% | $3.95-4.70     | $82-113      | No settlement; Iran holds strait-first; claimed hits, US strike rounds, limbo                                  |
-| Escalated war       | 7%  | $4.75-5.10     | $115-127     | New step: Gulf hub/plant out 7+ days (~4), strikes on Iranian civilian infrastructure (~2), ground forces (~2) |
-| MOU-style deal      | 10% | $3.85-4.10     | $73-87       | Iran folds on sequencing or interim text; nothing signed in full                                               |
+| Limited war / Limbo | 81% | $3.95-4.70     | $82-113      | No settlement; Iran holds strait-first; claimed hits, US strike rounds, limbo                                  |
+| Escalated war       | 10% | $4.75-5.10     | $115-127     | New step: Gulf hub/plant out 7+ days (~6), strikes on Iranian civilian infrastructure (~2), ground forces (~2) |
+| MOU-style deal      | 8%  | $3.85-4.10     | $73-87       | Iran folds on sequencing or interim text; nothing signed in full                                               |
 | Comprehensive deal  | 1%  | $3.85-4.05     | $73-85       | Signed deal conceding a Rubio term before the election                                                         |
 
 **Weighted bands (`scenarios.csv`):** a merged scenario keeps the price mix of the paths inside it as sub-ranges weighted by their odds — limited = round 46 ($4.25-4.50) + strike campaign 7 ($4.45-4.70) + limbo 19 ($4.10-4.30) + half-open 9 ($3.95-4.15), centred on the forwards; escalated = new step 7 ($4.75-5.10); MOU = Iran folds 8 + signed non-comprehensive 3. Every Nov 3 price line = odds × bands, uniform within each sub-range; `build.py` fails if a line drifts more than 1 point. Brent bands are for the January contract (ICE settle $97.59 on Oct 6, ~$3 under December); JKM bands for December ($25.84).
 
 **Gas baseline (AAA, Oct 6):** national regular $4.37 (wk $4.48, mo $4.15); diesel $6.32 (record $6.53 9/22). NY state $4.47 / $6.52; NYC metro $4.55 / $6.73 (≈ +18¢ / +41¢ over national; the NYC lines use the latest gap from `gas.csv`). **2026 reference (AAA):** pre-war $2.98 (Feb 26); high $4.56 (May 21); July low $3.79; Sept peak $4.48 (Sept 24).
 **Gas mechanics:** rockets 2-4¢/day, feathers 1-1.5¢/day (~2.4¢ per $1/bbl); no-shock path → ~$4.10-4.25.
-**Nov 3 lines (AAA national regular):** ≥$4.50 ~13% · ≥$4.75 ~7% · ≥$5.00 ~2% · <$4.00 ~9%. NYC metro ≥$4.75 ~11%, ≥$5 ~6%. Diesel ≥$6.50 ~12% · ≥$6.75 ~7% · ≥$7.00 ~6% · <$6.00 ~19%. Brent (Jan.) ≥$100 ~37% · ≥$110 ~9% · ≥$120 ~4% · <$90 ~21%. JKM (Dec.) ≥$25 ~67% · ≥$28 ~12% · ≥$31 ~5% · <$20 ~5%.
+**Nov 3 lines (AAA national regular):** ≥$4.50 ~16% · ≥$4.75 ~10% · ≥$5.00 ~2% · <$4.00 ~8%. NYC metro ≥$4.75 ~14%, ≥$5 ~9%. Diesel ≥$6.50 ~15% · ≥$6.75 ~10% · ≥$7.00 ~8% · <$6.00 ~17%. Brent (Jan.) ≥$100 ~40% · ≥$110 ~12% · ≥$120 ~6% · <$90 ~19%. JKM (Dec.) ≥$25 ~69% · ≥$28 ~15% · ≥$31 ~8% · <$20 ~5%.
 **Market cross-check:** the bands now centre on ICE January Brent ($97.59, Oct 6); Dated Brent >$120 (Oct 2 floor) says physical is tighter than futures. Futures have faded every lull; supply recovery + G7 release cap upside.
 
 ### Through Year-End 2026
@@ -197,7 +197,6 @@ P(signed deal by YE) 13% sits between comprehensive (8) and MOU + comprehensive 
 Registry and targets: `data/tripwires.csv`. Targets are moves from today's odds (`key+=n` / `key-=n`), or a level (`key=v`) for a resolution; the dashboard fills the levels in. The list below is printed by `python3 dashboard/build.py --tripwire-lines`; a test checks it matches.
 
 - Iran formally accepts US sequencing, or round two is scheduled with text → YE deal +8, MOU-style by Nov 3 +6.
-- Iran's armed forces (IRGC or Artesh) officially claim a specific attack on shipping, US forces or regional targets that is independently confirmed (UKMTO, CENTCOM, vessel ID or imagery) → escalated by Nov 3 +3, MOU-style by Nov 3 −2.
 - US strikes Iran before Nov. 3 (confirmed by CENTCOM, the Pentagon or the White House), breaking Trump's no-strikes-before-the-midterms pledge → escalated by Nov 3 +8, MOU-style by Nov 3 −6, YE escalated +8, YE deal −4, gas ≥$4.50 +12.
 - Saudi shuttle ship hit outside the Fujairah/Sohar STS zone → escalated by Nov 3 +3.
 - B-1Bs reappear at Diego Garcia/Gulf, B-2/B-52s forward-deploy, or three carriers on station (GHWB back in the AOR after its Phuket port visit while TR arrives) → Blink #10 no-blink +10, escalated by Nov 3 +3.

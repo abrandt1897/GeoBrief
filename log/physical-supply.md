@@ -57,3 +57,10 @@ The chart now plots the East-West pipeline at about 5.8 Mbd from Oct 6. That is 
 
 - This is an official estimate, not a tracker reading; no Kpler, Vortexa or TankerTrackers rate has been published since the Oct 4 Khurais strike.
 - A Yanbu loadings figure (plus about 1 Mbd for west-coast refineries) would replace it.
+
+## Hormuz exports stay near 8.5 Mbd as Iran sinks a container ship (Oct 14)
+
+Kpler's media briefing puts Hormuz exports at 8.5 Mbd in the week to Oct 12, nearly 40% below prewar and level with the week to Oct 7, with daily flows swinging from 6 Mbd on Friday to 3 Mbd on Monday. Middle East crude shipments, including the pipelines to the Gulf of Oman and the Red Sea, slipped to 14.0 Mbd from 15.3. The IEA's October report confirms how far September had recovered: 10.9 Mbd of total oil through Hormuz (up 3.7 on August), Gulf crude exports of 13.9 Mbd and 5.6 Mbd of bypass exports. October is giving that back as attacks mount (UKMTO: 20 in the strait since Oct 1; GFS Pride sank Oct 14).
+
+- Products remain the bottleneck: the IEA has Middle East product exports at 1.9 Mbd and LPG at 0.67 Mbd in September, against 4.7 and 1.5 prewar.
+- East-West has no new reading; the plotted 5.8 Mbd is still the Saudi minister's Oct 6 figure.

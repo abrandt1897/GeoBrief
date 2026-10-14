@@ -201,3 +201,4 @@ date,brent_front,brent_spot,jkm_front,brent_nov3,jkm_nov3,source
 2026-10-09,104.43,,25.980,101.25,27.600,"Brent: Trading Economics; JKM: Investing.com JKMc1; Nov. 3 contracts (Brent Jan., JKM Dec.): CME settlements (backfilled Oct 13)"
 2026-10-12,105.96,,26.090,103.20,28.505,"Brent: Trading Economics; JKM: Investing.com JKMc1; Nov. 3 contracts (Brent Jan., JKM Dec.): CME settlements (backfilled Oct 13)"
 2026-10-13,106.03,,26.270,102.91,29.615,"Brent: Trading Economics; JKM: Investing.com JKMc1; Nov. 3 contracts (Brent Jan., JKM Dec.): CME settlements (filled Oct 14)"
+2026-10-14,106.06,,26.385,,,"Brent: Dec. settle via CNBC (Trading Economics page inconsistent tonight); JKM: Investing.com JKMc1; Nov. 3 contracts: CME Oct 14 settlements not yet posted, fill next run"
