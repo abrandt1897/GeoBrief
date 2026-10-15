@@ -101,15 +101,26 @@ def test_split_dispatch_separates_slot_headline_body_and_sources() -> None:
     assert d == {"slot": "", "head": "Larak strikes begin (Aug 30-Sep 10).", "body": "", "src": "", "titled": False}
 
 
-def test_check_dispatches_needs_headline_and_no_status_line_on_new_runs() -> None:
+def test_check_dispatches_rejects_status_line_on_new_runs() -> None:
     def ev(date: str, text: str) -> build.Event:
         return {"date": date, "text": text, "chart": None}
 
     old = [ev("2026-10-14", "(am, run) Something. No tripwire fired and odds are unchanged.")]
     assert build.check_dispatches(old) == []
-    assert build.check_dispatches([ev("2026-10-14", "(pm, run) **Head** Body.")]) == []
-    assert len(build.check_dispatches([ev("2026-10-15", "(am, run) No headline here.")])) == 1
-    assert len(build.check_dispatches([ev("2026-10-15", "(am, run) **Head** No tripwire fired.")])) == 1
+    assert build.check_dispatches([ev("2026-10-15", "(am, run) Body.")]) == []
+    assert len(build.check_dispatches([ev("2026-10-15", "(am, run) Body. No tripwire fired.")])) == 1
+
+
+def test_check_headlines_needs_one_per_run_day() -> None:
+    def ev(date: str, text: str = "(am, run) a") -> build.Event:
+        return {"date": date, "text": text, "chart": None}
+
+    heads = [{"date": "2026-10-14", "headline": "Iran Claims a Sinking"}]
+    events = [ev("2026-10-13", "history"), ev("2026-10-14"), ev("2026-10-14", "(pm, run) b")]
+    assert build.check_headlines(events, heads) == []
+    assert len(build.check_headlines([*events, ev("2026-10-15")], heads)) == 1
+    assert len(build.check_headlines(events, [{"date": "2026-10-14", "headline": "Ends with a period."}])) == 1
+    assert len(build.check_headlines(events, heads * 2)) == 1
 
 
 def test_check_daily_odds_needs_rows_on_every_run_day() -> None:

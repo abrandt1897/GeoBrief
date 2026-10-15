@@ -46,7 +46,7 @@ test("renders headline, scenario table, dispatches and ticker without errors", a
   await expect(page.locator("#dateline")).toContainText("days to Election Day");
   await expect(page.locator("#scen-body tr")).toHaveCount(4);
   await expect(page.locator("#scen-body tr").first()).toContainText("Limited war / Limbo");
-  await expect(page.locator("#disp .disp-day")).toHaveCount(4);
+  await expect(page.locator("#disp .disp-day")).toHaveCount(5);
   await expect(page.locator("#ticker")).toContainText("ESCALATED WAR BY NOV. 3");
   await expect(page.locator("#ticker")).toContainText("AAA NATIONAL");
   expect(errors).toEqual([]);
@@ -350,32 +350,40 @@ test("dispatches load older days in pages back to the start of the war", async (
   await page.goto(PAGE);
   const rows = page.locator("#disp .disp-day");
   const more = page.locator("#disp-more");
-  await expect(rows).toHaveCount(4);
+  await expect(rows).toHaveCount(5);
   await expect(more).toBeVisible();
-  let prev = 4;
+  let prev = 5;
   while (await more.isVisible()) {
     await more.click();
     const n = await rows.count();
     expect(n - prev).toBeGreaterThanOrEqual(1);
-    expect(n - prev).toBeLessThanOrEqual(7);
+    expect(n - prev).toBeLessThanOrEqual(8);
     prev = n;
   }
   await expect(rows.last()).toContainText("Feb. 28");
   await expect(rows.last()).toContainText("Khamenei");
 });
 
-test("dispatches show headlines; only the newest starts open and others expand on tap", async ({ page }) => {
+test("dispatches lead each day with a headline; only the newest day starts open", async ({ page }) => {
   await page.goto(PAGE);
-  const items = page.locator("#disp details.disp");
-  await expect(items.first()).toHaveAttribute("open", "");
-  await expect(page.locator("#disp details.disp[open]")).toHaveCount(1);
-  await expect(page.locator("#disp .slot").first()).toHaveText(/Morning|Evening/i);
+  const days = page.locator("#disp details.disp-day");
+  await expect(days.first()).toHaveAttribute("open", "");
+  await expect(page.locator("#disp details.disp-day[open]")).toHaveCount(1);
+  await expect(days.first().locator(".hl")).not.toBeEmpty();
+  expect(
+    await days
+      .first()
+      .locator(".hl")
+      .evaluate((el) => getComputedStyle(el).fontWeight),
+  ).toBe("700");
+  await expect(days.first().locator(".slot").first()).toHaveText(/Morning|Evening/i);
   await expect(page.locator("#disp")).not.toContainText(", run)");
-  const second = items.nth(1);
-  await expect(second.locator("p").first()).toBeHidden();
+  await expect(page.locator("#disp")).not.toContainText("**");
+  const second = days.nth(1);
+  await expect(second.locator(".disp p").first()).toBeHidden();
   await second.locator("summary").click();
-  await expect(second.locator("p").first()).toBeVisible();
-  await expect(second.locator(".src")).not.toBeEmpty();
+  await expect(second.locator(".disp p").first()).toBeVisible();
+  await expect(second.locator(".src").first()).not.toBeEmpty();
 });
 
 test("clicking the ticker pauses it and clicking again resumes it", async ({ page }) => {

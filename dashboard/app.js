@@ -44,6 +44,7 @@
  * @property {SupplyRow[]} supply
  * @property {SupplyEvent[]} supply_events
  * @property {SupplyNote | null} supply_note
+ * @property {Record<string, string>} [headlines] date -> the day's headline, from data/headlines.csv
  * @property {Rescore[]} [rescores] from data/rescores.csv; absent in payloads built before it existed
  */
 /** @typedef {{ date: string, v: Record<string, number> }} DateRow */
@@ -1423,12 +1424,13 @@
   $("bets").innerHTML = D.brief.bets
     .map((b) => `<div class="bet"><div class="c">${esc(b.cond)}</div><div class="e">${esc(b.effect)}</div></div>`)
     .join("");
-  // Dispatches: one card per day, newest first, each entry a headline that opens to the prose and sources.
-  // Older days are revealed a page at a time back to the start of the war; the newest entry starts open.
-  const DISP_FIRST = 4;
-  const DISP_PAGE = 7;
+  // Dispatches: one card per day, newest first, led by the day's headline (data/headlines.csv; older days fall back
+  // to their first sentence). Tapping a headline opens the Morning/Evening prose; the newest day starts open.
+  const DISP_FIRST = 5;
+  const DISP_PAGE = 8;
   /** @type {Record<string, string>} */
   const SLOT = { am: "Morning", pm: "Evening", late: "Late" };
+  const HEADS = D.headlines ?? {};
   /** @type {{ date: string, items: GBEvent[] }[]} */
   const dispDays = [];
   for (const e of [...D.events].reverse()) {
@@ -1438,27 +1440,29 @@
   }
   let dispShown = 0;
   const dispMore = /** @type {HTMLButtonElement} */ ($("disp-more"));
-  /** @param {GBEvent} e @param {boolean} open */
-  const dispItem = (e, open) => {
+  /** @param {GBEvent} e @param {boolean} headUsed the day headline is this entry's first sentence */
+  const dispItem = (e, headUsed) => {
+    const prose = e.titled || headUsed ? e.body : `${e.head} ${e.body}`.trim();
+    if (!prose && !e.src) return "";
     const slot = SLOT[e.slot] ? `<span class="slot">${SLOT[e.slot]}</span>` : "";
-    const head = `${slot}<span class="h${e.titled ? "" : " untitled"}">${esc(e.head)}</span>`;
-    if (!e.body && !e.src) return `<div class="disp">${head}</div>`;
-    const body = e.body ? `<p>${esc(e.body)}</p>` : "";
     const src = e.src ? `<p class="src">${esc(e.src)}</p>` : "";
-    return `<details class="disp"${open ? " open" : ""}><summary>${head}</summary>${body}${src}</details>`;
+    return `<div class="disp">${slot}${prose ? `<p>${esc(prose)}</p>` : ""}${src}</div>`;
+  };
+  /** @param {{ date: string, items: GBEvent[] }} day @param {boolean} open */
+  const dispDay = (day, open) => {
+    const own = HEADS[day.date];
+    const lead = /** @type {GBEvent} */ (day.items[0]);
+    const head = own ?? lead.head;
+    const when = `${fmtDate(day.date)}${day.date.slice(0, 4) === D.brief.updated.slice(0, 4) ? "" : `, ${day.date.slice(0, 4)}`}`;
+    const top = `<div class="d">${when}</div><h3 class="hl">${esc(head)}</h3>`;
+    const items = day.items.map((e) => dispItem(e, !own && e === lead)).join("");
+    if (!items) return `<div class="disp-day">${top}</div>`;
+    return `<details class="disp-day"${open ? " open" : ""}><summary>${top}</summary>${items}</details>`;
   };
   /** @param {number} n */
   const showDispatches = (n) => {
     const next = dispDays.slice(dispShown, dispShown + n);
-    $("disp").insertAdjacentHTML(
-      "beforeend",
-      next
-        .map(
-          (day, i) =>
-            `<div class="disp-day"><div class="d">${fmtDate(day.date)}${day.date.slice(0, 4) === D.brief.updated.slice(0, 4) ? "" : `, ${day.date.slice(0, 4)}`}</div><div class="items">${day.items.map((e, j) => dispItem(e, dispShown === 0 && i === 0 && j === 0)).join("")}</div></div>`,
-        )
-        .join(""),
-    );
+    $("disp").insertAdjacentHTML("beforeend", next.map((day, i) => dispDay(day, dispShown === 0 && i === 0)).join(""));
     dispShown += next.length;
     const left = dispDays.length - dispShown;
     dispMore.hidden = left <= 0;

@@ -46,6 +46,7 @@ GeoBrief is a flat-file repo. Text and CSV files are the database, one Python sc
 | `data/supply.csv`, `supply_events.csv`           | yes            | Physical supply series; `supply_events.csv` captions are no longer drawn (see `docs/physical-supply-explainer.md`)                           |
 | `data/tripwires.csv`, `data/blinks.csv`          | yes            | Tripwire board; TACO history                                                                                                                 |
 | `data/rescores.csv`                              | yes            | Dates when odds moved because a definition changed (chart markers)                                                                           |
+| `data/headlines.csv`                             | yes            | One headline per day, leading that day's dispatch card; the evening run may rewrite the day's row                                            |
 | `log/events.md`                                  | yes            | Parsed as `- YYYY-MM-DD \| text [chart: label]`; older `[chart:]` tags are parsed but no longer drawn                                        |
 | `log/physical-supply.md`                         | yes            | Only the last level-2 section, rendered to HTML as the supply note                                                                           |
 | `state/current.md`, `taco.md`, `deal-tracker.md` | no             | Reasoning for humans and Claude; must agree with the CSVs but aren't parsed                                                                  |

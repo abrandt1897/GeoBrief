@@ -48,6 +48,7 @@ SCHEMAS: dict[str, list[str]] = {
     "supply.csv": ["date", "series", "mbd", "kind", "source", "note"],
     "rescores.csv": ["date", "horizon", "note"],
     "supply_events.csv": ["date", "label"],
+    "headlines.csv": ["date", "headline"],
 }
 
 
@@ -94,6 +95,7 @@ def test_no_ragged_rows(name: str) -> None:
         ("blinks.csv", ["date"]),
         ("supply.csv", ["date"]),
         ("supply_events.csv", ["date"]),
+        ("headlines.csv", ["date"]),
     ],
 )
 def test_dates_are_valid(name: str, cols: list[str]) -> None:

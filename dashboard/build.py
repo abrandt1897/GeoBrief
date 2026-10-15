@@ -98,8 +98,9 @@ def load_events() -> list[Event]:
     return out
 
 
-# Run dispatches after this (date, slot) must open with a **headline** and skip the routine status sentence.
-HEADLINE_AFTER = ("2026-10-14", "am")
+# Run dispatches after this (date, slot) skip the routine status sentence.
+STATUS_LINE_AFTER = ("2026-10-14", "am")
+HEADLINE_MAX = 80
 ABBREV = re.compile(
     r"(?:\b(?:Adm|Gen|Lt|Col|Capt|Maj|Sgt|Cpl|Pvt|Sen|Rep|Gov|Mr|Mrs|Ms|Dr|St|No|Jan|Feb|Mar|Apr|Aug|Sep|Sept|Oct|Nov|Dec)|\b[A-Z])\.$"
 )
@@ -524,14 +525,30 @@ def check_dispatches(events: list[Event]) -> list[str]:
             if key in seen:
                 errors.append(f"log/events.md has two {m.group(1)} run dispatches on {e['date']}; merge them into one")
             seen.add(key)
-            if key > HEADLINE_AFTER:
-                if not e["text"][m.end() :].lstrip().startswith("**"):
-                    errors.append(f"{e['date']} {m.group(1)} dispatch needs a **headline** after the run tag")
-                if BOILERPLATE.search(e["text"]):
-                    errors.append(
-                        f"{e['date']} {m.group(1)} dispatch repeats the status line; "
-                        "mention odds or tripwires only when one moved"
-                    )
+            if key > STATUS_LINE_AFTER and BOILERPLATE.search(e["text"]):
+                errors.append(
+                    f"{e['date']} {m.group(1)} dispatch repeats the status line; "
+                    "mention odds or tripwires only when one moved"
+                )
+    return errors
+
+
+def check_headlines(events: list[Event], headlines: list[Row]) -> list[str]:
+    """Each day with a run dispatch has one headline row in data/headlines.csv (the evening run may rewrite it)."""
+    errors = []
+    dates = [h["date"] for h in headlines]
+    if dates != sorted(set(dates)):
+        errors.append("data/headlines.csv must have one row per date, in date order")
+    for h in headlines:
+        text = h["headline"].strip()
+        if not text or len(text) > HEADLINE_MAX or text.endswith("."):
+            errors.append(
+                f"data/headlines.csv {h['date']}: a headline is 1-{HEADLINE_MAX} characters with no final period"
+            )
+    first = min(dates, default="9999")
+    for d in sorted({e["date"] for e in events if re.match(r"\((am|pm), run\)", e["text"]) and e["date"] >= first}):
+        if d not in dates:
+            errors.append(f"data/headlines.csv has no headline for {d}; add the day's headline")
     return errors
 
 
@@ -553,6 +570,7 @@ def check(odds: list[Row], forecasts: list[Row], terms: list[Row], brief: Brief)
     return (
         check_sums(odds)
         + check_dispatches(load_events())
+        + check_headlines(load_events(), rows("headlines.csv"))
         + check_blink10(latest_f, brief)
         + check_deal(odds, latest_f, terms, brief)
         + check_blink10_scenarios(odds, brief)
@@ -583,6 +601,7 @@ def render(brief: Brief, odds: list[Row], forecasts: list[Row], terms: list[Row]
         "rescores": rows("rescores.csv"),
         "terms": [{**t, "p": float(t["p"])} for t in terms],
         "blinks": rows("blinks.csv"),
+        "headlines": {h["date"]: h["headline"].strip() for h in rows("headlines.csv")},
         "events": [{**e, **split_dispatch(e["text"])} for e in load_events()],
         "supply": numeric(rows("supply.csv"), ("date", "series", "kind", "source", "note")),
         "supply_events": rows("supply_events.csv"),

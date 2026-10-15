@@ -827,50 +827,49 @@ td.num {
 }
 
 .disp-day {
-  display: grid;
-  grid-template-columns: 76px minmax(0, 1fr);
-  gap: 20px;
-  padding: 12px 0;
+  padding: 14px 0;
   border-top: 1px solid var(--rule);
 }
 
-.disp-day .d {
-  font-family: var(--sans);
-  font-size: 14px;
-  font-weight: 700;
-  padding-top: 2px;
-}
-
-.disp + .disp {
-  margin-top: 10px;
-}
-
-.disp summary {
+.disp-day summary {
   cursor: pointer;
   list-style: none;
 }
 
-.disp summary::-webkit-details-marker {
+.disp-day summary::-webkit-details-marker {
   display: none;
 }
 
-.disp .h {
-  font-weight: 600;
+.disp-day .d {
+  font: 700 12px var(--sans);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--war);
 }
 
-/* Older dispatches have no headline: their first sentence stands in, in body weight. */
-.disp .h.untitled {
-  font-weight: 400;
+.disp-day .hl {
+  margin: 2px 0 0;
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
-details.disp .h::after {
+details.disp-day .hl::after {
   content: " +";
   color: var(--muted);
   font-weight: 400;
 }
 
-details.disp[open] .h::after {
+details.disp-day[open] .hl::after {
   content: " −";
+}
+
+.disp {
+  margin-top: 12px;
+  max-width: 760px;
 }
 
 .disp .slot {
@@ -882,12 +881,18 @@ details.disp[open] .h::after {
 }
 
 .disp p {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
 }
 
 .disp .src {
   font: 13px var(--sans);
   color: var(--muted);
+}
+
+@media (width <= 560px) {
+  .disp-day .hl {
+    font-size: 21px;
+  }
 }
 
 .more {
