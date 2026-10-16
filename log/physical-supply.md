@@ -64,3 +64,10 @@ Kpler's media briefing puts Hormuz exports at 8.5 Mbd in the week to Oct 12, nea
 
 - Products remain the bottleneck: the IEA has Middle East product exports at 1.9 Mbd and LPG at 0.67 Mbd in September, against 4.7 and 1.5 prewar.
 - East-West has no new reading; the plotted 5.8 Mbd is still the Saudi minister's Oct 6 figure.
+
+## Hormuz crude edges up to 9.4 Mbd as Yanbu becomes a target (Oct 16)
+
+Kpler puts crude exports through Hormuz at 9.4 Mbd in the week to Oct 14, about 70% of prewar and up from 8.5 in the week to Oct 12, even though at least nine ships were attacked in and around the strait over those days. The attacks are slowing traffic, not stopping it. On Oct 16 Saudi forces intercepted a Houthi ballistic missile aimed at the Yanbu export terminal, the first reported attempt this month on the Red Sea end of the East-West bypass.
+
+- No hit was reported, so the East-West tripwire stays armed; a Yanbu outage of three days or more confirmed by a tracker would fire it.
+- East-West still has no tracker reading; the plotted 5.8 Mbd is the Saudi minister's Oct 6 figure.
