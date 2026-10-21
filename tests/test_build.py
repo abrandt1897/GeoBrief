@@ -111,6 +111,17 @@ def test_check_dispatches_rejects_status_line_on_new_runs() -> None:
     assert len(build.check_dispatches([ev("2026-10-15", "(am, run) Body. No tripwire fired.")])) == 1
 
 
+def test_check_dispatch_flows_needs_a_supply_row() -> None:
+    def ev(text: str, date: str = "2026-10-21") -> build.Event:
+        return {"date": date, "text": text, "chart": None}
+
+    supply = [{"date": "2026-10-18", "series": "gulf_kpler", "mbd": "20.6", "note": "total 24.6 vs 23.3 prewar"}]
+    ok = ev("(pm, run) Kpler put exports at 24.6 Mbd; a tanker carrying 2 million barrels was hit.")
+    assert build.check_dispatch_flows([ok], supply) == []
+    assert build.check_dispatch_flows([ev("(am, run) Hormuz ran 9.9 Mbd.", "2026-10-20")], supply) == []
+    assert len(build.check_dispatch_flows([ev("(am, run) Hormuz ran 14 million barrels a day.")], supply)) == 1
+
+
 def test_check_headlines_needs_one_per_run_day() -> None:
     def ev(date: str, text: str = "(am, run) a") -> build.Event:
         return {"date": date, "text": text, "chart": None}

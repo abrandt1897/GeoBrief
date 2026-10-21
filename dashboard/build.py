@@ -104,6 +104,9 @@ HEADLINE_MAX = 80
 ABBREV = re.compile(
     r"(?:\b(?:Adm|Gen|Lt|Col|Capt|Maj|Sgt|Cpl|Pvt|Sen|Rep|Gov|Mr|Mrs|Ms|Dr|St|No|Jan|Feb|Mar|Apr|Aug|Sep|Sept|Oct|Nov|Dec)|\b[A-Z])\.$"
 )
+# A flow rate quoted in a dispatch ("24.6 Mbd"); cargo sizes like "2 million barrels" don't match.
+FLOW_RATE = re.compile(r"(\d+(?:\.\d+)?)\s*(?:Mbd|mb/d|million (?:barrels (?:a|per) day|bpd|b/d))", re.I)
+FLOWS_CHECKED_FROM = "2026-10-21"
 BOILERPLATE = re.compile(r"no tripwire fired|odds (?:are|were) unchanged", re.I)
 
 
@@ -533,6 +536,23 @@ def check_dispatches(events: list[Event]) -> list[str]:
     return errors
 
 
+def check_dispatch_flows(events: list[Event], supply: list[Row]) -> list[str]:
+    """Every flow rate a run dispatch quotes is in data/supply.csv (value or note), so the chart matches."""
+    known = {float(n) for r in supply for n in re.findall(r"\d+(?:\.\d+)?", f"{r['mbd']} {r['note']}")}
+    errors = []
+    for e in events:
+        m = re.match(r"\((am|pm), run\)", e["text"])
+        if not m or e["date"] < FLOWS_CHECKED_FROM:
+            continue
+        for v in FLOW_RATE.findall(e["text"]):
+            if float(v) not in known:
+                errors.append(
+                    f"{e['date']} {m.group(1)} dispatch quotes {v} Mbd but data/supply.csv has no such reading; "
+                    "add the row (build.md step 4) so the physical supply chart matches"
+                )
+    return errors
+
+
 def check_headlines(events: list[Event], headlines: list[Row]) -> list[str]:
     """Each day with a run dispatch has one headline row in data/headlines.csv (the evening run may rewrite it)."""
     errors = []
@@ -571,6 +591,7 @@ def check(odds: list[Row], forecasts: list[Row], terms: list[Row], brief: Brief)
         check_sums(odds)
         + check_dispatches(load_events())
         + check_headlines(load_events(), rows("headlines.csv"))
+        + check_dispatch_flows(load_events(), rows("supply.csv"))
         + check_blink10(latest_f, brief)
         + check_deal(odds, latest_f, terms, brief)
         + check_blink10_scenarios(odds, brief)

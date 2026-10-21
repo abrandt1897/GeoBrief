@@ -71,3 +71,11 @@ Kpler puts crude exports through Hormuz at 9.4 Mbd in the week to Oct 14, about 
 
 - No hit was reported, so the East-West tripwire stays armed; a Yanbu outage of three days or more confirmed by a tracker would fire it.
 - East-West still has no tracker reading; the plotted 5.8 Mbd is the Saudi minister's Oct 6 figure.
+
+## Gulf exports top prewar while Hormuz lags (Oct 21)
+
+Kpler's preliminary figures (via the WSJ, Oct 20) put Middle East oil exports at 24.6 Mbd in the week to Oct 18, above the 23.3 Mbd prewar level, with about 14 Mbd still moving through Hormuz (including ship-to-ship transfers off Oman), about 82% of prewar. The rest went out through the Saudi and UAE bypass pipelines, which carried about 40% of non-Iranian Gulf crude in September against 17% before the war.
+
+- Both Kpler figures are total oil (crude and products). The chart's Kpler lines are crude only, so the Oct 18 points are crude-basis estimates: the same share of prewar applied to the crude baselines (Gulf 20.6, Hormuz 11.1).
+- They are preliminary, and Kpler often revises its first vintage.
+- East-West still has no tracker reading; the plotted 5.8 Mbd is the Saudi minister's Oct 6 figure.
