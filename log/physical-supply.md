@@ -79,3 +79,10 @@ Kpler's preliminary figures (via the WSJ, Oct 20) put Middle East oil exports at
 - Both Kpler figures are total oil (crude and products). The chart's Kpler lines are crude only, so the Oct 18 points are crude-basis estimates: the same share of prewar applied to the crude baselines (Gulf 20.6, Hormuz 11.1).
 - They are preliminary, and Kpler often revises its first vintage.
 - East-West still has no tracker reading; the plotted 5.8 Mbd is the Saudi minister's Oct 6 figure.
+
+## Chart now tracks total oil (Oct 22)
+
+The Kpler lines now show total oil (crude and products): total Gulf exports, oil via Hormuz (including ship-to-ship shuttles off Oman) and oil via pipelines, which is total minus Hormuz, so the two lower lines add up to the top one. Kpler put total exports at 24.6 Mbd in the week to Oct 18 (23.3 prewar) and Hormuz at about 14 Mbd (about 17 prewar), which leaves about 10.6 Mbd going around the strait.
+
+- Most earlier weekly Kpler readings were crude only; they are scaled to total oil with measured ratios (Gulf x1.19, Hormuz x1.13) and marked as estimates.
+- The Oct 18 figures are preliminary, and Kpler often revises its first vintage.

@@ -787,7 +787,10 @@
 
   /** Physical-supply data sources; the button picks which one the Gulf and Hormuz lines use. */
   const SUPPLY_SOURCES = {
-    kpler: { label: "Kpler", unit: "Kpler crude only." },
+    kpler: {
+      label: "Kpler",
+      unit: "Kpler total oil: crude and products; crude-only readings are scaled up as estimates.",
+    },
     iea: { label: "IEA", unit: "IEA total oil: crude, NGLs and products." },
   };
   /** @typedef {keyof typeof SUPPLY_SOURCES} SupplySource */
@@ -796,22 +799,41 @@
 
   /**
    * Physical-supply series in draw order; the colour follows the series, never its rank.
+   * "Via pipelines" is derived: total Gulf exports minus Hormuz flows, so the lower two lines add up to the top one.
    * @param {SupplySource} src
    */
   const supplySeries = (src) => [
-    { key: `gulf_${src}`, name: "Gulf exports", color: "--fg", width: 3.5 },
-    { key: `hormuz_${src}`, name: "Hormuz flows", color: "--war", width: 3 },
-    { key: "eastwest", name: "East-West pipeline", color: "--calm", width: 2.5 },
+    { key: `gulf_${src}`, name: "Total Gulf exports", color: "--fg", width: 3.5 },
+    { key: `hormuz_${src}`, name: "Via Hormuz", color: "--war", width: 3 },
+    { key: `pipeline_${src}`, name: "Via pipelines", color: "--calm", width: 2.5 },
   ];
+
+  /**
+   * Total minus Hormuz on each date both have a reading (prewar baselines pair with each other).
+   * @param {SupplyRow[]} rs plotted rows for one source
+   * @param {SupplySource} src
+   * @returns {SupplyRow[]}
+   */
+  const pipelineRows = (rs, src) =>
+    rs.flatMap((g) => {
+      if (g.series !== `gulf_${src}` || g.mbd == null) return [];
+      const h = rs.find(
+        (x) =>
+          x.series === `hormuz_${src}` &&
+          (x.date === g.date || (x.kind === "baseline" && g.kind === "baseline" && x.date > g.date)),
+      );
+      return h && h.mbd != null
+        ? [{ ...g, series: `pipeline_${src}`, mbd: Math.round((g.mbd - h.mbd) * 10) / 10, kind: "estimate" }]
+        : [];
+    });
 
   /** @param {HTMLElement} el */
   function supplyPanel(el) {
     const cols = supplySeries(supplySource);
     const keys = new Set(cols.map((c) => c.key));
     // Single-source readings stay in supply.csv for the record but aren't plotted until confirmed.
-    const rowsS = D.supply
-      .filter((r) => r.mbd != null && r.kind !== "unconfirmed" && keys.has(r.series))
-      .sort((a, b) => (a.date < b.date ? -1 : 1));
+    const plotted = D.supply.filter((r) => r.mbd != null && r.kind !== "unconfirmed" && keys.has(r.series));
+    const rowsS = [...plotted, ...pipelineRows(plotted, supplySource)].sort((a, b) => (a.date < b.date ? -1 : 1));
     const dates = [...new Set(rowsS.map((r) => r.date))].sort();
     // Trackers publish weekly; the note under the chart says when the newest reading is from.
     const lastReading = rowsS[rowsS.length - 1]?.date ?? D.brief.updated;
@@ -852,7 +874,7 @@
         )
         .join(
           "",
-        )}</div><div style="font-size:13px" class="muted">Million barrels a day. ${SUPPLY_SOURCES[supplySource].unit} Monthly averages are plotted mid-month; dots are individual readings.</div></div>` +
+        )}</div><div style="font-size:13px" class="muted">Million barrels a day. ${SUPPLY_SOURCES[supplySource].unit} Via pipelines is total exports minus Hormuz flows (bypass pipelines and ports outside the strait). Monthly averages are plotted mid-month; dots are individual readings.</div></div>` +
       legend +
       (lastReading < D.brief.updated
         ? `<div class="muted" style="font-size:13px;margin-top:6px;font-family:var(--sans)">Trackers publish weekly. Newest reading ${fmtDate(lastReading)}; checked ${fmtDate(D.brief.updated)}.</div>`
@@ -866,7 +888,7 @@
       };
     }
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
-      label: `Line chart of Gulf exports, Hormuz flows (${SUPPLY_SOURCES[supplySource].label}) and Saudi East-West pipeline throughput since January`,
+      label: `Line chart of total Gulf oil exports, oil via Hormuz and oil via pipelines (${SUPPLY_SOURCES[supplySource].label}) since January`,
       start: "2026-01-01",
       end: isoOf(day(lastDate) + 30),
       dates,
