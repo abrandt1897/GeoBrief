@@ -86,3 +86,4 @@ The Kpler lines now show total oil (crude and products): total Gulf exports, oil
 
 - Most earlier weekly Kpler readings were crude only; they are scaled to total oil with measured ratios (Gulf x1.19, Hormuz x1.13) and marked as estimates.
 - The Oct 18 figures are preliminary, and Kpler often revises its first vintage.
+- Kpler didn't publish public weekly figures before late September. Earlier points are Kpler's monthly and period averages (for example 2.3 Mbd through Hormuz from April to the June MOU and 6.1 Mbd during the MOU window), and the pipeline line interpolates Hormuz between its readings.

@@ -809,23 +809,27 @@
   ];
 
   /**
-   * Total minus Hormuz on each date both have a reading (prewar baselines pair with each other).
+   * Total minus Hormuz at each total-exports reading. Hormuz is taken on the same date, or interpolated between the
+   * Hormuz readings either side, since the two are rarely published for the same week.
    * @param {SupplyRow[]} rs plotted rows for one source
    * @param {SupplySource} src
    * @returns {SupplyRow[]}
    */
-  const pipelineRows = (rs, src) =>
-    rs.flatMap((g) => {
+  const pipelineRows = (rs, src) => {
+    const hs = rs
+      .filter((x) => x.series === `hormuz_${src}` && x.mbd != null)
+      .sort((a, b) => (a.date < b.date ? -1 : 1));
+    return rs.flatMap((g) => {
       if (g.series !== `gulf_${src}` || g.mbd == null) return [];
-      const h = rs.find(
-        (x) =>
-          x.series === `hormuz_${src}` &&
-          (x.date === g.date || (x.kind === "baseline" && g.kind === "baseline" && x.date > g.date)),
-      );
-      return h && h.mbd != null
-        ? [{ ...g, series: `pipeline_${src}`, mbd: Math.round((g.mbd - h.mbd) * 10) / 10, kind: "estimate" }]
-        : [];
+      const prev = hs.filter((h) => h.date <= g.date).pop();
+      const next = hs.find((h) => h.date >= g.date);
+      if (!prev || !next || prev.mbd == null || next.mbd == null) return [];
+      const span = day(next.date) - day(prev.date);
+      const t = span ? (day(g.date) - day(prev.date)) / span : 0;
+      const hormuz = prev.mbd + (next.mbd - prev.mbd) * t;
+      return [{ ...g, series: `pipeline_${src}`, mbd: Math.round((g.mbd - hormuz) * 10) / 10, kind: "estimate" }];
     });
+  };
 
   /** @param {HTMLElement} el */
   function supplyPanel(el) {
@@ -874,7 +878,7 @@
         )
         .join(
           "",
-        )}</div><div style="font-size:13px" class="muted">Million barrels a day. ${SUPPLY_SOURCES[supplySource].unit} Via pipelines is total exports minus Hormuz flows (bypass pipelines and ports outside the strait). Monthly averages are plotted mid-month; dots are individual readings.</div></div>` +
+        )}</div><div style="font-size:13px" class="muted">Million barrels a day. ${SUPPLY_SOURCES[supplySource].unit} Via pipelines is total exports minus Hormuz flows (bypass pipelines and ports outside the strait), with Hormuz interpolated between readings. Monthly averages are plotted mid-month; dots are individual readings.</div></div>` +
       legend +
       (lastReading < D.brief.updated
         ? `<div class="muted" style="font-size:13px;margin-top:6px;font-family:var(--sans)">Trackers publish weekly. Newest reading ${fmtDate(lastReading)}; checked ${fmtDate(D.brief.updated)}.</div>`
