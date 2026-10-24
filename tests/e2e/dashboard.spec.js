@@ -238,6 +238,27 @@ test("gas price ranges are exclusive and sum to 100% for every fuel", async ({ p
   }
 });
 
+test("gas horizon toggle swaps Nov. 3 ranges for year-end ones", async ({ page }) => {
+  const errors = collectErrors(page);
+  await page.goto(`${PAGE}#gas`);
+  await expect(page.locator("#seg-h-nov3")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".figs")).toContainText("on Nov. 3");
+  await page.click("#seg-h-ye2026");
+  await expect(page.locator("#seg-h-ye2026")).toHaveAttribute("aria-pressed", "true");
+  const svg = page.locator("#panel svg");
+  await expect(svg).toContainText("Dec. 31");
+  await expect(svg.locator("rect title")).toHaveCount(4);
+  await expect(page.locator(".figs")).toContainText("Under $3.75 on Dec. 31");
+  await expect(page.locator(".figs")).toContainText("$4.50 or more on Dec. 31");
+  const ps = await page.locator(".figs strong").allTextContents();
+  expect(ps).toHaveLength(5);
+  expect(ps.reduce((a, t) => a + Number(t.replace("%", "")), 0)).toBe(100);
+  await page.click("#seg-diesel");
+  await expect(page.locator("#seg-h-ye2026")).toHaveCount(0);
+  await expect(page.locator(".figs")).toContainText("on Nov. 3");
+  expect(errors).toEqual([]);
+});
+
 test("Brent and LNG buttons swap in their series, bands and ranges", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto(`${PAGE}#gas`);

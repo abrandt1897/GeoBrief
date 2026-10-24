@@ -538,6 +538,7 @@
    * @property {number} [step] y-axis step; omitted = 25¢ or 50¢ by range
    * @property {[string, number, [string, number][]]} buckets "<" forecast id, its price, then ">=" ids and prices
    * @property {string} note
+   * @property {{ buckets: [string, number, [string, number][]], note: string }} [ye] year-end ranges, if forecast
    */
   /** @param {(r: GasRow) => number | null} get @param {string} name @returns {FuelLine[]} */
   const gasLine = (get, name) => [{ name, color: "--fg", pts: readings(gasRows, get) }];
@@ -562,6 +563,18 @@
         ],
       ],
       note: `${BANDS_NOTE} Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.`,
+      ye: {
+        buckets: [
+          "gas_ye_lt375",
+          3.75,
+          [
+            ["gas_ye_400", 4],
+            ["gas_ye_425", 4.25],
+            ["gas_ye_450", 4.5],
+          ],
+        ],
+        note: "Bars right of Dec. 31 show each scenario’s year-end range; bar width is proportional to its probability. The ranges under the chart don’t overlap, so they sum to 100%. The status quo is centred on January RBOB gasoline futures plus the usual retail spread, which bakes in the cheaper winter blend. Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.",
+      },
     },
     diesel: {
       label: "Diesel",
@@ -647,10 +660,14 @@
   };
   /** @type {Fuel} */
   let gasFuel = "gas";
+  /** @type {"nov3" | "ye2026"} horizon of the ranges, for a fuel that has year-end ones */
+  let gasHorizon = "nov3";
 
   /** @param {HTMLElement} el */
   function gasPanel(el) {
     const cfg = FUELS[gasFuel];
+    const isYe = gasHorizon === "ye2026" && !!cfg.ye;
+    const horizonEnd = isYe ? `${election.slice(0, 4)}-12-31` : election;
     const lines = cfg.lines();
     const allDates = [...new Set(lines.flatMap((l) => l.pts.map((r) => r.date)))].sort();
     const lastDate = allDates[allDates.length - 1] ?? latest.date;
@@ -666,7 +683,7 @@
       ...(l.dash ? { dash: l.dash } : {}),
       points: l.pts.filter((r) => r.date >= start).map((r) => ({ d: r.date, v: r.v })),
     }));
-    const bands = scenarioBands(cfg.band, money);
+    const bands = scenarioBands(cfg.band, money, isYe ? "ye2026" : "nov3");
     const vals = [
       ...series.flatMap((x) => x.points.flatMap((pt) => (pt.v == null ? [] : [pt.v]))),
       ...bands.flatMap((b) => [b.lo, b.hi]),
@@ -678,7 +695,7 @@
     /** @type {number[]} */
     const ticks = [];
     for (let t = yMin; t <= yMax - step + step / 25; t += step) ticks.push(Number(t.toFixed(2)));
-    const [ltId, low, ge] = cfg.buckets;
+    const [ltId, low, ge] = isYe && cfg.ye ? cfg.ye.buckets : cfg.buckets;
     const legend = `<div class="legend" style="margin-top:10px">${lines
       .flatMap((l) => {
         const cur = nth(l.pts);
@@ -698,21 +715,37 @@
           (k) =>
             `<button type="button" id="seg-${k}" data-fuel="${k}" aria-pressed="${k === gasFuel}">${FUELS[k].label}</button>`,
         )
-        .join("")}</div><div style="font-size:13px" class="muted">${esc(cfg.unit)}</div></div>` +
+        .join("")}</div>${
+        cfg.ye
+          ? `<div class="seg" role="group" aria-label="Horizon">${HORIZONS.map(
+              ([k, label]) =>
+                `<button type="button" id="seg-h-${k}" aria-pressed="${k === (isYe ? "ye2026" : "nov3")}">${label}</button>`,
+            ).join("")}</div>`
+          : ""
+      }<div style="font-size:13px" class="muted">${esc(cfg.unit)}</div></div>` +
       legend +
       '<div class="chart" style="margin-top:30px"></div>' +
-      priceBuckets(ltId, low, ge, cfg.step ? (v) => `$${v}` : money) +
-      `<div class="note">${esc(cfg.note)}</div>`;
+      priceBuckets(ltId, low, ge, cfg.step ? (v) => `$${v}` : money, isYe ? "Dec. 31" : "Nov. 3") +
+      `<div class="note">${esc(isYe && cfg.ye ? cfg.ye.note : cfg.note)}</div>`;
     for (const k of ids) {
       $(`seg-${k}`).onclick = () => {
         gasFuel = k;
         render();
       };
     }
+    if (cfg.ye) {
+      for (const [k] of HORIZONS) {
+        $(`seg-h-${k}`).onclick = () => {
+          gasHorizon = k;
+          render();
+        };
+      }
+    }
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
-      label: cfg.chartLabel,
+      label: isYe ? cfg.chartLabel.replace("Nov. 3", "year-end") : cfg.chartLabel,
       start,
-      end: election,
+      end: horizonEnd,
+      ...(isYe ? { endMark: "Dec. 31" } : {}),
       dates,
       series,
       yMin,
@@ -725,16 +758,24 @@
     });
   }
 
+  /** @type {["nov3" | "ye2026", string][]} */
+  const HORIZONS = [
+    ["nov3", "Nov. 3"],
+    ["ye2026", "Year-end"],
+  ];
+
   /**
-   * Nov. 3 price bands, one per current scenario, sized by its latest probability.
+   * Price bands for a horizon, one per current scenario, sized by its latest probability.
    * @param {(s: Scenario) => string} field
    * @param {(v: number) => string} f
+   * @param {"nov3" | "ye2026"} horizon
    * @returns {Band[]}
    */
-  function scenarioBands(field, f) {
-    return Object.keys(latest.v).flatMap((k) => {
-      const s = meta.get(`nov3:${k}`);
-      const p = latest.v[k] ?? 0;
+  function scenarioBands(field, f, horizon) {
+    const odds = horizon === "ye2026" ? latestYeRow.v : latest.v;
+    return Object.keys(odds).flatMap((k) => {
+      const s = meta.get(`${horizon}:${k}`);
+      const p = odds[k] ?? 0;
       const range = s ? bandRange(field(s)) : null;
       if (!s || !range) return [];
       const [lo, hi] = range;
@@ -749,9 +790,10 @@
    * @param {number} low
    * @param {[string, number][]} ge forecast ids for "at or above" each threshold, ascending
    * @param {(v: number) => string} f price format
+   * @param {string} when resolution date label
    * @returns {string}
    */
-  function priceBuckets(ltId, low, ge, f) {
+  function priceBuckets(ltId, low, ge, f, when) {
     const lt = latestF.get(ltId);
     const ps = ge.map(([id]) => latestF.get(id)?.p);
     if (!lt || ps.some((p) => p == null)) return "";
@@ -766,7 +808,7 @@
       }),
     ];
     return `<div class="figs">${labels
-      .map((label, i) => `<div><small>${label} on Nov. 3</small><strong>${Math.round(probs[i] ?? 0)}%</strong></div>`)
+      .map((label, i) => `<div><small>${label} on ${when}</small><strong>${Math.round(probs[i] ?? 0)}%</strong></div>`)
       .join("")}</div>`;
   }
 
@@ -1236,7 +1278,7 @@
       id: "gas",
       label: "Gas Prices",
       title: "Energy Prices Against The Scenarios",
-      dek: "Gas, diesel, Brent crude and Asian LNG, each with the price range every scenario implies on Nov. 3. Pump prices rise 2–4¢ a day after a shock and fall 1–1.5¢ a day after it passes.",
+      dek: "Gas, diesel, Brent crude and Asian LNG, each with the price range every scenario implies on Nov. 3 (gas also at year end). Pump prices rise 2–4¢ a day after a shock and fall 1–1.5¢ a day after it passes.",
       render: gasPanel,
     },
     {

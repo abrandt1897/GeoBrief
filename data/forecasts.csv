@@ -95,3 +95,7 @@ lng_jkm_31,2026-10-14,JKM LNG (Dec. contract) >= $31 on Nov 3,8,2026-11-03,JKM D
 gas_nyc_500,2026-10-15,AAA NYC metro regular >= $5.00 on Nov 3,8,2026-11-03,AAA NYC metro regular as shown on Nov 3,,,re-derived Oct 15: NYC-national gap narrowed to 18c (AAA Oct 15) x the weighted sub-bands (scenarios.csv)
 gas_nyc_475,2026-10-24,AAA NYC metro regular >= $4.75 on Nov 3,13,2026-11-03,AAA NYC metro regular as shown on Nov 3,,,re-derived Oct 24: NYC-national gap narrowed to 14c (AAA Oct 24) x the weighted sub-bands (scenarios.csv)
 gas_nyc_500,2026-10-24,AAA NYC metro regular >= $5.00 on Nov 3,7,2026-11-03,AAA NYC metro regular as shown on Nov 3,,,re-derived Oct 24: NYC-national gap narrowed to 14c (AAA Oct 24) x the weighted sub-bands (scenarios.csv)
+gas_ye_lt375,2026-10-24,AAA national regular < $3.75 on Dec 31,10,2026-12-31,AAA national regular as shown on Dec 31,,,"new Oct 24 (year-end gas toggle): ye2026 odds x ye2026 gas bands (scenarios.csv), status quo centred on Jan RBOB $3.018 (CME Oct 22) + ~$1.10 retail spread"
+gas_ye_400,2026-10-24,AAA national regular >= $4.00 on Dec 31,68,2026-12-31,AAA national regular as shown on Dec 31,,,new Oct 24: ye2026 odds x ye2026 gas bands (scenarios.csv)
+gas_ye_425,2026-10-24,AAA national regular >= $4.25 on Dec 31,38,2026-12-31,AAA national regular as shown on Dec 31,,,new Oct 24: ye2026 odds x ye2026 gas bands (scenarios.csv)
+gas_ye_450,2026-10-24,AAA national regular >= $4.50 on Dec 31,18,2026-12-31,AAA national regular as shown on Dec 31,,,new Oct 24: ye2026 odds x ye2026 gas bands (scenarios.csv)

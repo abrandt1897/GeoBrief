@@ -290,6 +290,7 @@ def p_at_least(segs: list[tuple[float, float, float]], x: float) -> float:
 
 # Forecast id -> (scenarios.csv band column, ">=" or "<", threshold).
 # NYC metro lines use the national gas band plus the NYC premium (see nyc_premium).
+# gas_ye_* lines resolve on Dec. 31 against the ye2026 odds and bands; the rest on Nov. 3 (see price_horizon).
 PRICE_LINES: dict[str, tuple[str, str, float]] = {
     "gas_nat_lt400": ("gas_band", "<", 4.00),
     "gas_nat_450": ("gas_band", ">=", 4.50),
@@ -309,7 +310,16 @@ PRICE_LINES: dict[str, tuple[str, str, float]] = {
     "lng_jkm_25": ("lng_band", ">=", 25),
     "lng_jkm_28": ("lng_band", ">=", 28),
     "lng_jkm_31": ("lng_band", ">=", 31),
+    "gas_ye_lt375": ("gas_band", "<", 3.75),
+    "gas_ye_400": ("gas_band", ">=", 4.00),
+    "gas_ye_425": ("gas_band", ">=", 4.25),
+    "gas_ye_450": ("gas_band", ">=", 4.50),
 }
+
+
+def price_horizon(fid: str) -> str:
+    """The odds horizon a price line resolves on: ye2026 for gas_ye_*, else nov3."""
+    return "ye2026" if fid.startswith("gas_ye_") else "nov3"
 
 
 def nyc_premium(gas: list[Row]) -> float:
@@ -320,17 +330,17 @@ def nyc_premium(gas: list[Row]) -> float:
 
 
 def implied_price_line(odds: list[Row], scenarios: list[Row], fid: str, premium: float = 0.0) -> float | None:
-    """A Nov. 3 price line implied by the latest scenario odds and their bands, in percent.
+    """A price line implied by the latest scenario odds and their bands for its horizon, in percent.
 
     `premium` is the NYC-over-national gap; NYC lines test the national band at the threshold minus it.
     """
     col, op, x = PRICE_LINES[fid]
     if fid.startswith("gas_nyc_"):
         x -= premium
-    nov = latest_odds(odds, "nov3")
-    bands = {s["scenario"]: s[col] for s in scenarios if s["horizon"] == "nov3"}
+    horizon = price_horizon(fid)
+    bands = {s["scenario"]: s[col] for s in scenarios if s["horizon"] == horizon}
     total = 0.0
-    for k, p in nov.items():
+    for k, p in latest_odds(odds, horizon).items():
         segs = band_segments(bands.get(k, ""))
         if not segs:
             return None
@@ -342,14 +352,14 @@ def implied_price_line(odds: list[Row], scenarios: list[Row], fid: str, premium:
 def check_price_lines(
     odds: list[Row], scenarios: list[Row], latest_f: dict[str, Row], premium: float = 0.0
 ) -> list[str]:
-    """Every Nov. 3 price forecast equals scenario odds x bands (rounded), so the bars and ranges agree."""
+    """Every price forecast equals its horizon's scenario odds x bands (rounded), so the bars and ranges agree."""
     errors: list[str] = []
     for fid in PRICE_LINES:
         if fid not in latest_f:
             continue
         want = implied_price_line(odds, scenarios, fid, premium)
         if want is None:
-            errors.append(f"{fid}: a current nov3 scenario has no band for it")
+            errors.append(f"{fid}: a current {price_horizon(fid)} scenario has no band for it")
             continue
         got = float(latest_f[fid]["p"])
         if abs(got - want) > 1:
