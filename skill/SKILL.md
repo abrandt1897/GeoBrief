@@ -178,7 +178,7 @@ Oct 5: **UAE-third tripwire fired** (Uhud, Emirates Shipping) → infra +2, half
 
 **Gas baseline (AAA, Oct 6):** national regular $4.37 (wk $4.48, mo $4.15); diesel $6.32 (record $6.53 9/22). NY state $4.47 / $6.52; NYC metro $4.55 / $6.73 (≈ +18¢ / +41¢ over national; the NYC lines use the latest gap from `gas.csv`). **2026 reference (AAA):** pre-war $2.98 (Feb 26); high $4.56 (May 21); July low $3.79; Sept peak $4.48 (Sept 24).
 **Gas mechanics:** rockets 2-4¢/day, feathers 1-1.5¢/day (~2.4¢ per $1/bbl); no-shock path → ~$4.10-4.25.
-**Nov 3 lines (AAA national regular):** ≥$4.50 ~16% · ≥$4.75 ~10% · ≥$5.00 ~2% · <$4.00 ~8%. NYC metro ≥$4.75 ~14%, ≥$5 ~8%. Diesel ≥$6.50 ~15% · ≥$6.75 ~10% · ≥$7.00 ~8% · <$6.00 ~17%. Brent (Jan.) ≥$100 ~40% · ≥$110 ~12% · ≥$120 ~6% · <$90 ~19%. JKM (Dec.) ≥$25 ~69% · ≥$28 ~15% · ≥$31 ~8% · <$20 ~5%.
+**Nov 3 lines (AAA national regular):** ≥$4.50 ~16% · ≥$4.75 ~10% · ≥$5.00 ~2% · <$4.00 ~8%. NYC metro ≥$4.75 ~13%, ≥$5 ~7% (Oct 24, NYC gap 14¢). Diesel ≥$6.50 ~15% · ≥$6.75 ~10% · ≥$7.00 ~8% · <$6.00 ~17%. Brent (Jan.) ≥$100 ~40% · ≥$110 ~12% · ≥$120 ~6% · <$90 ~19%. JKM (Dec.) ≥$25 ~69% · ≥$28 ~15% · ≥$31 ~8% · <$20 ~5%.
 **Market cross-check:** the bands now centre on ICE January Brent ($97.59, Oct 6); Dated Brent >$120 (Oct 2 floor) says physical is tighter than futures. Futures have faded every lull; supply recovery + G7 release cap upside.
 
 ### Through Year-End 2026
