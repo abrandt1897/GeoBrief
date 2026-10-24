@@ -290,7 +290,8 @@ def p_at_least(segs: list[tuple[float, float, float]], x: float) -> float:
 
 # Forecast id -> (scenarios.csv band column, ">=" or "<", threshold).
 # NYC metro lines use the national gas band plus the NYC premium (see nyc_premium).
-# gas_ye_* lines resolve on Dec. 31 against the ye2026 odds and bands; the rest on Nov. 3 (see price_horizon).
+# Each non-NYC line has a year-end twin, ye_<id>, with the same threshold, resolving on Dec. 31 against the ye2026
+# odds and bands (see price_horizon).
 PRICE_LINES: dict[str, tuple[str, str, float]] = {
     "gas_nat_lt400": ("gas_band", "<", 4.00),
     "gas_nat_450": ("gas_band", ">=", 4.50),
@@ -310,16 +311,13 @@ PRICE_LINES: dict[str, tuple[str, str, float]] = {
     "lng_jkm_25": ("lng_band", ">=", 25),
     "lng_jkm_28": ("lng_band", ">=", 28),
     "lng_jkm_31": ("lng_band", ">=", 31),
-    "gas_ye_lt375": ("gas_band", "<", 3.75),
-    "gas_ye_400": ("gas_band", ">=", 4.00),
-    "gas_ye_425": ("gas_band", ">=", 4.25),
-    "gas_ye_450": ("gas_band", ">=", 4.50),
 }
+PRICE_LINES |= {f"ye_{fid}": line for fid, line in PRICE_LINES.items() if not fid.startswith("gas_nyc_")}
 
 
 def price_horizon(fid: str) -> str:
-    """The odds horizon a price line resolves on: ye2026 for gas_ye_*, else nov3."""
-    return "ye2026" if fid.startswith("gas_ye_") else "nov3"
+    """The odds horizon a price line resolves on: ye2026 for ye_*, else nov3."""
+    return "ye2026" if fid.startswith("ye_") else "nov3"
 
 
 def nyc_premium(gas: list[Row]) -> float:

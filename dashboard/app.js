@@ -538,12 +538,14 @@
    * @property {number} [step] y-axis step; omitted = 25¢ or 50¢ by range
    * @property {[string, number, [string, number][]]} buckets "<" forecast id, its price, then ">=" ids and prices
    * @property {string} note
-   * @property {{ buckets: [string, number, [string, number][]], note: string }} [ye] year-end ranges, if forecast
+   * @property {string} yeNote note for the year-end view, whose ranges are the same with ye_-prefixed forecast ids
    */
   /** @param {(r: GasRow) => number | null} get @param {string} name @returns {FuelLine[]} */
   const gasLine = (get, name) => [{ name, color: "--fg", pts: readings(gasRows, get) }];
   const BANDS_NOTE =
     "Bars right of Election Day show each scenario’s Nov. 3 range; bar width is proportional to its probability. The ranges under the chart don’t overlap, so they sum to 100%.";
+  const YE_NOTE =
+    "Bars right of Dec. 31 show each scenario’s year-end range; bar width is proportional to its probability. The ranges are the same as for Nov. 3; they don’t overlap, so they sum to 100%.";
   /** @type {Record<Fuel, FuelCfg>} */
   const FUELS = {
     gas: {
@@ -563,18 +565,7 @@
         ],
       ],
       note: `${BANDS_NOTE} Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.`,
-      ye: {
-        buckets: [
-          "gas_ye_lt375",
-          3.75,
-          [
-            ["gas_ye_400", 4],
-            ["gas_ye_425", 4.25],
-            ["gas_ye_450", 4.5],
-          ],
-        ],
-        note: "Bars right of Dec. 31 show each scenario’s year-end range; bar width is proportional to its probability. The ranges under the chart don’t overlap, so they sum to 100%. The status quo is centred on January RBOB gasoline futures plus the usual retail spread, which bakes in the cheaper winter blend. Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.",
-      },
+      yeNote: `${YE_NOTE} The status quo is centred on January RBOB gasoline futures plus the usual retail spread, which bakes in the cheaper winter blend. Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.`,
     },
     diesel: {
       label: "Diesel",
@@ -593,6 +584,7 @@
         ],
       ],
       note: `${BANDS_NOTE} Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.`,
+      yeNote: `${YE_NOTE} The status quo is centred on January ULSD (heating oil) futures plus the usual retail spread. Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.`,
     },
     brent: {
       label: "Brent",
@@ -628,6 +620,7 @@
         ],
       ],
       note: `${BANDS_NOTE} Bands and ranges are for the January contract, the front month on Nov. 3 after December expires Oct. 30. The dashed line is the January contract itself (exchange settlements from ICE and CME, recorded from Oct. 6), so it compares directly with the bands; it runs about $3 under December for backwardation, and the front-month line joins it when December expires. Futures are the front month as Trading Economics shows it, the price most headlines quote; spot is EIA’s daily Europe Brent FOB, which prices physical cargoes now and runs well above futures when prompt barrels are scarce. EIA spot lags a few days.`,
+      yeNote: `${YE_NOTE} Bands and ranges are for the February contract, the front month on Dec. 31, its last trading day; it settled about $4 under January on Oct. 23. The dashed line is still the January contract. Spot is EIA’s daily Europe Brent FOB and lags a few days.`,
     },
     lng: {
       label: "LNG",
@@ -656,17 +649,18 @@
         ],
       ],
       note: `${BANDS_NOTE} JKM is the Asian spot LNG benchmark and the one most exposed to Hormuz, since Qatar ships about a fifth of the world’s LNG through it. The series is the continuous front-month future, so it steps when the contract rolls mid-month; bands and ranges are for the December contract, the front month on Nov. 3. The dashed line is the December contract itself (exchange settlements from ICE and CME, recorded from Oct. 6), so it compares directly with the bands.`,
+      yeNote: `${YE_NOTE} JKM is the Asian spot LNG benchmark and the one most exposed to Hormuz. Bands and ranges are for the February contract, the front month on Dec. 31 after January expires mid-December. The dashed line is still the December contract, which trades close to February.`,
     },
   };
   /** @type {Fuel} */
   let gasFuel = "gas";
-  /** @type {"nov3" | "ye2026"} horizon of the ranges, for a fuel that has year-end ones */
+  /** @type {"nov3" | "ye2026"} horizon of the bands and ranges */
   let gasHorizon = "nov3";
 
   /** @param {HTMLElement} el */
   function gasPanel(el) {
     const cfg = FUELS[gasFuel];
-    const isYe = gasHorizon === "ye2026" && !!cfg.ye;
+    const isYe = gasHorizon === "ye2026";
     const horizonEnd = isYe ? `${election.slice(0, 4)}-12-31` : election;
     const lines = cfg.lines();
     const allDates = [...new Set(lines.flatMap((l) => l.pts.map((r) => r.date)))].sort();
@@ -695,7 +689,11 @@
     /** @type {number[]} */
     const ticks = [];
     for (let t = yMin; t <= yMax - step + step / 25; t += step) ticks.push(Number(t.toFixed(2)));
-    const [ltId, low, ge] = isYe && cfg.ye ? cfg.ye.buckets : cfg.buckets;
+    /** @type {FuelCfg["buckets"]} */
+    const buckets = isYe
+      ? [`ye_${cfg.buckets[0]}`, cfg.buckets[1], cfg.buckets[2].map(([id, t]) => [`ye_${id}`, t])]
+      : cfg.buckets;
+    const [ltId, low, ge] = buckets;
     const legend = `<div class="legend" style="margin-top:10px">${lines
       .flatMap((l) => {
         const cur = nth(l.pts);
@@ -715,31 +713,24 @@
           (k) =>
             `<button type="button" id="seg-${k}" data-fuel="${k}" aria-pressed="${k === gasFuel}">${FUELS[k].label}</button>`,
         )
-        .join("")}</div>${
-        cfg.ye
-          ? `<div class="seg" role="group" aria-label="Horizon">${HORIZONS.map(
-              ([k, label]) =>
-                `<button type="button" id="seg-h-${k}" aria-pressed="${k === (isYe ? "ye2026" : "nov3")}">${label}</button>`,
-            ).join("")}</div>`
-          : ""
-      }<div style="font-size:13px" class="muted">${esc(cfg.unit)}</div></div>` +
+        .join("")}</div><div class="seg" role="group" aria-label="Horizon">${HORIZONS.map(
+        ([k, label]) => `<button type="button" id="seg-h-${k}" aria-pressed="${k === gasHorizon}">${label}</button>`,
+      ).join("")}</div><div style="font-size:13px" class="muted">${esc(cfg.unit)}</div></div>` +
       legend +
       '<div class="chart" style="margin-top:30px"></div>' +
       priceBuckets(ltId, low, ge, cfg.step ? (v) => `$${v}` : money, isYe ? "Dec. 31" : "Nov. 3") +
-      `<div class="note">${esc(isYe && cfg.ye ? cfg.ye.note : cfg.note)}</div>`;
+      `<div class="note">${esc(isYe ? cfg.yeNote : cfg.note)}</div>`;
     for (const k of ids) {
       $(`seg-${k}`).onclick = () => {
         gasFuel = k;
         render();
       };
     }
-    if (cfg.ye) {
-      for (const [k] of HORIZONS) {
-        $(`seg-h-${k}`).onclick = () => {
-          gasHorizon = k;
-          render();
-        };
-      }
+    for (const [k] of HORIZONS) {
+      $(`seg-h-${k}`).onclick = () => {
+        gasHorizon = k;
+        render();
+      };
     }
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
       label: isYe ? cfg.chartLabel.replace("Nov. 3", "year-end") : cfg.chartLabel,
@@ -1278,7 +1269,7 @@
       id: "gas",
       label: "Gas Prices",
       title: "Energy Prices Against The Scenarios",
-      dek: "Gas, diesel, Brent crude and Asian LNG, each with the price range every scenario implies on Nov. 3 (gas also at year end). Pump prices rise 2–4¢ a day after a shock and fall 1–1.5¢ a day after it passes.",
+      dek: "Gas, diesel, Brent crude and Asian LNG, each with the price range every scenario implies on Nov. 3 (or at year end). Pump prices rise 2–4¢ a day after a shock and fall 1–1.5¢ a day after it passes.",
       render: gasPanel,
     },
     {

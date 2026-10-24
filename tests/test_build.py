@@ -326,8 +326,8 @@ def test_implied_price_line_weights_scenarios() -> None:
 def test_year_end_gas_lines_use_ye2026_odds_and_bands() -> None:
     ye = [{**r, "horizon": "ye2026"} for r in SCEN]
     # ye limited 56 x 0.375 + escalated 20 x 1 = 41; nov3-only bands give no year-end line
-    assert build.implied_price_line(GOOD_ODDS, SCEN + ye, "gas_ye_450") == pytest.approx(41.0)
-    assert build.implied_price_line(GOOD_ODDS, SCEN, "gas_ye_450") is None
+    assert build.implied_price_line(GOOD_ODDS, SCEN + ye, "ye_gas_nat_450") == pytest.approx(41.0)
+    assert build.implied_price_line(GOOD_ODDS, SCEN, "ye_gas_nat_450") is None
 
 
 def test_price_line_check_flags_stale_forecast() -> None:
