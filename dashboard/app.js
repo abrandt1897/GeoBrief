@@ -914,7 +914,7 @@
         )}</div><div style="font-size:13px" class="muted">Million barrels a day. ${SUPPLY_SOURCES[supplySource].unit} Via pipelines is total exports minus Hormuz flows (bypass pipelines and ports outside the strait), with Hormuz interpolated between readings. Monthly averages are plotted mid-month; dots are individual readings.</div></div>` +
       legend +
       (lastReading < D.brief.updated
-        ? `<div class="muted" style="font-size:13px;margin-top:6px;font-family:var(--sans)">Trackers publish weekly. Newest reading ${fmtDate(lastReading)}; checked ${fmtDate(D.brief.updated)}.</div>`
+        ? `<div class="muted" style="font-size:13px;margin-top:6px;font-family:var(--sans)">No newer Kpler figure has been published. Newest reading ${fmtDate(lastReading)}; last checked ${fmtDate(D.brief.updated)}.</div>`
         : "") +
       '<div class="chart" style="margin-top:30px"></div>' +
       note;
