@@ -87,3 +87,11 @@ The Kpler lines now show total oil (crude and products): total Gulf exports, oil
 - Most earlier weekly Kpler readings were crude only; they are scaled to total oil with measured ratios (Gulf x1.19, Hormuz x1.13) and marked as estimates.
 - The Oct 18 figures are preliminary, and Kpler often revises its first vintage.
 - Kpler didn't publish public weekly figures before late September. Earlier points are Kpler's monthly and period averages (for example 2.3 Mbd through Hormuz from April to the June MOU and 6.1 Mbd during the MOU window), and the pipeline line interpolates Hormuz between its readings.
+
+## Hormuz flows fall as attacks peak (Oct 30)
+
+Kpler data cited by CNBC put flows through Hormuz at 7.3 Mbd in the week ended Wednesday, Oct 28, more than 40% below the prewar baseline and about half the 14 Mbd (total oil) in the week to Oct 18. UKMTO counts just over 30 attacks on ships in October, twice September's total, so the record pace of strikes is now showing up in volumes.
+
+- CNBC doesn't state the basis; its earlier Kpler Hormuz figures were crude, so the chart plots a total-oil estimate of about 8.2 Mbd (7.3 x1.13).
+- The same article puts Hormuz crude at 11.1 Mbd on average in October, about 2% below September, so the drop is concentrated in the last week.
+- No Kpler total Gulf export figure for the same week has surfaced yet, so the pipeline line can't be updated for it.
