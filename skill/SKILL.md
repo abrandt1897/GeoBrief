@@ -169,16 +169,16 @@ Oct 5: **UAE-third tripwire fired** (Uhud, Emirates Shipping) → infra +2, half
 
 | Scenario            | P   | Gas (AAA reg.) | Brent (Jan.) | Key Driver                                                                                                     |
 | ------------------- | --- | -------------- | ------------ | -------------------------------------------------------------------------------------------------------------- |
-| Limited war / Limbo | 81% | $3.95-4.70     | $82-113      | No settlement; Iran holds strait-first; claimed hits, US strike rounds, limbo                                  |
+| Limited war / Limbo | 81% | $3.85-4.40     | $82-113      | No settlement; Iran holds strait-first; claimed hits, US strike rounds, limbo                                  |
 | Escalated war       | 10% | $4.75-5.10     | $115-127     | New step: Gulf hub/plant out 7+ days (~6), strikes on Iranian civilian infrastructure (~2), ground forces (~2) |
 | MOU-style deal      | 8%  | $3.85-4.10     | $73-87       | Iran folds on sequencing or interim text; nothing signed in full                                               |
 | Comprehensive deal  | 1%  | $3.85-4.05     | $73-85       | Signed deal conceding a Rubio term before the election                                                         |
 
-**Weighted bands (`scenarios.csv`):** a merged scenario keeps the price mix of the paths inside it as sub-ranges weighted by their odds — limited = round 46 ($4.25-4.50) + strike campaign 7 ($4.45-4.70) + limbo 19 ($4.10-4.30) + half-open 9 ($3.95-4.15), centred on the forwards; escalated = new step 7 ($4.75-5.10); MOU = Iran folds 8 + signed non-comprehensive 3. Every Nov 3 price line = odds × bands, uniform within each sub-range; `build.py` fails if a line drifts more than 1 point. Brent bands are for the January contract (ICE settle $97.59 on Oct 6, ~$3 under December); JKM bands for December ($25.84).
+**Weighted bands (`scenarios.csv`):** a merged scenario keeps the price mix of the paths inside it as sub-ranges weighted by their odds — limited = round 46 ($4.08-4.25) + strike campaign 7 ($4.15-4.40) + limbo 19 ($3.96-4.20) + half-open 9 ($3.85-4.05), gas recentred Oct 31 on the $4.18 AAA reading when `tw_aaa_low` fired (other bands centred on the forwards); escalated = new step 7 ($4.75-5.10); MOU = Iran folds 8 + signed non-comprehensive 3. Every Nov 3 price line = odds × bands, uniform within each sub-range; `build.py` fails if a line drifts more than 1 point. Brent bands are for the January contract (ICE settle $97.59 on Oct 6, ~$3 under December); JKM bands for December ($25.84).
 
 **Gas baseline (AAA, Oct 6):** national regular $4.37 (wk $4.48, mo $4.15); diesel $6.32 (record $6.53 9/22). NY state $4.47 / $6.52; NYC metro $4.55 / $6.73 (≈ +18¢ / +41¢ over national; the NYC lines use the latest gap from `gas.csv`). **2026 reference (AAA):** pre-war $2.98 (Feb 26); high $4.56 (May 21); July low $3.79; Sept peak $4.48 (Sept 24).
 **Gas mechanics:** rockets 2-4¢/day, feathers 1-1.5¢/day (~2.4¢ per $1/bbl); no-shock path → ~$4.10-4.25.
-**Nov 3 lines (AAA national regular):** ≥$4.50 ~16% · ≥$4.75 ~10% · ≥$5.00 ~2% · <$4.00 ~8%. NYC metro ≥$4.75 ~13%, ≥$5 ~7% (Oct 24, NYC gap 14¢). Diesel ≥$6.50 ~15% · ≥$6.75 ~10% · ≥$7.00 ~8% · <$6.00 ~17%. Brent (Jan.) ≥$100 ~40% · ≥$110 ~12% · ≥$120 ~6% · <$90 ~19%. JKM (Dec.) ≥$25 ~69% · ≥$28 ~15% · ≥$31 ~8% · <$20 ~5%.
+**Nov 3 lines (AAA national regular):** ≥$4.50 ~10% · ≥$4.75 ~10% · ≥$5.00 ~2% · <$4.00 ~15% (Oct 31, `tw_aaa_low` fired; ≥$4.50 is floored at the 10% escalated odds). NYC metro ≥$4.75 ~10%, ≥$5 ~9% (Oct 31, NYC gap 20¢). Diesel ≥$6.50 ~15% · ≥$6.75 ~10% · ≥$7.00 ~8% · <$6.00 ~17%. Brent (Jan.) ≥$100 ~40% · ≥$110 ~12% · ≥$120 ~6% · <$90 ~19%. JKM (Dec.) ≥$25 ~69% · ≥$28 ~15% · ≥$31 ~8% · <$20 ~5%.
 **Market cross-check:** the bands now centre on ICE January Brent ($97.59, Oct 6); Dated Brent >$120 (Oct 2 floor) says physical is tighter than futures. Futures have faded every lull; supply recovery + G7 release cap upside.
 
 ### Through Year-End 2026
@@ -209,7 +209,6 @@ Registry and targets: `data/tripwires.csv`. Targets are moves from today's odds 
 - Iran offers a concrete cut in enrichment capacity (Vance's condition), in text or on the record → YE deal +6, YE comprehensive +4.
 - Direct Iran–Israel exchange: Iranian missiles or drones fired at Israel, or an Israeli strike inside Iran → escalated by Nov 3 +4, MOU-style by Nov 3 −3.
 - Houthis declare Bab el-Mandeb closed, or hit a non-Saudi ship in the strait (confirmed by UKMTO) → Brent (Jan.) ≥$100 +18, gas ≥$4.50 +12.
-- AAA national regular below $4.20 on any day before Nov. 3 → gas ≥$4.50 −8, gas <$4.00 +7.
 
 Retired Oct 7: the Kpler monthly (lands after Nov 3) and the separate carriers tripwire (merged into bombers). Past tripwires sit in the dashboard's collapsed section.
 
