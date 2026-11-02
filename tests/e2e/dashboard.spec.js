@@ -43,7 +43,10 @@ test("renders headline, scenario table, dispatches and ticker without errors", a
   const errors = collectErrors(page);
   await page.goto(PAGE);
   await expect(page.locator("h1")).toHaveText(/Iran War Odds Through 2026/);
-  await expect(page.locator("#dateline")).toContainText("days to Election Day");
+  // The countdown depends on the reader's date: "N days", "1 day", "Election Day" or "has passed".
+  await expect(page.locator("#dateline")).toHaveText(
+    /^Updated .+ · (\d+ days? to Election Day|Election Day( has passed)?)$/,
+  );
   await expect(page.locator("#scen-body tr")).toHaveCount(4);
   await expect(page.locator("#scen-body tr").first()).toContainText("Limited war / Limbo");
   await expect(page.locator("#disp .disp-day")).toHaveCount(5);
