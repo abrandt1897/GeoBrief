@@ -2,7 +2,7 @@
 
 _Term probabilities are canonical in `data/deal_terms.csv`; this file holds the read and tripwires._
 
-P(term | deal). P(deal) ≈ 13% by end-2026, 31% by end-2027 (Vance, Oct 5–6: any deal needs a "meaningful" enrichment-capacity cut).
+P(term | deal). P(deal) ≈ 11% by end-2026, 31% by end-2027 (Vance, Oct 5–6: any deal needs a "meaningful" enrichment-capacity cut; −2 on Nov 3 after the confirmed US strike on Qeshm).
 
 | Term                                                   | P   |
 | ------------------------------------------------------ | --- |

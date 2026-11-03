@@ -108,7 +108,7 @@ Hold Yemen's Red Sea coast; open war with Riyadh (Riyadh/Yanbu/Taif/Khamis Musha
 
 ## Deal Tracker (Oct 7)
 
-P(term | deal). P(deal) ≈ 13% by end-2026, 31% by end-2027 (Vance, Oct 5–6: any deal needs a "meaningful" enrichment-capacity cut).
+P(term | deal). P(deal) ≈ 11% by end-2026, 31% by end-2027 (Vance, Oct 5–6: any deal needs a "meaningful" enrichment-capacity cut; −2 on Nov 3 after the confirmed US strike on Qeshm).
 
 | Term                                                   | P   |
 | ------------------------------------------------------ | --- |
@@ -183,15 +183,15 @@ Resolved Nov 3 on the status as of the Nov 2 evening run (Adam: "count the statu
 | Scenario            | P   |
 | ------------------- | --- |
 | Limited war / Limbo | 66% |
-| Escalated war       | 12% |
-| MOU-style deal      | 14% |
-| Comprehensive deal  | 8%  |
+| Escalated war       | 15% |
+| MOU-style deal      | 12% |
+| Comprehensive deal  | 7%  |
 
-P(signed deal by YE) 13% sits between comprehensive (8) and MOU + comprehensive (22): 8 comprehensive + 5 signed without a Rubio term (counted in MOU-style with Iran folds 9).
+P(signed deal by YE) 11% sits between comprehensive (7) and MOU + comprehensive (19): 7 comprehensive + 4 signed without a Rubio term (counted in MOU-style with Iran folds 8).
 
 **Gas baseline (AAA, Oct 6):** national regular $4.37 (wk $4.48, mo $4.15); diesel $6.32 (record $6.53 9/22). NY state $4.47 / $6.52; NYC metro $4.55 / $6.73 (≈ +18¢ / +41¢ over national; the NYC lines use the latest gap from `gas.csv`). **2026 reference (AAA):** pre-war $2.98 (Feb 26); high $4.56 (May 21); July low $3.79; Sept peak $4.48 (Sept 24).
 **Gas mechanics:** rockets 2-4¢/day, feathers 1-1.5¢/day (~2.4¢ per $1/bbl); no-shock path → ~$4.10-4.25.
-**Year-end price lines (Dec 31; added Oct 24, `ye_*`, same thresholds as Nov 3):** gas <$4.00 ~32% · ≥$4.50 ~18% · ≥$4.75 ~8% · ≥$5.00 ~3%. Diesel <$6.00 ~47% · ≥$6.50 ~16% · ≥$6.75 ~10% · ≥$7.00 ~6%. Brent (Feb.) <$90 ~20% · ≥$100 ~68% · ≥$110 ~39% · ≥$120 ~15%. JKM (Feb.) <$20 ~9% · ≥$25 ~76% · ≥$28 ~68% · ≥$31 ~46%. Bands (`scenarios.csv` ye2026): limited = forward 34 + post-election strike round 20 + half-open 12, centred on the Oct 22–23 futures for Dec 31: Jan RBOB $3.02 + ~$1.10 (gas ~$4.15), Jan ULSD $4.63 + ~$1.40 (diesel ~$6.05), ICE Feb Brent $107.32, Feb JKM $30.81. Escalated, MOU-style and comprehensive bands sit above and below as on Nov 3.
+**Year-end price lines (Dec 31; added Oct 24, `ye_*`, same thresholds as Nov 3):** gas <$4.00 ~29% · ≥$4.50 ~21% · ≥$4.75 ~10% · ≥$5.00 ~3%. Diesel <$6.00 ~44% · ≥$6.50 ~19% · ≥$6.75 ~12% · ≥$7.00 ~8%. Brent (Feb.) <$90 ~17% · ≥$100 ~71% · ≥$110 ~42% · ≥$120 ~18%. JKM (Feb.) <$20 ~8% · ≥$25 ~79% · ≥$28 ~71% · ≥$31 ~49% (re-derived Nov 3 pm on the new odds). Bands (`scenarios.csv` ye2026): limited = forward 34 + post-election strike round 20 + half-open 12, centred on the Oct 22–23 futures for Dec 31: Jan RBOB $3.02 + ~$1.10 (gas ~$4.15), Jan ULSD $4.63 + ~$1.40 (diesel ~$6.05), ICE Feb Brent $107.32, Feb JKM $30.81. Escalated, MOU-style and comprehensive bands sit above and below as on Nov 3.
 **Market cross-check:** January Brent settled $104.77 on Nov 2 (−7.6%, its lowest in about four weeks, as traders unwound the war premium); the year-end bands resolve on the February contract ($109.56 on Oct 30, CME). Dated Brent >$120 (Oct 2 floor) said physical was tighter than futures. Futures have faded every lull; supply recovery + G7 release cap upside.
 
 ### Live Tripwires
@@ -199,7 +199,6 @@ P(signed deal by YE) 13% sits between comprehensive (8) and MOU + comprehensive 
 Registry and targets: `data/tripwires.csv`. Targets are moves from today's odds (`key+=n` / `key-=n`), or a level (`key=v`) for a resolution; the dashboard fills the levels in. The list below is printed by `python3 dashboard/build.py --tripwire-lines`; a test checks it matches.
 
 - Iran formally accepts US sequencing, or round two is scheduled with text → YE deal +8, YE MOU-style +6.
-- US strikes Iran (confirmed by CENTCOM, the Pentagon or the White House), the post-midterm strike Netanyahu is pressing for → YE escalated +8, YE MOU-style −4, YE deal −4, YE gas ≥$4.50 +8.
 - Saudi shuttle ship hit outside the Fujairah/Sohar STS zone → YE escalated +3.
 - B-1Bs reappear at Diego Garcia/Gulf, B-2/B-52s forward-deploy, or three carriers on station (GHWB back in the AOR after its Phuket port visit while TR arrives) → Blink #10 no-blink +10, YE escalated +3.
 - US blockade easing → YE MOU-style +9.
@@ -211,11 +210,12 @@ Registry and targets: `data/tripwires.csv`. Targets are moves from today's odds 
 - Iran offers a concrete cut in enrichment capacity (Vance's condition), in text or on the record → YE deal +6, YE comprehensive +4.
 - Direct Iran–Israel exchange: Iranian missiles or drones fired at Israel, or an Israeli strike inside Iran → YE escalated +4, YE MOU-style −3.
 - Houthis declare Bab el-Mandeb closed, or hit a non-Saudi ship in the strait (confirmed by UKMTO) → YE Brent (Feb.) ≥$100 +12, YE gas ≥$4.50 +12.
+- US resumes a multi-day strike campaign on Iran (confirmed by CENTCOM, the Pentagon or the White House), the post-midterm wave Netanyahu is pressing for → YE escalated +5, YE MOU-style −2, YE deal −2.
 
 Retired Oct 7: the Kpler monthly (lands after Nov 3) and the separate carriers tripwire (merged into bombers). Nov 3: every armed tripwire that moved a Nov 3 number now moves the year-end odds or `ye_*` price lines instead. Past tripwires sit in the dashboard's collapsed section.
 
 ### Structural
 
 - Hormuz back to ~20 mb/d (all liquids, monthly) by end-2026: ~4% (needs a deal plus fast mine clearance and insurance; the end-2027 card is void)
-- War-ending deal: 13% by end-2026; 31% by end-2027
-- Comprehensive nuclear deal in 2026: ~6% (13% × 50%); any comprehensive (≥1 Rubio term) ~8%
+- War-ending deal: 11% by end-2026; 31% by end-2027
+- Comprehensive nuclear deal in 2026: ~6% (11% × 50%, rounded up); any comprehensive (≥1 Rubio term) ~7%

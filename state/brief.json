@@ -1,7 +1,7 @@
 {
   "updated": "2026-11-03",
   "headline": "Iran War Odds Through 2026",
-  "status": "Tracking runs to Dec. 31, where the odds are limited war 66%, escalated 12%, MOU-style 14% and comprehensive 8%. A US jet hit a missile launcher on Qeshm Island on Nov. 2 after the IRGC fired on a US aircraft, but only unnamed officials confirm it and the target was military, so the US-strike tripwire stays armed and the odds hold; Netanyahu is pressing for a wider campaign after the vote while Qatari mediators carry a draft to Tehran.",
+  "status": "Tracking runs to Dec. 31, where the odds are now limited war 66%, escalated 15%, MOU-style 12% and comprehensive 7%. Trump confirmed on Fox that US jets struck an Iranian air-defense site on Qeshm Island, which fires the US-strike tripwire, but he called it a minor, defensive hit and talks through Qatar go on, so it moves the odds by less than the set effect: escalated is up 3 points and a deal is less likely. Iran says the US reply is not convincing and vows a response, and mediators expect answers from both sides within 36 hours.",
   "bets": [
     {
       "cond": "Iran accepts US sequencing, or round two is set with text",
@@ -26,7 +26,7 @@
     "rubio_met": 0
   },
   "deal_p": {
-    "ye2026": 13,
+    "ye2026": 11,
     "ye2027": 31
   },
   "election_day": "2026-11-03"
