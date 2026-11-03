@@ -43,33 +43,35 @@ test("renders headline, scenario table, dispatches and ticker without errors", a
   const errors = collectErrors(page);
   await page.goto(PAGE);
   await expect(page.locator("h1")).toHaveText(/Iran War Odds Through 2026/);
-  // The countdown depends on the reader's date: "N days", "1 day", "Election Day" or "has passed".
+  // The countdown depends on the reader's date: to Election Day, then to year end once it has passed.
   await expect(page.locator("#dateline")).toHaveText(
-    /^Updated .+ · (\d+ days? to Election Day|Election Day( has passed)?)$/,
+    /^Updated .+ · (\d+ days? to (Election Day|year end)|Election Day|Year end( has passed)?)$/,
   );
-  await expect(page.locator("#scen-body tr")).toHaveCount(4);
-  await expect(page.locator("#scen-body tr").first()).toContainText("Limited war / Limbo");
+  await expect(page.locator("#ye-body tr")).toHaveCount(4);
+  await expect(page.locator("#ye-body tr").first()).toContainText("Limited war / Limbo");
   await expect(page.locator("#disp .disp-day")).toHaveCount(5);
-  await expect(page.locator("#ticker")).toContainText("ESCALATED WAR BY NOV. 3");
+  await expect(page.locator("#ticker")).toContainText("ESCALATED WAR BY YE");
   await expect(page.locator("#ticker")).toContainText("AAA NATIONAL");
   expect(errors).toEqual([]);
 });
 
-test("scenario tables follow the selected tab", async ({ page }) => {
+test("the year-end scenario table and bets show with the odds tab only", async ({ page }) => {
   await page.goto(PAGE);
-  await expect(page.locator("#scenarios")).toBeVisible();
-  await expect(page.locator("#ye-scenarios")).toBeHidden();
-  await expect(page.locator("#bet")).toBeVisible();
-  await page.click("#tab-gas");
-  await expect(page.locator("#bet")).toBeHidden();
-  await expect(page.locator("#scenarios")).toBeHidden();
-  await expect(page.locator("#ye-scenarios")).toBeHidden();
-  await page.click("#tab-yearend");
-  await expect(page.locator("#scenarios")).toBeHidden();
+  await expect(page.locator("#scenarios")).toHaveCount(0);
   await expect(page.locator("#ye-scenarios")).toBeVisible();
   await expect(page.locator("#ye-body tr")).toHaveCount(4);
   await expect(page.locator("#bet")).toBeVisible();
   await expect(page.locator("#panel svg")).toContainText("Dec. 31");
+  await page.click("#tab-gas");
+  await expect(page.locator("#bet")).toBeHidden();
+  await expect(page.locator("#ye-scenarios")).toBeHidden();
+});
+
+test("an old #yearend link opens the year-end odds tab", async ({ page }) => {
+  await page.goto(`${PAGE}#yearend`);
+  await expect(page.locator("#tab-yearend")).toHaveCount(0);
+  await expect(page.locator("#tab-odds")).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator("#panel-title")).toHaveText("The Odds Through Year End");
 });
 
 test("grouped odds chart labels sum to 100", async ({ page }) => {
@@ -116,10 +118,7 @@ const rescoresFor = (horizon) =>
   );
 
 /** @type {[string, string][]} */
-const SCENARIO_CHARTS = [
-  ["odds", "nov3"],
-  ["yearend", "ye2026"],
-];
+const SCENARIO_CHARTS = [["odds", "ye2026"]];
 for (const [tab, horizon] of SCENARIO_CHARTS) {
   test(`${tab} chart: an unlabelled dashed line per re-score, with the note in the readout`, async ({ page }) => {
     const errors = collectErrors(page);
@@ -146,13 +145,13 @@ test("odds history: a dot per scenario even on a single date, and no ticker move
   page,
 }) => {
   await page.goto(PAGE);
-  const dates = oddsDates("nov3");
+  const dates = oddsDates("ye2026");
   const last = dates.at(-1) ?? "";
   const prev = dates.at(-2);
   // End-label dots always mark the latest update, so even one date shows four points.
   await expect(page.locator("#panel svg circle[r='6']")).toHaveCount(4);
-  const item = page.locator("#ticker > .item", { hasText: "ESCALATED WAR BY NOV. 3" });
-  const crossed = !prev || rescoresFor("nov3").some((r) => r.date > prev && r.date <= last);
+  const item = page.locator("#ticker > .item", { hasText: "ESCALATED WAR BY YE" });
+  const crossed = !prev || rescoresFor("ye2026").some((r) => r.date > prev && r.date <= last);
   if (crossed) await expect(item).not.toContainText(/[▲▼]|UNCH/);
 });
 
@@ -164,13 +163,12 @@ test("odds chart shows one line per scenario and no toggle", async ({ page }) =>
 
 /** @type {[string, string][]} */
 const TABS = [
-  ["odds", "The Odds Through Election Day"],
+  ["odds", "The Odds Through Year End"],
   ["gas", "Energy Prices Against The Scenarios"],
   ["supply", "How Much Oil Is Getting Out"],
   ["blinks", "The TACO Tracker"],
   ["tripwires", "What Would Move The Odds"],
   ["deal", "What A Deal Would Likely Contain"],
-  ["yearend", "Where Things Stand By Dec. 31"],
   ["calibration", "How Good Are These Forecasts?"],
 ];
 
@@ -241,32 +239,39 @@ test("gas price ranges are exclusive and sum to 100% for every fuel", async ({ p
   }
 });
 
-test("horizon toggle swaps Nov. 3 bands and ranges for year-end ones, same ranges", async ({ page }) => {
+test("energy chart shows year-end bands and ranges only, with no horizon toggle", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto(`${PAGE}#gas`);
-  await expect(page.locator("#seg-h-nov3")).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator(".figs")).toContainText("on Nov. 3");
-  await page.click("#seg-h-ye2026");
-  await expect(page.locator("#seg-h-ye2026")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("#seg-h-nov3")).toHaveCount(0);
+  await expect(page.locator("#seg-h-ye2026")).toHaveCount(0);
   const svg = page.locator("#panel svg");
   await expect(svg).toContainText("Dec. 31");
+  await expect(svg).not.toContainText("Election Day");
   await expect(svg.locator("rect title")).toHaveCount(4);
   await expect(page.locator(".figs")).toContainText("Under $4.00 on Dec. 31");
   await expect(page.locator(".figs")).toContainText("$5.00 or more on Dec. 31");
-  const ps = await page.locator(".figs strong").allTextContents();
-  expect(ps).toHaveLength(5);
-  expect(ps.reduce((a, t) => a + Number(t.replace("%", "")), 0)).toBe(100);
   for (const fuel of ["#seg-diesel", "#seg-brent", "#seg-lng"]) {
     await page.click(fuel);
-    await expect(page.locator("#seg-h-ye2026")).toHaveAttribute("aria-pressed", "true");
     await expect(svg.locator("rect title")).toHaveCount(4);
     const qs = await page.locator(".figs strong").allTextContents();
     expect(qs).toHaveLength(5);
     expect(qs.reduce((a, t) => a + Number(t.replace("%", "")), 0)).toBe(100);
   }
   await expect(page.locator(".figs")).toContainText("Under $20 on Dec. 31");
-  await page.click("#seg-h-nov3");
-  await expect(page.locator(".figs")).toContainText("Under $20 on Nov. 3");
+  expect(errors).toEqual([]);
+});
+
+test("calibration tab carries the Nov. 3 scorecard and its final odds chart", async ({ page }) => {
+  const errors = collectErrors(page);
+  await page.goto(`${PAGE}#calibration`);
+  const card = page.locator(".nov3-card");
+  await expect(card).toContainText("Nov. 3 scorecard");
+  await expect(card.locator("svg")).toContainText("Election Day");
+  const rows = card.locator(".sc-row:not(.sc-head)");
+  await expect(rows.first()).toContainText("Scenario in force");
+  await expect(rows.first()).toContainText("Limited war / Limbo");
+  await expect(card).toContainText("Brent, January contract");
+  expect(await card.innerHTML()).not.toMatch(/NaN|undefined/);
   expect(errors).toEqual([]);
 });
 
@@ -279,12 +284,12 @@ test("Brent and LNG buttons swap in their series, bands and ranges", async ({ pa
   await expect(svg).toContainText("War begins");
   await expect(page.locator(".legend")).toContainText("Brent futures");
   await expect(page.locator(".legend")).toContainText("Brent spot (EIA)");
-  await expect(page.locator(".legend")).toContainText("January contract");
+  await expect(page.locator(".legend")).toContainText("February contract");
   await expect(svg.locator("rect title")).toHaveCount(4);
   await expect(page.locator(".figs")).toContainText("$120 or more");
   await page.click("#seg-lng");
   await expect(page.locator(".legend")).toContainText("JKM");
-  await expect(page.locator(".legend")).toContainText("December contract");
+  await expect(page.locator(".legend")).toContainText("February contract");
   await expect(svg.locator("rect title")).toHaveCount(4);
   await expect(page.locator(".figs")).toContainText("Under $20");
   expect(errors).toEqual([]);

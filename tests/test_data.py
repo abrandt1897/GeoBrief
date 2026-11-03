@@ -30,7 +30,17 @@ SCHEMAS: dict[str, list[str]] = {
     ],
     "gas.csv": ["date", "nat_regular", "nat_diesel", "ny_regular", "ny_diesel", "nyc_regular", "nyc_diesel", "source"],
     "markets.csv": ["date", "brent_ice_front", "dated_brent", "dated_floor", "rial_per_usd", "source"],
-    "energy.csv": ["date", "brent_front", "brent_spot", "jkm_front", "brent_nov3", "jkm_nov3", "source"],
+    "energy.csv": [
+        "date",
+        "brent_front",
+        "brent_spot",
+        "jkm_front",
+        "brent_nov3",
+        "jkm_nov3",
+        "brent_ye",
+        "jkm_ye",
+        "source",
+    ],
     "forecasts.csv": [
         "id",
         "made_on",
@@ -162,6 +172,8 @@ def test_energy_one_row_per_date_and_plausible_prices() -> None:
             ("jkm_front", 3, 80),
             ("brent_nov3", 30, 250),
             ("jkm_nov3", 3, 80),
+            ("brent_ye", 30, 250),
+            ("jkm_ye", 3, 80),
         ):
             if r[col]:
                 assert lo < float(r[col]) < hi, f"{r['date']} {col}={r[col]}"
@@ -302,12 +314,11 @@ def test_prose_tripwire_lists_match_the_registry() -> None:
         assert not missing, f"{name} is missing tripwire lines (run build.py --tripwire-lines): {missing}"
 
 
-NOV3_LINE_IDS = [
-    "gas_nat_450", "gas_nat_475", "gas_nat_500", "gas_nat_lt400",
-    "gas_nyc_475", "gas_nyc_500",
-    "gas_diesel_650", "gas_diesel_675", "gas_diesel_700", "gas_diesel_lt600",
-    "brent_100", "brent_110", "brent_120", "brent_lt90",
-    "lng_jkm_25", "lng_jkm_28", "lng_jkm_31", "lng_jkm_lt20",
+YE_LINE_IDS = [
+    "ye_gas_nat_lt400", "ye_gas_nat_450", "ye_gas_nat_475", "ye_gas_nat_500",
+    "ye_gas_diesel_lt600", "ye_gas_diesel_650", "ye_gas_diesel_675", "ye_gas_diesel_700",
+    "ye_brent_lt90", "ye_brent_100", "ye_brent_110", "ye_brent_120",
+    "ye_lng_jkm_lt20", "ye_lng_jkm_25", "ye_lng_jkm_28", "ye_lng_jkm_31",
 ]  # fmt: skip
 
 
@@ -317,10 +328,9 @@ def test_prose_quotes_current_forecasts(name: str) -> None:
     text = (ROOT / name).read_text(encoding="utf-8")
     latest = build.latest_forecasts(load("forecasts.csv"))
     p = {k: f"{float(r['p']):g}" for k, r in latest.items()}
-    lines = re.search(r"\*\*Nov 3 lines \(AAA national regular\):\*\*(.*)", text)
-    assert lines, f"{name}: no Nov 3 lines paragraph"
+    lines = re.search(r"\*\*Year-end price lines \(Dec 31[^)]*\):\*\*(.*?)Bands", text)
+    assert lines, f"{name}: no year-end price lines paragraph"
     quoted = re.findall(r"~(\d+)%", lines.group(1))
-    assert quoted == [p[k] for k in NOV3_LINE_IDS], f"{name}: Nov 3 lines {quoted} != forecasts.csv"
+    assert quoted == [p[k] for k in YE_LINE_IDS], f"{name}: year-end lines {quoted} != forecasts.csv"
     assert f"War-ending deal: {p['deal_ye2026']}% by end-2026; {p['deal_ye2027']}% by end-2027" in text
     assert f"P(signed deal by YE) {p['deal_ye2026']}%" in text
-    assert f"~{p['deal_prenov3']}% signed (`deal_prenov3`)" in text

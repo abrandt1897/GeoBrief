@@ -6,7 +6,7 @@
 /** @typedef {{ horizon: string, scenario: string, label: string, group: Group | "", gas_band: string, diesel_band: string, brent_band: string, lng_band: string, driver: string }} Scenario */
 /** @typedef {{ date: string, source: string, nat_regular: number | null, nat_diesel: number | null, ny_regular: number | null, ny_diesel: number | null, nyc_regular: number | null, nyc_diesel: number | null }} GasRow */
 /** @typedef {{ date: string, source: string, brent_ice_front: number | null, dated_brent: number | null, dated_floor: number | null, rial_per_usd: number | null }} MarketRow */
-/** @typedef {{ date: string, source: string, brent_front: number | null, brent_spot: number | null, jkm_front: number | null, brent_nov3: number | null, jkm_nov3: number | null }} EnergyRow */
+/** @typedef {{ date: string, source: string, brent_front: number | null, brent_spot: number | null, jkm_front: number | null, brent_nov3: number | null, jkm_nov3: number | null, brent_ye: number | null, jkm_ye: number | null }} EnergyRow */
 /** @typedef {{ id: string, made_on: string, question: string, p: number, resolves_on: string, resolution_rule: string, outcome: number | "void" | null, resolved_on: string, notes: string }} Forecast */
 /** @typedef {{ id: string, condition: string, effect: string, status: "armed" | "fired" | "expired", set_on: string, fired_on: string, evidence: string }} Tripwire */
 /** @typedef {{ term: string, p: number, rubio: string }} Term */
@@ -186,7 +186,6 @@
     if (!cur || !prev) return undefined;
     return rescoresFor(horizon).some((r) => r.date > prev.date && r.date <= cur.date) ? undefined : prev;
   };
-  const prevNov = comparablePrev(nov, "nov3");
   /**
    * One update's odds summed into the four scenarios. Older updates used finer scenarios that each map to one
    * of the four; an update holding a row that maps to none (e.g. an unsplit war total) gives null throughout.
@@ -514,17 +513,6 @@
     });
   }
 
-  /** @param {HTMLElement} el */
-  function oddsPanel(el) {
-    scenarioChart(el, {
-      horizon: "nov3",
-      rows: nov,
-      end: election,
-      endMark: "Election Day",
-      byLabel: "Nov. 3",
-    });
-  }
-
   /** @typedef {"gas" | "diesel" | "brent" | "lng"} Fuel */
   /** @typedef {{ name: string, color: string, width?: number, dash?: string, pts: Reading[] }} FuelLine */
   /**
@@ -537,21 +525,19 @@
    * @property {number} dp decimals for prices
    * @property {number} [step] y-axis step; omitted = 25¢ or 50¢ by range
    * @property {[string, number, [string, number][]]} buckets "<" forecast id, its price, then ">=" ids and prices
+   *   (the Nov. 3 ids; the chart shows their year-end twins, ye_<id>)
    * @property {string} note
-   * @property {string} yeNote note for the year-end view, whose ranges are the same with ye_-prefixed forecast ids
    */
   /** @param {(r: GasRow) => number | null} get @param {string} name @returns {FuelLine[]} */
   const gasLine = (get, name) => [{ name, color: "--fg", pts: readings(gasRows, get) }];
   const BANDS_NOTE =
-    "Bars right of Election Day show each scenario’s Nov. 3 range; bar width is proportional to its probability. The ranges under the chart don’t overlap, so they sum to 100%.";
-  const YE_NOTE =
-    "Bars right of Dec. 31 show each scenario’s year-end range; bar width is proportional to its probability. The ranges are the same as for Nov. 3; they don’t overlap, so they sum to 100%.";
+    "Bars right of Dec. 31 show each scenario’s year-end range; bar width is proportional to its probability. The ranges under the chart don’t overlap, so they sum to 100%.";
   /** @type {Record<Fuel, FuelCfg>} */
   const FUELS = {
     gas: {
       label: "Gas",
       unit: "AAA national regular, $ per gallon",
-      chartLabel: "AAA national regular gas prices with Nov. 3 scenario price bands",
+      chartLabel: "AAA national regular gas prices with year-end scenario price bands",
       lines: () => gasLine((r) => r.nat_regular, "Regular"),
       band: (sc) => sc.gas_band,
       dp: 2,
@@ -564,13 +550,12 @@
           ["gas_nat_500", 5],
         ],
       ],
-      note: `${BANDS_NOTE} Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.`,
-      yeNote: `${YE_NOTE} The status quo is centred on January RBOB gasoline futures plus the usual retail spread, which bakes in the cheaper winter blend. Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.`,
+      note: `${BANDS_NOTE} The status quo is centred on January RBOB gasoline futures plus the usual retail spread, which bakes in the cheaper winter blend. Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.`,
     },
     diesel: {
       label: "Diesel",
       unit: "AAA national diesel, $ per gallon",
-      chartLabel: "AAA national diesel prices with Nov. 3 scenario price bands",
+      chartLabel: "AAA national diesel prices with year-end scenario price bands",
       lines: () => gasLine((r) => r.nat_diesel, "Diesel"),
       band: (sc) => sc.diesel_band,
       dp: 2,
@@ -583,13 +568,12 @@
           ["gas_diesel_700", 7],
         ],
       ],
-      note: `${BANDS_NOTE} Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.`,
-      yeNote: `${YE_NOTE} The status quo is centred on January ULSD (heating oil) futures plus the usual retail spread. Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.`,
+      note: `${BANDS_NOTE} The status quo is centred on January ULSD (heating oil) futures plus the usual retail spread. Before Oct. 4 the series is backfilled from archived AAA pages, AAA’s weekly posts and news reports quoting AAA. Hover or tap to read any day.`,
     },
     brent: {
       label: "Brent",
-      unit: "Brent front-month futures (Trading Economics), the January contract and EIA Brent spot, $ per barrel",
-      chartLabel: "Brent crude futures and spot prices with Nov. 3 scenario price bands",
+      unit: "Brent front-month futures (Trading Economics), the February contract and EIA Brent spot, $ per barrel",
+      chartLabel: "Brent crude futures and spot prices with year-end scenario price bands",
       lines: () => [
         { name: "Brent futures", color: "--fg", pts: readings(enRows, (r) => r.brent_front) },
         {
@@ -600,11 +584,11 @@
           pts: readings(enRows, (r) => r.brent_spot),
         },
         {
-          name: "January contract",
+          name: "February contract",
           color: "--fg",
           width: 2.5,
           dash: "6 4",
-          pts: readings(enRows, (r) => r.brent_nov3),
+          pts: readings(enRows, (r) => r.brent_ye),
         },
       ],
       band: (sc) => sc.brent_band,
@@ -619,21 +603,20 @@
           ["brent_120", 120],
         ],
       ],
-      note: `${BANDS_NOTE} Bands and ranges are for the January contract, the front month on Nov. 3 after December expires Oct. 30. The dashed line is the January contract itself (exchange settlements from ICE and CME, recorded from Oct. 6), so it compares directly with the bands; it runs about $3 under December for backwardation, and the front-month line joins it when December expires. Futures are the front month as Trading Economics shows it, the price most headlines quote; spot is EIA’s daily Europe Brent FOB, which prices physical cargoes now and runs well above futures when prompt barrels are scarce. EIA spot lags a few days.`,
-      yeNote: `${YE_NOTE} Bands and ranges are for the February contract, the front month on Dec. 31, its last trading day; it settled about $4 under January on Oct. 23. The dashed line is still the January contract. Spot is EIA’s daily Europe Brent FOB and lags a few days.`,
+      note: `${BANDS_NOTE} Bands and ranges are for the February contract, the front month on Dec. 31, its last trading day; it settled about $4 under January on Oct. 23. The dashed line is the February contract itself (CME settlements, recorded from Oct. 30), so it compares directly with the bands; the front-month line joins it when January expires at the end of November. Spot is EIA’s daily Europe Brent FOB and lags a few days.`,
     },
     lng: {
       label: "LNG",
       unit: "Asian spot LNG (Platts JKM front month), $ per million Btu",
-      chartLabel: "JKM Asian LNG prices with Nov. 3 scenario price bands",
+      chartLabel: "JKM Asian LNG prices with year-end scenario price bands",
       lines: () => [
         { name: "JKM", color: "--fg", pts: readings(enRows, (r) => r.jkm_front) },
         {
-          name: "December contract",
+          name: "February contract",
           color: "--fg",
           width: 2.5,
           dash: "6 4",
-          pts: readings(enRows, (r) => r.jkm_nov3),
+          pts: readings(enRows, (r) => r.jkm_ye),
         },
       ],
       band: (sc) => sc.lng_band,
@@ -648,20 +631,16 @@
           ["lng_jkm_31", 31],
         ],
       ],
-      note: `${BANDS_NOTE} JKM is the Asian spot LNG benchmark and the one most exposed to Hormuz, since Qatar ships about a fifth of the world’s LNG through it. The series is the continuous front-month future, so it steps when the contract rolls mid-month; bands and ranges are for the December contract, the front month on Nov. 3. The dashed line is the December contract itself (exchange settlements from ICE and CME, recorded from Oct. 6), so it compares directly with the bands.`,
-      yeNote: `${YE_NOTE} JKM is the Asian spot LNG benchmark and the one most exposed to Hormuz. Bands and ranges are for the February contract, the front month on Dec. 31 after January expires mid-December. The dashed line is still the December contract, which trades close to February.`,
+      note: `${BANDS_NOTE} JKM is the Asian spot LNG benchmark and the one most exposed to Hormuz. Bands and ranges are for the February contract, the front month on Dec. 31 after January expires mid-December. The dashed line is the February contract itself (CME settlements, recorded from Oct. 30), so it compares directly with the bands.`,
     },
   };
   /** @type {Fuel} */
   let gasFuel = "gas";
-  /** @type {"nov3" | "ye2026"} horizon of the bands and ranges */
-  let gasHorizon = "nov3";
 
   /** @param {HTMLElement} el */
   function gasPanel(el) {
     const cfg = FUELS[gasFuel];
-    const isYe = gasHorizon === "ye2026";
-    const horizonEnd = isYe ? `${election.slice(0, 4)}-12-31` : election;
+    const horizonEnd = `${election.slice(0, 4)}-12-31`;
     const lines = cfg.lines();
     const allDates = [...new Set(lines.flatMap((l) => l.pts.map((r) => r.date)))].sort();
     const lastDate = allDates[allDates.length - 1] ?? latest.date;
@@ -677,7 +656,7 @@
       ...(l.dash ? { dash: l.dash } : {}),
       points: l.pts.filter((r) => r.date >= start).map((r) => ({ d: r.date, v: r.v })),
     }));
-    const bands = scenarioBands(cfg.band, money, isYe ? "ye2026" : "nov3");
+    const bands = scenarioBands(cfg.band, money, "ye2026");
     const vals = [
       ...series.flatMap((x) => x.points.flatMap((pt) => (pt.v == null ? [] : [pt.v]))),
       ...bands.flatMap((b) => [b.lo, b.hi]),
@@ -690,9 +669,7 @@
     const ticks = [];
     for (let t = yMin; t <= yMax - step + step / 25; t += step) ticks.push(Number(t.toFixed(2)));
     /** @type {FuelCfg["buckets"]} */
-    const buckets = isYe
-      ? [`ye_${cfg.buckets[0]}`, cfg.buckets[1], cfg.buckets[2].map(([id, t]) => [`ye_${id}`, t])]
-      : cfg.buckets;
+    const buckets = yeBuckets(cfg.buckets);
     const [ltId, low, ge] = buckets;
     const legend = `<div class="legend" style="margin-top:10px">${lines
       .flatMap((l) => {
@@ -713,30 +690,22 @@
           (k) =>
             `<button type="button" id="seg-${k}" data-fuel="${k}" aria-pressed="${k === gasFuel}">${FUELS[k].label}</button>`,
         )
-        .join("")}</div><div class="seg" role="group" aria-label="Horizon">${HORIZONS.map(
-        ([k, label]) => `<button type="button" id="seg-h-${k}" aria-pressed="${k === gasHorizon}">${label}</button>`,
-      ).join("")}</div><div style="font-size:13px" class="muted">${esc(cfg.unit)}</div></div>` +
+        .join("")}</div><div style="font-size:13px" class="muted">${esc(cfg.unit)}</div></div>` +
       legend +
       '<div class="chart" style="margin-top:30px"></div>' +
-      priceBuckets(ltId, low, ge, cfg.step ? (v) => `$${v}` : money, isYe ? "Dec. 31" : "Nov. 3") +
-      `<div class="note">${esc(isYe ? cfg.yeNote : cfg.note)}</div>`;
+      priceBuckets(ltId, low, ge, cfg.step ? (v) => `$${v}` : money, "Dec. 31") +
+      `<div class="note">${esc(cfg.note)}</div>`;
     for (const k of ids) {
       $(`seg-${k}`).onclick = () => {
         gasFuel = k;
         render();
       };
     }
-    for (const [k] of HORIZONS) {
-      $(`seg-h-${k}`).onclick = () => {
-        gasHorizon = k;
-        render();
-      };
-    }
     lineChart(/** @type {HTMLElement} */ (q(el, ".chart")), {
-      label: isYe ? cfg.chartLabel.replace("Nov. 3", "year-end") : cfg.chartLabel,
+      label: cfg.chartLabel,
       start,
       end: horizonEnd,
-      ...(isYe ? { endMark: "Dec. 31" } : {}),
+      endMark: "Dec. 31",
       dates,
       series,
       yMin,
@@ -749,11 +718,11 @@
     });
   }
 
-  /** @type {["nov3" | "ye2026", string][]} */
-  const HORIZONS = [
-    ["nov3", "Nov. 3"],
-    ["ye2026", "Year-end"],
-  ];
+  /**
+   * A fuel's ladder with its year-end twins' ids (ye_<id>), which the chart shows now that Nov. 3 has resolved.
+   * @param {FuelCfg["buckets"]} b @returns {FuelCfg["buckets"]}
+   */
+  const yeBuckets = (b) => [`ye_${b[0]}`, b[1], b[2].map(([id, t]) => [`ye_${id}`, t])];
 
   /**
    * Price bands for a horizon, one per current scenario, sized by its latest probability.
@@ -789,18 +758,30 @@
     const ps = ge.map(([id]) => latestF.get(id)?.p);
     if (!lt || ps.some((p) => p == null)) return "";
     const probs = ladderProbs(lt.p, /** @type {number[]} */ (ps));
-    const first = ge[0]?.[1] ?? low;
-    const labels = [
-      `Under ${f(low)}`,
-      `${f(low)}–${f(first)}`,
-      ...ge.map(([, t], i) => {
-        const next = ge[i + 1];
-        return next ? `${f(t)}–${f(next[1])}` : `${f(t)} or more`;
-      }),
-    ];
+    const labels = bucketLabels(
+      low,
+      ge.map(([, t]) => t),
+      f,
+    );
     return `<div class="figs">${labels
       .map((label, i) => `<div><small>${label} on ${when}</small><strong>${Math.round(probs[i] ?? 0)}%</strong></div>`)
       .join("")}</div>`;
+  }
+
+  /**
+   * Labels for a ladder's ranges, matching ladderProbs: [under low, low to the first threshold, ..., top or more].
+   * For a ladder with no "<" id, pass the first threshold as `low` and the rest as `at`.
+   * @param {number} low @param {number[]} at thresholds above low, ascending @param {(v: number) => string} f
+   * @returns {string[]}
+   */
+  function bucketLabels(low, at, f) {
+    return [
+      `Under ${f(low)}`,
+      ...[low, ...at].map((t, i, all) => {
+        const next = all[i + 1];
+        return next == null ? `${f(t)} or more` : `${f(t)}–${f(next)}`;
+      }),
+    ];
   }
 
   /**
@@ -1041,8 +1022,8 @@
       )}<div class="note" style="margin-top:8px">Probability that each term is in a deal, if there is one. P(deal) is ${D.brief.deal_p.ye2026}% by end-2026 and ${D.brief.deal_p.ye2027}% by end-2027. Green marks Rubio’s three terms.</div></div>`;
   }
 
-  /** @param {HTMLElement} el */
-  function yePanel(el) {
+  /** Scenario odds through Dec. 31, the live horizon since Nov. 3 resolved. @param {HTMLElement} el */
+  function oddsPanel(el) {
     scenarioChart(el, {
       horizon: "ye2026",
       rows: ye,
@@ -1087,10 +1068,12 @@
    */
   const forecastGroups = (byId) => {
     const ladders = [
-      ...Object.values(FUELS).map((f) =>
-        ladder(
-          f.buckets[0],
-          f.buckets[2].map(([id]) => id),
+      ...Object.values(FUELS).flatMap((f) =>
+        [f.buckets, yeBuckets(f.buckets)].map((b) =>
+          ladder(
+            b[0],
+            b[2].map(([id]) => id),
+          ),
         ),
       ),
       ladder(null, ["gas_nyc_475", "gas_nyc_500"]),
@@ -1208,6 +1191,94 @@
     });
   }
 
+  /**
+   * The Nov. 3 scorecard: every question that resolved on Election Day, what happened, the last odds GeoBrief gave
+   * that outcome and its time-averaged Brier score (from scoredForecasts), under the final Nov. 3 odds chart.
+   * @param {HTMLElement} el
+   */
+  function nov3Scorecard(el) {
+    const byId = forecastsById();
+    /** @param {string} id @returns {Forecast | undefined} */
+    const last = (id) => {
+      const vs = byId.get(id);
+      return vs ? vs[vs.length - 1] : undefined;
+    };
+    const resolved = (/** @type {string} */ id) => {
+      const f = last(id);
+      return f && f.resolves_on === election && (f.outcome === 0 || f.outcome === 1) ? f : undefined;
+    };
+    const brier = new Map(scoredForecasts().map((f) => [f.id, f.brier]));
+    /** @type {{ q: string, result: string, p: number, key: string }[]} */
+    const rows = [];
+    const scen = GROUP_ORDER.map((k) => resolved(`scen_nov3_${k}`));
+    const hit = scen.findIndex((f) => f?.outcome === 1);
+    const hitF = scen[hit];
+    const hitK = GROUP_ORDER[hit];
+    if (hitF && hitK) rows.push({ q: "Scenario in force", result: GROUP_NAMES[hitK], p: hitF.p, key: "scen_nov3" });
+    /** @param {(r: GasRow) => number | null} get */
+    const gasOn = (get) =>
+      readings(gasRows, get)
+        .filter((r) => r.date <= election)
+        .pop()?.v;
+    /** @param {(r: EnergyRow) => number | null} get */
+    const enOn = (get) =>
+      readings(enRows, get)
+        .filter((r) => r.date <= election)
+        .pop()?.v;
+    /** @type {[string, string | null, string[], number[], number | undefined, number][]} question, "<" id, "≥" ids, thresholds, reading, decimals */
+    const ladders = [
+      ["Gas, AAA national regular", "gas_nat_lt400", ["gas_nat_450", "gas_nat_475", "gas_nat_500"], [4, 4.5, 4.75, 5], gasOn((r) => r.nat_regular), 2],
+      ["Gas, AAA NYC metro regular", null, ["gas_nyc_475", "gas_nyc_500"], [4.75, 5], gasOn((r) => r.nyc_regular), 2],
+      ["Diesel, AAA national", "gas_diesel_lt600", ["gas_diesel_650", "gas_diesel_675", "gas_diesel_700"], [6, 6.5, 6.75, 7], gasOn((r) => r.nat_diesel), 2],
+      ["Brent, January contract", "brent_lt90", ["brent_100", "brent_110", "brent_120"], [90, 100, 110, 120], enOn((r) => r.brent_nov3), 2],
+      ["Asian LNG, JKM December contract", "lng_jkm_lt20", ["lng_jkm_25", "lng_jkm_28", "lng_jkm_31"], [20, 25, 28, 31], enOn((r) => r.jkm_nov3), 2],
+    ]; // prettier-ignore
+    for (const [question, lt, ge, ts, actual, dp] of ladders) {
+      const fs = ge.map(resolved);
+      const ltF = lt ? resolved(lt) : null;
+      if (fs.some((f) => !f) || ltF === undefined) continue;
+      const g = ladder(lt, ge);
+      const idx = g.index([...(ltF ? [ltF] : []), ...fs].map((f) => Number(f?.outcome)));
+      const probs = g.probs([...(ltF ? [ltF] : []), ...fs].map((f) => f?.p ?? 0));
+      const labels = bucketLabels(ts[0] ?? 0, ts.slice(1), (v) => `$${v.toFixed(2)}`);
+      if (idx == null) continue;
+      const read = actual == null ? "" : ` ($${actual.toFixed(dp)})`;
+      rows.push({ q: question, result: `${labels[idx] ?? "—"}${read}`, p: probs[idx] ?? 0, key: g.key });
+    }
+    const inGroups = new Set(["scen_nov3", ...ladders.flatMap(([, lt, ge]) => [...(lt ? [lt] : []), ...ge])]);
+    for (const id of byId.keys()) {
+      const f = resolved(id);
+      if (!f || inGroups.has(id) || id.startsWith("scen_")) continue;
+      rows.push({
+        q: f.question,
+        result: f.outcome === 1 ? "Yes" : "No",
+        p: f.outcome === 1 ? f.p : 100 - f.p,
+        key: id,
+      });
+    }
+    if (!rows.length) return;
+    const scores = rows.flatMap((r) => {
+      const b = brier.get(r.key);
+      return b == null ? [] : [b];
+    });
+    const avg = scores.length ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(3) : "—";
+    const box = document.createElement("div");
+    box.className = "nov3-card";
+    box.innerHTML =
+      `<h3 class="cal-h">Nov. 3 scorecard</h3><p class="note">The midterm horizon resolved on the status as of the evening of Nov. 2: no deal and no new escalation step, so Limited war / Limbo. Prices are the last readings before Election Day. Average Brier score <b>${avg}</b> across ${rows.length} questions.</p>` +
+      '<div class="chart nov3-chart" style="margin-top:30px"></div>' +
+      `<div class="score" role="table" aria-label="Nov. 3 questions"><div class="sc-row sc-head" role="row"><span role="columnheader">Question</span><span role="columnheader">Result</span><span role="columnheader" class="sc-n">Final odds</span><span role="columnheader" class="sc-n">Brier</span></div>${rows
+        .map((r) => {
+          const b = brier.get(r.key);
+          return `<div class="sc-row" role="row"><span role="cell" class="sc-q">${esc(r.q)}</span><span role="cell">${esc(r.result)}</span><span role="cell" class="sc-n">${Math.round(r.p)}%</span><span role="cell" class="sc-n">${b == null ? "—" : b.toFixed(3)}</span></div>`;
+        })
+        .join("")}</div>`;
+    el.append(box);
+    const chartEl = document.createElement("div");
+    /** @type {HTMLElement} */ (q(box, ".nov3-chart")).replaceWith(chartEl);
+    scenarioChart(chartEl, { horizon: "nov3", rows: nov, end: election, endMark: "Election Day", byLabel: "Nov. 3" });
+  }
+
   /** @param {HTMLElement} el */
   function calPanel(el) {
     const current = [...latestF.values()].filter((f) => f.outcome !== "void");
@@ -1254,6 +1325,7 @@
       `<div style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;gap:32px"><div><small class="muted">Brier score</small><div style="font-size:32px;font-weight:700">${brier}</div></div><div><small class="muted">Resolved</small><div style="font-size:32px;font-weight:700">${res.length}</div></div><div><small class="muted">Open</small><div style="font-size:32px;font-weight:700">${open}</div></div></div>` +
       famHtml +
       `<div style="font-size:15px;max-width:380px">${res.length ? "Each forecast’s Brier score is averaged over every version of it, weighted by the days each version stood, then averaged by question family and overall. A price ladder or a horizon’s four scenarios is one forecast with several outcomes (Brier halved to run 0–1). Each dot is a bucket of outcomes by their time-averaged probability; the closer to the diagonal, the better calibrated." : `No forecasts have resolved yet. The next ones resolve on ${next ? fmtDate(next) : "—"}.`}</div></div></div>`;
+    nov3Scorecard(el);
   }
 
   /** @type {Tab[]} */
@@ -1261,15 +1333,15 @@
     {
       id: "odds",
       label: "Scenario Odds",
-      title: "The Odds Through Election Day",
-      dek: "GeoBrief’s probability for each path to Nov. 3, re-derived after every material event. Four scenarios: limited and escalated war in orange, MOU-style and comprehensive deals in green.",
+      title: "The Odds Through Year End",
+      dek: "GeoBrief’s probability for each path to Dec. 31, re-derived after every material event. Four scenarios: limited and escalated war in orange, MOU-style and comprehensive deals in green. The Nov. 3 forecasts are scored under Calibration.",
       render: oddsPanel,
     },
     {
       id: "gas",
       label: "Gas Prices",
       title: "Energy Prices Against The Scenarios",
-      dek: "Gas, diesel, Brent crude and Asian LNG, each with the price range every scenario implies on Nov. 3 (or at year end). Pump prices rise 2–4¢ a day after a shock and fall 1–1.5¢ a day after it passes.",
+      dek: "Gas, diesel, Brent crude and Asian LNG, each with the price range every scenario implies on Dec. 31. Pump prices rise 2–4¢ a day after a shock and fall 1–1.5¢ a day after it passes.",
       render: gasPanel,
     },
     {
@@ -1302,13 +1374,6 @@
       render: dealPanel,
     },
     {
-      id: "yearend",
-      label: "Year-End",
-      title: "Where Things Stand By Dec. 31",
-      dek: "Probability of each outcome by the end of 2026.",
-      render: yePanel,
-    },
-    {
       id: "calibration",
       label: "Calibration",
       title: "How Good Are These Forecasts?",
@@ -1319,11 +1384,14 @@
   /** @param {string | null | undefined} id @returns {id is string} */
   const isTab = (id) => TABS.some((t) => t.id === id);
   let tab = "odds";
-  const hashTab = location.hash.slice(1);
+  // The Year-End tab merged into Scenario Odds when Nov. 3 resolved; old links and saved tabs land there.
+  /** @param {string | null} id */
+  const alias = (id) => (id === "yearend" ? "odds" : id);
+  const hashTab = alias(location.hash.slice(1));
   if (isTab(hashTab)) tab = hashTab;
   else {
     try {
-      const saved = localStorage.getItem("gb-tab");
+      const saved = alias(localStorage.getItem("gb-tab"));
       if (isTab(saved)) tab = saved;
     } catch {
       // Storage can be blocked; the default tab is fine.
@@ -1345,9 +1413,8 @@
     const p = $("panel");
     p.innerHTML = "";
     cur.render(p);
-    $("scenarios").hidden = tab !== "odds";
-    $("ye-scenarios").hidden = tab !== "yearend";
-    $("bet").hidden = tab !== "odds" && tab !== "yearend";
+    $("ye-scenarios").hidden = tab !== "odds";
+    $("bet").hidden = tab !== "odds";
   }
   /** @param {string} id */
   const selectTab = (id) => {
@@ -1389,7 +1456,7 @@
   // ---------- menu ----------
   const drawerItems = [
     ...TABS.map((t) => ({ href: `#${t.id}`, tab: t.id, name: t.label, sub: t.sub ?? t.title })),
-    { href: "#scenarios", tab: "odds", name: "Scenario Table", sub: "Every path to Nov. 3 with gas and drivers" },
+    { href: "#ye-scenarios", tab: "odds", name: "Scenario Table", sub: "Every path to Dec. 31 with its definition" },
     { href: "#dispatches", tab: "", name: "Dispatches", sub: "The latest events" },
     { href: "#method", tab: "", name: "Method", sub: "How the odds are made and checked" },
   ];
@@ -1433,7 +1500,9 @@
   $("headline").textContent = D.brief.headline;
   // Count down from the reader's today (Eastern), not from the last update, so the number never goes stale.
   const todayET = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  // After Election Day the live horizon is Dec. 31, so count down to that.
   const daysLeft = day(election) - day(todayET);
+  const yeLeft = day(`${election.slice(0, 4)}-12-31`) - day(todayET);
   const countdown =
     daysLeft > 1
       ? `${daysLeft} days to Election Day`
@@ -1441,7 +1510,13 @@
         ? "1 day to Election Day"
         : daysLeft === 0
           ? "Election Day"
-          : "Election Day has passed";
+          : yeLeft > 1
+            ? `${yeLeft} days to year end`
+            : yeLeft === 1
+              ? "1 day to year end"
+              : yeLeft === 0
+                ? "Year end"
+                : "Year end has passed";
   $("dateline").textContent = `Updated ${fmtDate(D.brief.updated)}, ${D.brief.updated.slice(0, 4)} · ${countdown}`;
   // Staleness: runs are at 6 a.m. and 6 p.m. ET, but `updated` is a date only, so read it as 18:00 ET
   // (22:00Z) of that day, the latest a run on that date can be. More than 18 hours past that, a run was missed.
@@ -1460,14 +1535,6 @@
       live.classList.add("stale");
     }
   }
-  $("scen-body").innerHTML = keysByP(latest.v)
-    .map((k) => {
-      const s = scen("nov3", k);
-      const range = bandRange(s.gas_band);
-      const band = range ? `$${range.map((v) => v.toFixed(2)).join("–")}` : "—";
-      return `<tr><td style="font-weight:600"><span style="display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:8px;background:${cv(colorOf(k))}"></span>${esc(s.label)}</td><td class="num"><span class="pill" style="background:${cv(colorOf(k))}">${latest.v[k] ?? 0}%</span></td><td style="white-space:nowrap">${band}</td><td>${esc(s.driver)}</td></tr>`;
-    })
-    .join("");
   const prevYe = comparablePrev(ye, "ye2026");
   $("ye-body").innerHTML = keysByP(latestYe.v)
     .map((k) => {
@@ -1531,8 +1598,8 @@
   showDispatches(DISP_FIRST);
 
   // ---------- ticker ----------
-  const gNow = groups(latest.v);
-  const gPrev = prevNov ? groups(prevNov.v) : null;
+  const gNow = groups(latestYe.v, "ye2026");
+  const gPrev = prevYe ? groups(prevYe.v, "ye2026") : null;
   const escNow = gNow.escalated_war ?? 0;
   /** @param {number} a @param {number | null | undefined} b @param {number} dp @returns {[string, string]} */
   const delta = (a, b, dp) => {
@@ -1579,7 +1646,7 @@
   for (const t of D.tripwires) tw[t.status]++;
   /** @type {[string, string, [string, string]][]} */
   const items = [
-    ["ESCALATED WAR BY NOV. 3", `${Math.round(escNow)}%`, delta(escNow, gPrev?.escalated_war, 0)],
+    ["ESCALATED WAR BY YE", `${Math.round(escNow)}%`, delta(escNow, gPrev?.escalated_war, 0)],
     ["DEAL BY YE", `${D.brief.deal_p.ye2026}%`, ["", ""]],
   ];
   if (br) items.push(["BRENT", `$${br.v.toFixed(2)}`, delta(br.v, brP?.v, 2)]);

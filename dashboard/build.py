@@ -353,8 +353,8 @@ def check_price_lines(
     """Every price forecast equals its horizon's scenario odds x bands (rounded), so the bars and ranges agree."""
     errors: list[str] = []
     for fid in PRICE_LINES:
-        if fid not in latest_f:
-            continue
+        if fid not in latest_f or latest_f[fid]["outcome"]:
+            continue  # absent, or resolved: a scored record no longer tracks the odds
         want = implied_price_line(odds, scenarios, fid, premium)
         if want is None:
             errors.append(f"{fid}: a current {price_horizon(fid)} scenario has no band for it")
@@ -371,11 +371,19 @@ def check_scenario_forecasts(odds: list[Row], latest_f: dict[str, Row]) -> list[
     for horizon in ("nov3", "ye2026"):
         for k, p in latest_odds(odds, horizon).items():
             fid = f"scen_{horizon}_{k}"
+            if fid in latest_f and latest_f[fid]["outcome"]:
+                continue  # the horizon has resolved
             if fid not in latest_f:
                 errors.append(f"forecasts.csv has no {fid} row for the latest {horizon} odds")
             elif float(latest_f[fid]["p"]) != p:
                 errors.append(f"forecasts.csv {fid} = {latest_f[fid]['p']} but odds.csv says {p:g}")
     return errors
+
+
+def resolved_target(latest_f: dict[str, Row], key: str) -> bool:
+    """A target whose forecast has resolved (or been voided): an armed tripwire can no longer move it."""
+    fid = "scen_{}_{}".format(*key.split(":", 1)) if ":" in key else key
+    return bool(fid in latest_f and latest_f[fid]["outcome"])
 
 
 def current_value(odds: list[Row], latest_f: dict[str, Row], key: str) -> float | None:
@@ -443,7 +451,12 @@ def check_tripwires(odds: list[Row], latest_f: dict[str, Row], trips: list[Row])
             continue
         for key, val in values.items():
             cur = current_value(odds, latest_f, key)
-            if cur is None or val is None:
+            if resolved_target(latest_f, key):
+                errors.append(
+                    f"tripwires.csv {t['id']}: target {key} has resolved; "
+                    "move it to the year-end horizon or expire the tripwire"
+                )
+            elif cur is None or val is None:
                 errors.append(f"tripwires.csv {t['id']}: unknown target {key}")
             elif abs(val - cur) < 2:
                 errors.append(f"tripwires.csv {t['id']}: target {key}={val:g} is within 2 of the current {cur:g}")
@@ -463,6 +476,10 @@ TARGET_LABELS = {
     "gas_nat_475": "gas ≥$4.75",
     "gas_nat_lt400": "gas <$4.00",
     "brent_100": "Brent (Jan.) ≥$100",
+    "ye2026:mou_deal": "YE MOU-style",
+    "ye_gas_nat_450": "YE gas ≥$4.50",
+    "ye_gas_nat_475": "YE gas ≥$4.75",
+    "ye_brent_100": "YE Brent (Feb.) ≥$100",
 }
 
 
@@ -580,17 +597,26 @@ def check_headlines(events: list[Event], headlines: list[Row]) -> list[str]:
     return errors
 
 
+# The day each odds horizon resolves. Runs before it add a row set every day; none are added after it.
+HORIZON_ENDS = {"nov3": "2026-11-03", "ye2026": "2026-12-31"}
+
+
 def check_daily_odds(odds: list[Row], events: list[Event]) -> list[str]:
-    """Every day with a run dispatch has odds rows for both horizons, unchanged or not, so the charts plot each day."""
+    """Every run day before a horizon resolves has odds rows for it, unchanged or not, so the charts plot each day.
+
+    A resolved horizon is a record: no rows from its end date on.
+    """
     have = {(r["date"], r["horizon"]) for r in odds}
     first = min((r["date"] for r in odds), default="")
     run_days = sorted({e["date"] for e in events if re.match(r"\((am|pm), run\)", e["text"]) and e["date"] >= first})
-    return [
+    missing = [
         f"odds.csv has no {h} rows for {d}, a run day; copy the latest odds with note 'unchanged'"
         for d in run_days
-        for h in ("nov3", "ye2026")
-        if (d, h) not in have
+        for h, end in HORIZON_ENDS.items()
+        if d < end and (d, h) not in have
     ]
+    late = sorted({(r["date"], r["horizon"]) for r in odds if r["date"] >= HORIZON_ENDS.get(r["horizon"], "9999")})
+    return missing + [f"odds.csv has {h} rows for {d}, once the horizon resolved; drop them" for d, h in late]
 
 
 def check(odds: list[Row], forecasts: list[Row], terms: list[Row], brief: Brief) -> list[str]:

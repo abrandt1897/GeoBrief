@@ -145,6 +145,18 @@ def test_check_daily_odds_needs_rows_on_every_run_day() -> None:
     assert len(missing) == 2 and all("2026-10-08" in m for m in missing)
 
 
+def test_check_daily_odds_stops_at_each_horizon_end() -> None:
+    def ev(date: str) -> build.Event:
+        return {"date": date, "text": "(am, run) a", "chart": None}
+
+    odds = [odds_row("2026-11-02", h, "limited_war", 100) for h in ("nov3", "ye2026")]
+    odds += [odds_row(d, "ye2026", "limited_war", 100) for d in ("2026-11-03", "2026-11-04")]
+    # From Election Day on, a run needs only year-end rows.
+    assert build.check_daily_odds(odds, [ev("2026-11-02"), ev("2026-11-03"), ev("2026-11-04")]) == []
+    late = build.check_daily_odds([*odds, odds_row("2026-11-04", "nov3", "limited_war", 100)], [])
+    assert len(late) == 1 and "once the horizon resolved" in late[0]
+
+
 # ---------- consistency checks ----------
 
 
@@ -409,3 +421,18 @@ def test_nyc_lines_shift_by_the_premium() -> None:
     shifted = build.implied_price_line(GOOD_ODDS, SCEN, "gas_nyc_475", 0.2)
     assert shifted is not None and base is not None
     assert shifted > base
+
+
+def test_armed_tripwire_cannot_target_a_resolved_forecast() -> None:
+    fc = {k: forecast(k, v) for k, v in {"deal_ye2026": 65, "gas_nat_450": 10}.items()}
+    fc["scen_nov3_escalated_war"] = {**forecast("scen_nov3_escalated_war", 21), "outcome": "0"}
+    fc["gas_nat_450"] = {**fc["gas_nat_450"], "outcome": "0"}
+    assert build.check_tripwires(GOOD_ODDS, fc, [trip("deal_ye2026+=5")]) == []
+    for target in ("nov3:escalated_war+=5", "gas_nat_450+=5"):
+        errs = build.check_tripwires(GOOD_ODDS, fc, [trip(target)])
+        assert len(errs) == 1 and "has resolved" in errs[0], errs
+
+
+def test_resolved_price_lines_and_scenarios_are_not_rechecked() -> None:
+    fc = {"scen_nov3_escalated_war": {**forecast("scen_nov3_escalated_war", 25), "outcome": "0"}}
+    assert not any("scen_nov3_escalated_war" in e for e in build.check_scenario_forecasts(GOOD_ODDS, fc))
