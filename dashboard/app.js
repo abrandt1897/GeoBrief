@@ -51,7 +51,7 @@
 /** @typedef {{ d: string, v: number | null }} Pt */
 /** @typedef {{ name: string, color: string, width?: number, dash?: string, points: Pt[] }} Series */
 /** @typedef {{ v: number, value: string, name: string, color: string, boxW: number }} EndLabel */
-/** @typedef {{ lo: number, hi: number, w: number, color: string, title: string, x?: number }} Band */
+/** @typedef {{ lo: number, hi: number, w: number, color: string, title: string }} Band */
 /** @typedef {{ date: string, text: string }} Annotation */
 /** @typedef {{ date: string, note: string }} Marker */
 /**
@@ -276,7 +276,7 @@
       h += `<line class="rescore-line" x1="${mx}" x2="${mx}" y1="${T}" y2="${B}" style="stroke:var(--muted)" stroke-width="1.25" stroke-dasharray="2 4"/>`;
     }
     for (const b of o.bands ?? []) {
-      h += `<rect x="${R + 8 + (b.x ?? 0)}" y="${Y(b.hi) + 0.5}" width="${b.w}" height="${Math.max(1, Y(b.lo) - Y(b.hi) - 1)}" style="fill:${cv(b.color)}" fill-opacity=".9"><title>${esc(b.title)}</title></rect>`;
+      h += `<rect x="${R + 8}" y="${Y(b.hi) + 0.5}" width="${b.w}" height="${Math.max(1, Y(b.lo) - Y(b.hi) - 1)}" style="fill:${cv(b.color)}" fill-opacity=".9"><title>${esc(b.title)}</title></rect>`;
     }
     for (const s of o.series) {
       const pts = s.points.flatMap((p) => (p.v == null ? [] : [{ d: p.d, v: p.v }]));
@@ -521,7 +521,7 @@
   /** @param {(r: GasRow) => number | null} get @param {string} name @returns {FuelLine[]} */
   const gasLine = (get, name) => [{ name, color: "--fg", pts: readings(gasRows, get) }];
   const BANDS_NOTE =
-    "Bars right of Dec. 31 are the price ranges under the chart, drawn against the price axis; bar width is proportional to each range’s probability and is split by colour into the scenarios behind it. The ranges don’t overlap, so they sum to 100%.";
+    "Bars right of Dec. 31 are the price ranges under the chart, drawn against the price axis; bar width is proportional to each range’s probability and its colour is the scenario most of that probability comes from. The ranges don’t overlap, so they sum to 100%.";
   /** @type {Record<Fuel, FuelCfg>} */
   const FUELS = {
     gas: {
@@ -722,8 +722,7 @@
 
   /**
    * Bars right of Dec. 31, one per price range under the chart, spanning that range on the price axis.
-   * Each bar's width is the range's probability, split into scenario colours by how much of each
-   * scenario's band falls in the range.
+   * Each bar's width is the range's probability; its colour is the scenario with the most probability in the range.
    * @param {string} ltId @param {number[]} cuts low, then each threshold, ascending
    * @param {[string, number][]} ge @param {number[]} outer axis ends of the open-ended ranges
    * @param {ReturnType<typeof scenarioRanges>} scen @param {(v: number) => string} f
@@ -749,24 +748,18 @@
             return acc + (hi > lo ? (w * ov) / (hi - lo) : 0);
           }, 0),
       }));
-      const tot = mass.reduce((acc, y) => acc + y.m, 0);
+      // One colour per range: the scenario with the most probability inside it.
+      const top = [...mass].sort((u, v) => v.m - u.m).find((y) => y.m > 0)?.x;
       // Width fits the 92-unit gutter right of Dec. 31 (100% -> 88).
-      const width = Math.max(2, p * 0.88);
-      let off = 0;
-      return mass.flatMap(({ x, m }) => {
-        if (!tot || m <= 0) return [];
-        const w = (width * m) / tot;
-        const bar = {
+      return [
+        {
           lo: Number.isFinite(a) ? a : (outer[0] ?? a),
           hi: Number.isFinite(b) ? b : (outer[1] ?? b),
-          w,
-          x: off,
-          color: colorOf(x.key),
-          title: `${labels[i] ?? ""}: ${Math.round(p)}% (${x.label} ${Math.round((p * m) / tot)}%)`,
-        };
-        off += w;
-        return [bar];
-      });
+          w: Math.max(2, p * 0.88),
+          color: top ? colorOf(top.key) : "--muted",
+          title: `${labels[i] ?? ""}: ${Math.round(p)}%${top ? ` (mostly ${top.label})` : ""}`,
+        },
+      ];
     });
   }
 
