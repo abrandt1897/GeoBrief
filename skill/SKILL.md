@@ -183,15 +183,15 @@ Resolved Nov 3 on the status as of the Nov 2 evening run (Adam: "count the statu
 | Scenario            | P   |
 | ------------------- | --- |
 | Limited war / Limbo | 66% |
-| Escalated war       | 15% |
-| MOU-style deal      | 12% |
+| Escalated war       | 13% |
+| MOU-style deal      | 14% |
 | Comprehensive deal  | 7%  |
 
-P(signed deal by YE) 11% sits between comprehensive (7) and MOU + comprehensive (19): 7 comprehensive + 4 signed without a Rubio term (counted in MOU-style with Iran folds 8).
+P(signed deal by YE) 11% sits between comprehensive (7) and MOU + comprehensive (21): 7 comprehensive + 4 signed without a Rubio term (counted in MOU-style with Iran folds 8).
 
 **Gas baseline (AAA, Oct 6):** national regular $4.37 (wk $4.48, mo $4.15); diesel $6.32 (record $6.53 9/22). NY state $4.47 / $6.52; NYC metro $4.55 / $6.73 (≈ +18¢ / +41¢ over national; the NYC lines use the latest gap from `gas.csv`). **2026 reference (AAA):** pre-war $2.98 (Feb 26); high $4.56 (May 21); July low $3.79; Sept peak $4.48 (Sept 24).
 **Gas mechanics:** rockets 2-4¢/day, feathers 1-1.5¢/day (~2.4¢ per $1/bbl); no-shock path → ~$4.10-4.25.
-**Year-end price lines (Dec 31; added Oct 24, `ye_*`, same thresholds as Nov 3):** gas <$4.00 ~29% · ≥$4.50 ~21% · ≥$4.75 ~10% · ≥$5.00 ~3%. Diesel <$6.00 ~44% · ≥$6.50 ~19% · ≥$6.75 ~12% · ≥$7.00 ~8%. Brent (Feb.) <$90 ~17% · ≥$100 ~71% · ≥$110 ~42% · ≥$120 ~18%. JKM (Feb.) <$20 ~8% · ≥$25 ~79% · ≥$28 ~71% · ≥$31 ~49% (re-derived Nov 3 pm on the new odds). Bands (`scenarios.csv` ye2026): limited = forward 34 + post-election strike round 20 + half-open 12, centred on the Oct 22–23 futures for Dec 31: Jan RBOB $3.02 + ~$1.10 (gas ~$4.15), Jan ULSD $4.63 + ~$1.40 (diesel ~$6.05), ICE Feb Brent $107.32, Feb JKM $30.81. Escalated, MOU-style and comprehensive bands sit above and below as on Nov 3.
+**Year-end price lines (Dec 31; added Oct 24, `ye_*`, same thresholds as Nov 3):** gas <$4.00 ~31% · ≥$4.50 ~19% · ≥$4.75 ~9% · ≥$5.00 ~3%. Diesel <$6.00 ~46% · ≥$6.50 ~17% · ≥$6.75 ~11% · ≥$7.00 ~7%. Brent (Feb.) <$90 ~19% · ≥$100 ~69% · ≥$110 ~40% · ≥$120 ~16%. JKM (Feb.) <$20 ~8% · ≥$25 ~77% · ≥$28 ~69% · ≥$31 ~47% (re-derived Nov 3 pm on the new odds). Bands (`scenarios.csv` ye2026): limited = forward 34 + post-election strike round 20 + half-open 12, centred on the Oct 22–23 futures for Dec 31: Jan RBOB $3.02 + ~$1.10 (gas ~$4.15), Jan ULSD $4.63 + ~$1.40 (diesel ~$6.05), ICE Feb Brent $107.32, Feb JKM $30.81. Escalated, MOU-style and comprehensive bands sit above and below as on Nov 3.
 **Market cross-check:** January Brent settled $104.77 on Nov 2 (−7.6%, its lowest in about four weeks, as traders unwound the war premium); the year-end bands resolve on the February contract ($109.56 on Oct 30, CME). Dated Brent >$120 (Oct 2 floor) said physical was tighter than futures. Futures have faded every lull; supply recovery + G7 release cap upside.
 
 ### Live Tripwires
