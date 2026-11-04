@@ -51,7 +51,7 @@
 /** @typedef {{ d: string, v: number | null }} Pt */
 /** @typedef {{ name: string, color: string, width?: number, dash?: string, points: Pt[] }} Series */
 /** @typedef {{ v: number, value: string, name: string, color: string, boxW: number }} EndLabel */
-/** @typedef {{ lo: number, hi: number, w: number, color: string, title: string }} Band */
+/** @typedef {{ lo: number, hi: number, w: number, color: string, title: string, text?: string }} Band */
 /** @typedef {{ date: string, text: string }} Annotation */
 /** @typedef {{ date: string, note: string }} Marker */
 /**
@@ -118,16 +118,6 @@
   };
   /** @param {string} tok @returns {string} */
   const cv = (tok) => `var(${tok})`;
-  /**
-   * Overall range of a price band: "lo-hi" or weighted sub-ranges "lo-hi:w|lo-hi:w".
-   * @param {string} band @returns {[number, number] | null}
-   */
-  const bandRange = (band) => {
-    if (!band) return null;
-    const segs = band.split("|").map((part) => (part.split(":")[0] ?? "").split("-").map(Number));
-    return [Math.min(...segs.map(([lo = 0]) => lo)), Math.max(...segs.map(([, hi = 0]) => hi))];
-  };
-
   /** @type {Record<Group, string>} */
   const GROUP_COLORS = {
     limited_war: "--war",
@@ -286,7 +276,9 @@
       h += `<line class="rescore-line" x1="${mx}" x2="${mx}" y1="${T}" y2="${B}" style="stroke:var(--muted)" stroke-width="1.25" stroke-dasharray="2 4"/>`;
     }
     for (const b of o.bands ?? []) {
-      h += `<rect x="${R + 8}" y="${Y(b.hi)}" width="${b.w}" height="${Y(b.lo) - Y(b.hi)}" style="fill:${cv(b.color)}" fill-opacity=".9"><title>${esc(b.title)}</title></rect>`;
+      h += `<rect x="${R + 8}" y="${Y(b.hi) + 1}" width="${b.w}" height="${Math.max(1, Y(b.lo) - Y(b.hi) - 2)}" style="fill:${cv(b.color)}" fill-opacity=".9"><title>${esc(b.title)}</title></rect>`;
+      if (b.text)
+        h += `<text x="${R + 12 + b.w}" y="${(Y(b.hi) + Y(b.lo)) / 2 + 4}" font-size="12" font-weight="600" style="fill:var(--fg)">${esc(b.text)}</text>`;
     }
     for (const s of o.series) {
       const pts = s.points.flatMap((p) => (p.v == null ? [] : [{ d: p.d, v: p.v }]));
@@ -521,7 +513,6 @@
    * @property {string} unit
    * @property {string} chartLabel
    * @property {() => FuelLine[]} lines
-   * @property {(s: Scenario) => string} band
    * @property {number} dp decimals for prices
    * @property {number} [step] y-axis step; omitted = 25¢ or 50¢ by range
    * @property {[string, number, [string, number][]]} buckets "<" forecast id, its price, then ">=" ids and prices
@@ -531,15 +522,14 @@
   /** @param {(r: GasRow) => number | null} get @param {string} name @returns {FuelLine[]} */
   const gasLine = (get, name) => [{ name, color: "--fg", pts: readings(gasRows, get) }];
   const BANDS_NOTE =
-    "Bars right of Dec. 31 show each scenario’s year-end range; bar width is proportional to its probability. The ranges under the chart don’t overlap, so they sum to 100%.";
+    "Bars right of Dec. 31 are the price ranges under the chart, drawn against the price axis; bar width is proportional to each range’s probability. The ranges don’t overlap, so they sum to 100%. They come from the year-end scenario odds times the price range each scenario implies.";
   /** @type {Record<Fuel, FuelCfg>} */
   const FUELS = {
     gas: {
       label: "Gas",
       unit: "AAA national regular, $ per gallon",
-      chartLabel: "AAA national regular gas prices with year-end scenario price bands",
+      chartLabel: "AAA national regular gas prices with year-end price-range odds",
       lines: () => gasLine((r) => r.nat_regular, "Regular"),
-      band: (sc) => sc.gas_band,
       dp: 2,
       buckets: [
         "gas_nat_lt400",
@@ -555,9 +545,8 @@
     diesel: {
       label: "Diesel",
       unit: "AAA national diesel, $ per gallon",
-      chartLabel: "AAA national diesel prices with year-end scenario price bands",
+      chartLabel: "AAA national diesel prices with year-end price-range odds",
       lines: () => gasLine((r) => r.nat_diesel, "Diesel"),
-      band: (sc) => sc.diesel_band,
       dp: 2,
       buckets: [
         "gas_diesel_lt600",
@@ -573,9 +562,8 @@
     brent: {
       label: "Brent",
       unit: "Brent daily close, front-month futures (Trading Economics), $ per barrel",
-      chartLabel: "Brent crude daily prices with year-end scenario price bands",
+      chartLabel: "Brent crude daily prices with year-end price-range odds",
       lines: () => [{ name: "Brent", color: "--fg", pts: readings(enRows, (r) => r.brent_front) }],
-      band: (sc) => sc.brent_band,
       dp: 2,
       step: 10,
       buckets: [
@@ -592,9 +580,8 @@
     lng: {
       label: "LNG",
       unit: "Asian LNG daily close, Platts JKM front month, $ per million Btu",
-      chartLabel: "JKM Asian LNG prices with year-end scenario price bands",
+      chartLabel: "JKM Asian LNG prices with year-end price-range odds",
       lines: () => [{ name: "JKM", color: "--fg", pts: readings(enRows, (r) => r.jkm_front) }],
-      band: (sc) => sc.lng_band,
       dp: 2,
       step: 5,
       buckets: [
@@ -631,21 +618,25 @@
       ...(l.dash ? { dash: l.dash } : {}),
       points: l.pts.filter((r) => r.date >= start).map((r) => ({ d: r.date, v: r.v })),
     }));
-    const bands = scenarioBands(cfg.band, money, "ye2026");
-    const vals = [
-      ...series.flatMap((x) => x.points.flatMap((pt) => (pt.v == null ? [] : [pt.v]))),
-      ...bands.flatMap((b) => [b.lo, b.hi]),
-    ];
-    const step = cfg.step ?? (Math.max(...vals) - Math.min(...vals) > 2.5 ? 0.5 : 0.25);
-    const pad = step / 5;
-    const yMin = Math.floor((Math.min(...vals) - pad) / step) * step;
-    const yMax = Math.ceil((Math.max(...vals) + pad) / step) * step;
-    /** @type {number[]} */
-    const ticks = [];
-    for (let t = yMin; t <= yMax - step + step / 25; t += step) ticks.push(Number(t.toFixed(2)));
     /** @type {FuelCfg["buckets"]} */
     const buckets = yeBuckets(cfg.buckets);
     const [ltId, low, ge] = buckets;
+    const cuts = [low, ...ge.map(([, t]) => t)];
+    const top = cuts[cuts.length - 1] ?? low;
+    const linePts = series.flatMap((x) => x.points.flatMap((pt) => (pt.v == null ? [] : [pt.v])));
+    const span = Math.max(...linePts, top) - Math.min(...linePts, low);
+    const step = cfg.step ?? (span > 2.5 ? 0.5 : 0.25);
+    // The axis reaches at least one step past the outer thresholds so the open-ended ranges get a bar.
+    const vals = [...linePts, low - step, top + step];
+    const pad = step / 5;
+    const yMin = Math.floor((Math.min(...vals) - pad) / step) * step;
+    const yMax = Math.ceil((Math.max(...vals) + pad) / step) * step;
+    /** @param {number} v */
+    const fmtCut = (v) => (cfg.step ? `$${v}` : money(v));
+    const bands = rangeBars(ltId, cuts, ge, low - step, top + step, fmtCut);
+    /** @type {number[]} */
+    const ticks = [];
+    for (let t = yMin; t <= yMax - step + step / 25; t += step) ticks.push(Number(t.toFixed(2)));
     const legend = `<div class="legend" style="margin-top:10px">${lines
       .flatMap((l) => {
         const cur = nth(l.pts);
@@ -668,7 +659,7 @@
         .join("")}</div><div style="font-size:13px" class="muted">${esc(cfg.unit)}</div></div>` +
       legend +
       '<div class="chart" style="margin-top:30px"></div>' +
-      priceBuckets(ltId, low, ge, cfg.step ? (v) => `$${v}` : money, "Dec. 31") +
+      priceBuckets(ltId, low, ge, fmtCut, "Dec. 31") +
       `<div class="note">${esc(cfg.note)}</div>`;
     for (const k of ids) {
       $(`seg-${k}`).onclick = () => {
@@ -700,22 +691,30 @@
   const yeBuckets = (b) => [`ye_${b[0]}`, b[1], b[2].map(([id, t]) => [`ye_${id}`, t])];
 
   /**
-   * Price bands for a horizon, one per current scenario, sized by its latest probability.
-   * @param {(s: Scenario) => string} field
-   * @param {(v: number) => string} f
-   * @param {"nov3" | "ye2026"} horizon
+   * Bars right of Dec. 31, one per price range under the chart, spanning that range on the price axis
+   * (the open-ended ones drawn one axis step past the outer thresholds) with width proportional to its probability.
+   * @param {string} ltId @param {number[]} cuts low, then each threshold, ascending
+   * @param {[string, number][]} ge @param {number} yMin @param {number} yMax @param {(v: number) => string} f
    * @returns {Band[]}
    */
-  function scenarioBands(field, f, horizon) {
-    const odds = horizon === "ye2026" ? latestYeRow.v : latest.v;
-    return Object.keys(odds).flatMap((k) => {
-      const s = meta.get(`${horizon}:${k}`);
-      const p = odds[k] ?? 0;
-      const range = s ? bandRange(field(s)) : null;
-      if (!s || !range) return [];
-      const [lo, hi] = range;
-      // Width scales with probability and fits the 92-unit gutter right of Election Day (100% → 88).
-      return [{ lo, hi, w: Math.max(6, p * 0.88), color: colorOf(k), title: `${s.label}: ${f(lo)}–${f(hi)} (${p}%)` }];
+  function rangeBars(ltId, cuts, ge, yMin, yMax, f) {
+    const lt = latestF.get(ltId);
+    const ps = ge.map(([id]) => latestF.get(id)?.p);
+    if (!lt || ps.some((p) => p == null)) return [];
+    const probs = ladderProbs(lt.p, /** @type {number[]} */ (ps));
+    const labels = bucketLabels(cuts[0] ?? 0, cuts.slice(1), f);
+    const edges = [yMin, ...cuts, yMax];
+    return probs.map((p, i) => {
+      const pct = Math.round(p);
+      // Width fits the 92-unit gutter right of Dec. 31 with room for the label (100% -> 60).
+      return {
+        lo: edges[i] ?? yMin,
+        hi: edges[i + 1] ?? yMax,
+        w: Math.max(2, pct * 0.6),
+        color: "--limbo",
+        title: `${labels[i] ?? ""}: ${pct}%`,
+        text: `${pct}%`,
+      };
     });
   }
 
@@ -1316,7 +1315,7 @@
       id: "gas",
       label: "Gas Prices",
       title: "Energy Prices Against The Scenarios",
-      dek: "Gas, diesel, Brent crude and Asian LNG, each with the price range every scenario implies on Dec. 31. Pump prices rise 2–4¢ a day after a shock and fall 1–1.5¢ a day after it passes.",
+      dek: "Gas, diesel, Brent crude and Asian LNG, each with the odds of each price range on Dec. 31. Pump prices rise 2–4¢ a day after a shock and fall 1–1.5¢ a day after it passes.",
       render: gasPanel,
     },
     {

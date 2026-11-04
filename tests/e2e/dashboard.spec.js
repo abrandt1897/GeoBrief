@@ -247,12 +247,12 @@ test("energy chart shows year-end bands and ranges only, with no horizon toggle"
   const svg = page.locator("#panel svg");
   await expect(svg).toContainText("Dec. 31");
   await expect(svg).not.toContainText("Election Day");
-  await expect(svg.locator("rect title")).toHaveCount(4);
+  await expect(svg.locator("rect title")).toHaveCount(5);
   await expect(page.locator(".figs")).toContainText("Under $4.00 on Dec. 31");
   await expect(page.locator(".figs")).toContainText("$5.00 or more on Dec. 31");
   for (const fuel of ["#seg-diesel", "#seg-brent", "#seg-lng"]) {
     await page.click(fuel);
-    await expect(svg.locator("rect title")).toHaveCount(4);
+    await expect(svg.locator("rect title")).toHaveCount(5);
     const qs = await page.locator(".figs strong").allTextContents();
     expect(qs).toHaveLength(5);
     expect(qs.reduce((a, t) => a + Number(t.replace("%", "")), 0)).toBe(100);
@@ -285,12 +285,25 @@ test("Brent and LNG buttons swap in their series, bands and ranges", async ({ pa
   // One line per fuel: the daily front-month close.
   await expect(page.locator(".legend > span")).toHaveCount(1);
   await expect(page.locator(".legend")).toContainText("Brent");
-  await expect(svg.locator("rect title")).toHaveCount(4);
+  await expect(svg.locator("rect title")).toHaveCount(5);
   await expect(page.locator(".figs")).toContainText("$120 or more");
+  // Each bar spans its range on the price axis: the $90-$100 bar sits between the $90 and $100 gridlines.
+  const bar = svg.locator("rect", { has: page.locator("title", { hasText: "$90–$100" }) });
+  const tick = async (/** @type {string} */ t) =>
+    Number(
+      await svg
+        .locator("text", { hasText: new RegExp(`^\\${t}$`) })
+        .first()
+        .getAttribute("y"),
+    );
+  const [y90, y100] = [await tick("$90"), await tick("$100")];
+  const by = Number(await bar.getAttribute("y"));
+  const bh = Number(await bar.getAttribute("height"));
+  expect(Math.abs(by + bh / 2 - (y90 + y100) / 2)).toBeLessThan(8);
   await page.click("#seg-lng");
   await expect(page.locator(".legend > span")).toHaveCount(1);
   await expect(page.locator(".legend")).toContainText("JKM");
-  await expect(svg.locator("rect title")).toHaveCount(4);
+  await expect(svg.locator("rect title")).toHaveCount(5);
   await expect(page.locator(".figs")).toContainText("Under $20");
   expect(errors).toEqual([]);
 });
