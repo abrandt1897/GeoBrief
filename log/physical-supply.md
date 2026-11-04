@@ -95,3 +95,11 @@ Kpler data cited by CNBC put flows through Hormuz at 7.3 Mbd in the week ended W
 - CNBC doesn't state the basis; its earlier Kpler Hormuz figures were crude, so the chart plots a total-oil estimate of about 8.2 Mbd (7.3 x1.13).
 - The same article puts Hormuz crude at 11.1 Mbd on average in October, about 2% below September, so the drop is concentrated in the last week.
 - No Kpler total Gulf export figure for the same week has surfaced yet, so the pipeline line can't be updated for it.
+
+## Gulf exports dip in October (Nov 4)
+
+Kpler's preliminary monthly data (via Reuters, Nov 3) put Gulf crude and condensate exports through Hormuz, the Red Sea and the Gulf of Oman at about 16.1 Mbd in October, down from 17.09 in September, as attacks on shipping hit a record. Vortexa's broader measure (crude, condensate and products, excluding LPG) fell to 17.1 Mbd from 18.9, about three-quarters of prewar.
+
+- Kpler's figure is crude and condensate, so the chart plots a total-oil estimate of about 19.2 Mbd (16.1 x1.19), dated Oct 31.
+- Both trackers say October is likely to be revised up, because shuttle tankers in the strait often switch off their transponders.
+- No Kpler weekly figure after the week ended Oct 28 (Hormuz) has surfaced yet.

@@ -146,3 +146,4 @@ date,nat_regular,nat_diesel,ny_regular,ny_diesel,nyc_regular,nyc_diesel,source
 2026-11-01,4.17,6.30,4.34,6.49,4.37,6.70,gasprices.aaa.com (national + ?state=NY)
 2026-11-02,4.17,6.29,4.34,6.49,4.37,6.71,gasprices.aaa.com (national + ?state=NY)
 2026-11-03,4.15,6.29,4.34,6.49,4.36,6.70,gasprices.aaa.com (national + ?state=NY)
+2026-11-04,4.12,6.27,4.32,6.48,4.34,6.68,gasprices.aaa.com (national + ?state=NY)

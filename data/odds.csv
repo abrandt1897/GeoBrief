@@ -219,3 +219,7 @@ date,horizon,scenario,p,note
 2026-11-03,ye2026,escalated_war,15,"tw_us_strike fired with a reduced effect (escalated +3, MOU-style -2, comprehensive -1, not the set +8/-4): Trump confirmed on Fox the Qeshm strike on an air-defense site but called it minor, a defensive hit rather than a resumed campaign"
 2026-11-03,ye2026,mou_deal,12,"tw_us_strike fired with a reduced effect (escalated +3, MOU-style -2, comprehensive -1, not the set +8/-4): Trump confirmed on Fox the Qeshm strike on an air-defense site but called it minor, a defensive hit rather than a resumed campaign"
 2026-11-03,ye2026,comprehensive_deal,7,"tw_us_strike fired with a reduced effect (escalated +3, MOU-style -2, comprehensive -1, not the set +8/-4): Trump confirmed on Fox the Qeshm strike on an air-defense site but called it minor, a defensive hit rather than a resumed campaign"
+2026-11-04,ye2026,limited_war,66,unchanged
+2026-11-04,ye2026,escalated_war,15,unchanged
+2026-11-04,ye2026,mou_deal,12,unchanged
+2026-11-04,ye2026,comprehensive_deal,7,unchanged
