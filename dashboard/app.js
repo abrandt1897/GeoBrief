@@ -521,7 +521,7 @@
   /** @param {(r: GasRow) => number | null} get @param {string} name @returns {FuelLine[]} */
   const gasLine = (get, name) => [{ name, color: "--fg", pts: readings(gasRows, get) }];
   const BANDS_NOTE =
-    "Bars right of Dec. 31 are the price ranges under the chart, drawn against the price axis; bar width is proportional to each range’s probability and its colour is the scenario most of that probability comes from. The ranges don’t overlap, so they sum to 100%.";
+    "Bars right of Dec. 31 are the price ranges under the chart, drawn against the price axis; each range has its own colour and bar width is proportional to its probability. The ranges don’t overlap, so they sum to 100%.";
   /** @type {Record<Fuel, FuelCfg>} */
   const FUELS = {
     gas: {
@@ -629,7 +629,14 @@
     const linePts = series.flatMap((x) => x.points.flatMap((pt) => (pt.v == null ? [] : [pt.v])));
     const span = Math.max(...linePts, top) - Math.min(...linePts, low);
     const step = cfg.step ?? (span > 2.5 ? 0.5 : 0.25);
-    const scen = scenarioRanges(cfg.band);
+    const scen = Object.keys(latestYeRow.v).flatMap((k) => {
+      const sc = meta.get(`ye2026:${k}`);
+      const nums = (sc ? cfg.band(sc) : "").split("|").flatMap((part) => {
+        const [lo, hi] = (part.split(":")[0] ?? "").split("-").map(Number);
+        return lo == null || hi == null || Number.isNaN(lo) || Number.isNaN(hi) ? [] : [{ lo, hi }];
+      });
+      return nums;
+    });
     // The open-ended ranges run out to the scenario bands' extremes (at least one step past the thresholds).
     const outer = [Math.min(low - step, ...scen.map((x) => x.lo)), Math.max(top + step, ...scen.map((x) => x.hi))];
     const vals = [...linePts, ...outer];
@@ -638,7 +645,7 @@
     const yMax = Math.ceil((Math.max(...vals) + pad) / step) * step;
     /** @param {number} v */
     const fmtCut = (v) => (cfg.step ? `$${v}` : money(v));
-    const bands = rangeBars(ltId, cuts, ge, outer, scen, fmtCut);
+    const bands = rangeBars(ltId, cuts, ge, outer, fmtCut);
     /** @type {number[]} */
     const ticks = [];
     for (let t = yMin; t <= yMax - step + step / 25; t += step) ticks.push(Number(t.toFixed(2)));
@@ -695,72 +702,32 @@
    */
   const yeBuckets = (b) => [`ye_${b[0]}`, b[1], b[2].map(([id, t]) => [`ye_${id}`, t])];
 
-  /**
-   * The year-end scenarios' weighted price sub-bands ("lo-hi" or "lo-hi:w|lo-hi:w") with their latest odds.
-   * @param {(s: Scenario) => string} field
-   * @returns {{ key: string, label: string, p: number, lo: number, hi: number, segs: [number, number, number][] }[]}
-   */
-  function scenarioRanges(field) {
-    const odds = latestYeRow.v;
-    return Object.keys(odds).flatMap((k) => {
-      const sc = meta.get(`ye2026:${k}`);
-      const band = sc ? field(sc) : "";
-      if (!sc || !band) return [];
-      /** @type {[number, number, number][]} */
-      const segs = band.split("|").map((part) => {
-        const [range = "", w = "1"] = part.split(":");
-        const [lo = 0, hi = 0] = range.split("-").map(Number);
-        return [lo, hi, Number(w)];
-      });
-      const tot = segs.reduce((a, [, , w]) => a + w, 0) || 1;
-      for (const sg of segs) sg[2] /= tot;
-      const lo = Math.min(...segs.map(([l]) => l));
-      const hi = Math.max(...segs.map(([, h]) => h));
-      return [{ key: k, label: sc.label, p: odds[k] ?? 0, lo, hi, segs }];
-    });
-  }
+  /** One colour per price range, low to high, so the five bars (and their labels) are easy to tell apart. */
+  const RANGE_COLORS = ["--calm-dark", "--calm-light", "--limbo", "--war-light", "--war-dark"];
 
   /**
-   * Bars right of Dec. 31, one per price range under the chart, spanning that range on the price axis.
-   * Each bar's width is the range's probability; its colour is the scenario with the most probability in the range.
+   * Bars right of Dec. 31, one per price range under the chart, spanning that range on the price axis,
+   * each in its own colour, with width proportional to the range's probability.
    * @param {string} ltId @param {number[]} cuts low, then each threshold, ascending
    * @param {[string, number][]} ge @param {number[]} outer axis ends of the open-ended ranges
-   * @param {ReturnType<typeof scenarioRanges>} scen @param {(v: number) => string} f
+   * @param {(v: number) => string} f
    * @returns {Band[]}
    */
-  function rangeBars(ltId, cuts, ge, outer, scen, f) {
+  function rangeBars(ltId, cuts, ge, outer, f) {
     const lt = latestF.get(ltId);
     const ps = ge.map(([id]) => latestF.get(id)?.p);
     if (!lt || ps.some((p) => p == null)) return [];
     const probs = ladderProbs(lt.p, /** @type {number[]} */ (ps));
     const labels = bucketLabels(cuts[0] ?? 0, cuts.slice(1), f);
-    const edges = [-Infinity, ...cuts, Infinity];
-    return probs.flatMap((p, i) => {
-      const a = edges[i] ?? -Infinity;
-      const b = edges[i + 1] ?? Infinity;
-      // Each scenario's mass in [a, b): its odds times the share of its (uniform) sub-bands inside the range.
-      const mass = scen.map((x) => ({
-        x,
-        m:
-          x.p *
-          x.segs.reduce((acc, [lo, hi, w]) => {
-            const ov = Math.max(0, Math.min(hi, b) - Math.max(lo, a));
-            return acc + (hi > lo ? (w * ov) / (hi - lo) : 0);
-          }, 0),
-      }));
-      // One colour per range: the scenario with the most probability inside it.
-      const top = [...mass].sort((u, v) => v.m - u.m).find((y) => y.m > 0)?.x;
-      // Width fits the 92-unit gutter right of Dec. 31 (100% -> 88).
-      return [
-        {
-          lo: Number.isFinite(a) ? a : (outer[0] ?? a),
-          hi: Number.isFinite(b) ? b : (outer[1] ?? b),
-          w: Math.max(2, p * 0.88),
-          color: top ? colorOf(top.key) : "--muted",
-          title: `${labels[i] ?? ""}: ${Math.round(p)}%${top ? ` (mostly ${top.label})` : ""}`,
-        },
-      ];
-    });
+    const edges = [outer[0] ?? 0, ...cuts, outer[1] ?? 0];
+    // Width fits the 92-unit gutter right of Dec. 31 (100% -> 88).
+    return probs.map((p, i) => ({
+      lo: edges[i] ?? 0,
+      hi: edges[i + 1] ?? 0,
+      w: Math.max(2, p * 0.88),
+      color: RANGE_COLORS[i] ?? "--muted",
+      title: `${labels[i] ?? ""}: ${Math.round(p)}%`,
+    }));
   }
 
   /**
@@ -783,7 +750,10 @@
       f,
     );
     return `<div class="figs">${labels
-      .map((label, i) => `<div><small>${label} on ${when}</small><strong>${Math.round(probs[i] ?? 0)}%</strong></div>`)
+      .map(
+        (label, i) =>
+          `<div><small><span class="sw" style="background:${cv(RANGE_COLORS[i] ?? "--muted")}"></span>${label} on ${when}</small><strong>${Math.round(probs[i] ?? 0)}%</strong></div>`,
+      )
       .join("")}</div>`;
   }
 
