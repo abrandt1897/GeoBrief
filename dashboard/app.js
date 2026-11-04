@@ -51,7 +51,7 @@
 /** @typedef {{ d: string, v: number | null }} Pt */
 /** @typedef {{ name: string, color: string, width?: number, dash?: string, points: Pt[] }} Series */
 /** @typedef {{ v: number, value: string, name: string, color: string, boxW: number }} EndLabel */
-/** @typedef {{ lo: number, hi: number, w: number, color: string, title: string, text?: string }} Band */
+/** @typedef {{ lo: number, hi: number, w: number, color: string, title: string, x?: number }} Band */
 /** @typedef {{ date: string, text: string }} Annotation */
 /** @typedef {{ date: string, note: string }} Marker */
 /**
@@ -276,9 +276,7 @@
       h += `<line class="rescore-line" x1="${mx}" x2="${mx}" y1="${T}" y2="${B}" style="stroke:var(--muted)" stroke-width="1.25" stroke-dasharray="2 4"/>`;
     }
     for (const b of o.bands ?? []) {
-      h += `<rect x="${R + 8}" y="${Y(b.hi) + 1}" width="${b.w}" height="${Math.max(1, Y(b.lo) - Y(b.hi) - 2)}" style="fill:${cv(b.color)}" fill-opacity=".9"><title>${esc(b.title)}</title></rect>`;
-      if (b.text)
-        h += `<text x="${R + 12 + b.w}" y="${(Y(b.hi) + Y(b.lo)) / 2 + 4}" font-size="12" font-weight="600" style="fill:var(--fg)">${esc(b.text)}</text>`;
+      h += `<rect x="${R + 8 + (b.x ?? 0)}" y="${Y(b.hi) + 0.5}" width="${b.w}" height="${Math.max(1, Y(b.lo) - Y(b.hi) - 1)}" style="fill:${cv(b.color)}" fill-opacity=".9"><title>${esc(b.title)}</title></rect>`;
     }
     for (const s of o.series) {
       const pts = s.points.flatMap((p) => (p.v == null ? [] : [{ d: p.d, v: p.v }]));
@@ -513,6 +511,7 @@
    * @property {string} unit
    * @property {string} chartLabel
    * @property {() => FuelLine[]} lines
+   * @property {(s: Scenario) => string} band
    * @property {number} dp decimals for prices
    * @property {number} [step] y-axis step; omitted = 25¢ or 50¢ by range
    * @property {[string, number, [string, number][]]} buckets "<" forecast id, its price, then ">=" ids and prices
@@ -522,7 +521,7 @@
   /** @param {(r: GasRow) => number | null} get @param {string} name @returns {FuelLine[]} */
   const gasLine = (get, name) => [{ name, color: "--fg", pts: readings(gasRows, get) }];
   const BANDS_NOTE =
-    "Bars right of Dec. 31 are the price ranges under the chart, drawn against the price axis; bar width is proportional to each range’s probability. The ranges don’t overlap, so they sum to 100%. They come from the year-end scenario odds times the price range each scenario implies.";
+    "Bars right of Dec. 31 are the price ranges under the chart, drawn against the price axis; bar width is proportional to each range’s probability and is split by colour into the scenarios behind it. The ranges don’t overlap, so they sum to 100%.";
   /** @type {Record<Fuel, FuelCfg>} */
   const FUELS = {
     gas: {
@@ -530,6 +529,7 @@
       unit: "AAA national regular, $ per gallon",
       chartLabel: "AAA national regular gas prices with year-end price-range odds",
       lines: () => gasLine((r) => r.nat_regular, "Regular"),
+      band: (sc) => sc.gas_band,
       dp: 2,
       buckets: [
         "gas_nat_lt400",
@@ -547,6 +547,7 @@
       unit: "AAA national diesel, $ per gallon",
       chartLabel: "AAA national diesel prices with year-end price-range odds",
       lines: () => gasLine((r) => r.nat_diesel, "Diesel"),
+      band: (sc) => sc.diesel_band,
       dp: 2,
       buckets: [
         "gas_diesel_lt600",
@@ -564,6 +565,7 @@
       unit: "Brent daily close, front-month futures (Trading Economics), $ per barrel",
       chartLabel: "Brent crude daily prices with year-end price-range odds",
       lines: () => [{ name: "Brent", color: "--fg", pts: readings(enRows, (r) => r.brent_front) }],
+      band: (sc) => sc.brent_band,
       dp: 2,
       step: 10,
       buckets: [
@@ -582,6 +584,7 @@
       unit: "Asian LNG daily close, Platts JKM front month, $ per million Btu",
       chartLabel: "JKM Asian LNG prices with year-end price-range odds",
       lines: () => [{ name: "JKM", color: "--fg", pts: readings(enRows, (r) => r.jkm_front) }],
+      band: (sc) => sc.lng_band,
       dp: 2,
       step: 5,
       buckets: [
@@ -626,14 +629,16 @@
     const linePts = series.flatMap((x) => x.points.flatMap((pt) => (pt.v == null ? [] : [pt.v])));
     const span = Math.max(...linePts, top) - Math.min(...linePts, low);
     const step = cfg.step ?? (span > 2.5 ? 0.5 : 0.25);
-    // The axis reaches at least one step past the outer thresholds so the open-ended ranges get a bar.
-    const vals = [...linePts, low - step, top + step];
+    const scen = scenarioRanges(cfg.band);
+    // The open-ended ranges run out to the scenario bands' extremes (at least one step past the thresholds).
+    const outer = [Math.min(low - step, ...scen.map((x) => x.lo)), Math.max(top + step, ...scen.map((x) => x.hi))];
+    const vals = [...linePts, ...outer];
     const pad = step / 5;
     const yMin = Math.floor((Math.min(...vals) - pad) / step) * step;
     const yMax = Math.ceil((Math.max(...vals) + pad) / step) * step;
     /** @param {number} v */
     const fmtCut = (v) => (cfg.step ? `$${v}` : money(v));
-    const bands = rangeBars(ltId, cuts, ge, low - step, top + step, fmtCut);
+    const bands = rangeBars(ltId, cuts, ge, outer, scen, fmtCut);
     /** @type {number[]} */
     const ticks = [];
     for (let t = yMin; t <= yMax - step + step / 25; t += step) ticks.push(Number(t.toFixed(2)));
@@ -691,30 +696,77 @@
   const yeBuckets = (b) => [`ye_${b[0]}`, b[1], b[2].map(([id, t]) => [`ye_${id}`, t])];
 
   /**
-   * Bars right of Dec. 31, one per price range under the chart, spanning that range on the price axis
-   * (the open-ended ones drawn one axis step past the outer thresholds) with width proportional to its probability.
+   * The year-end scenarios' weighted price sub-bands ("lo-hi" or "lo-hi:w|lo-hi:w") with their latest odds.
+   * @param {(s: Scenario) => string} field
+   * @returns {{ key: string, label: string, p: number, lo: number, hi: number, segs: [number, number, number][] }[]}
+   */
+  function scenarioRanges(field) {
+    const odds = latestYeRow.v;
+    return Object.keys(odds).flatMap((k) => {
+      const sc = meta.get(`ye2026:${k}`);
+      const band = sc ? field(sc) : "";
+      if (!sc || !band) return [];
+      /** @type {[number, number, number][]} */
+      const segs = band.split("|").map((part) => {
+        const [range = "", w = "1"] = part.split(":");
+        const [lo = 0, hi = 0] = range.split("-").map(Number);
+        return [lo, hi, Number(w)];
+      });
+      const tot = segs.reduce((a, [, , w]) => a + w, 0) || 1;
+      for (const sg of segs) sg[2] /= tot;
+      const lo = Math.min(...segs.map(([l]) => l));
+      const hi = Math.max(...segs.map(([, h]) => h));
+      return [{ key: k, label: sc.label, p: odds[k] ?? 0, lo, hi, segs }];
+    });
+  }
+
+  /**
+   * Bars right of Dec. 31, one per price range under the chart, spanning that range on the price axis.
+   * Each bar's width is the range's probability, split into scenario colours by how much of each
+   * scenario's band falls in the range.
    * @param {string} ltId @param {number[]} cuts low, then each threshold, ascending
-   * @param {[string, number][]} ge @param {number} yMin @param {number} yMax @param {(v: number) => string} f
+   * @param {[string, number][]} ge @param {number[]} outer axis ends of the open-ended ranges
+   * @param {ReturnType<typeof scenarioRanges>} scen @param {(v: number) => string} f
    * @returns {Band[]}
    */
-  function rangeBars(ltId, cuts, ge, yMin, yMax, f) {
+  function rangeBars(ltId, cuts, ge, outer, scen, f) {
     const lt = latestF.get(ltId);
     const ps = ge.map(([id]) => latestF.get(id)?.p);
     if (!lt || ps.some((p) => p == null)) return [];
     const probs = ladderProbs(lt.p, /** @type {number[]} */ (ps));
     const labels = bucketLabels(cuts[0] ?? 0, cuts.slice(1), f);
-    const edges = [yMin, ...cuts, yMax];
-    return probs.map((p, i) => {
-      const pct = Math.round(p);
-      // Width fits the 92-unit gutter right of Dec. 31 with room for the label (100% -> 60).
-      return {
-        lo: edges[i] ?? yMin,
-        hi: edges[i + 1] ?? yMax,
-        w: Math.max(2, pct * 0.6),
-        color: "--limbo",
-        title: `${labels[i] ?? ""}: ${pct}%`,
-        text: `${pct}%`,
-      };
+    const edges = [-Infinity, ...cuts, Infinity];
+    return probs.flatMap((p, i) => {
+      const a = edges[i] ?? -Infinity;
+      const b = edges[i + 1] ?? Infinity;
+      // Each scenario's mass in [a, b): its odds times the share of its (uniform) sub-bands inside the range.
+      const mass = scen.map((x) => ({
+        x,
+        m:
+          x.p *
+          x.segs.reduce((acc, [lo, hi, w]) => {
+            const ov = Math.max(0, Math.min(hi, b) - Math.max(lo, a));
+            return acc + (hi > lo ? (w * ov) / (hi - lo) : 0);
+          }, 0),
+      }));
+      const tot = mass.reduce((acc, y) => acc + y.m, 0);
+      // Width fits the 92-unit gutter right of Dec. 31 (100% -> 88).
+      const width = Math.max(2, p * 0.88);
+      let off = 0;
+      return mass.flatMap(({ x, m }) => {
+        if (!tot || m <= 0) return [];
+        const w = (width * m) / tot;
+        const bar = {
+          lo: Number.isFinite(a) ? a : (outer[0] ?? a),
+          hi: Number.isFinite(b) ? b : (outer[1] ?? b),
+          w,
+          x: off,
+          color: colorOf(x.key),
+          title: `${labels[i] ?? ""}: ${Math.round(p)}% (${x.label} ${Math.round((p * m) / tot)}%)`,
+        };
+        off += w;
+        return [bar];
+      });
     });
   }
 
