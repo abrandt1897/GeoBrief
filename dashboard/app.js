@@ -572,25 +572,9 @@
     },
     brent: {
       label: "Brent",
-      unit: "Brent front-month futures (Trading Economics), the February contract and EIA Brent spot, $ per barrel",
-      chartLabel: "Brent crude futures and spot prices with year-end scenario price bands",
-      lines: () => [
-        { name: "Brent futures", color: "--fg", pts: readings(enRows, (r) => r.brent_front) },
-        {
-          name: "Brent spot (EIA)",
-          color: "--muted",
-          width: 2.5,
-          dash: "1 5",
-          pts: readings(enRows, (r) => r.brent_spot),
-        },
-        {
-          name: "February contract",
-          color: "--fg",
-          width: 2.5,
-          dash: "6 4",
-          pts: readings(enRows, (r) => r.brent_ye),
-        },
-      ],
+      unit: "Brent daily close, front-month futures (Trading Economics), $ per barrel",
+      chartLabel: "Brent crude daily prices with year-end scenario price bands",
+      lines: () => [{ name: "Brent", color: "--fg", pts: readings(enRows, (r) => r.brent_front) }],
       band: (sc) => sc.brent_band,
       dp: 2,
       step: 10,
@@ -603,22 +587,13 @@
           ["brent_120", 120],
         ],
       ],
-      note: `${BANDS_NOTE} Bands and ranges are for the February contract, the front month on Dec. 31, its last trading day; it settled about $4 under January on Oct. 23. The dashed line is the February contract itself (CME settlements, recorded from Oct. 30), so it compares directly with the bands; the front-month line joins it when January expires at the end of November. Spot is EIA’s daily Europe Brent FOB and lags a few days.`,
+      note: `${BANDS_NOTE} The line is the daily close of the front-month future as Trading Economics shows it, the price most headlines quote; it steps when the contract rolls at each month end. Bands and ranges are for the February contract, which becomes the front month on Dec. 1 and settles on Dec. 31.`,
     },
     lng: {
       label: "LNG",
-      unit: "Asian spot LNG (Platts JKM front month), $ per million Btu",
+      unit: "Asian LNG daily close, Platts JKM front month, $ per million Btu",
       chartLabel: "JKM Asian LNG prices with year-end scenario price bands",
-      lines: () => [
-        { name: "JKM", color: "--fg", pts: readings(enRows, (r) => r.jkm_front) },
-        {
-          name: "February contract",
-          color: "--fg",
-          width: 2.5,
-          dash: "6 4",
-          pts: readings(enRows, (r) => r.jkm_ye),
-        },
-      ],
+      lines: () => [{ name: "JKM", color: "--fg", pts: readings(enRows, (r) => r.jkm_front) }],
       band: (sc) => sc.lng_band,
       dp: 2,
       step: 5,
@@ -631,7 +606,7 @@
           ["lng_jkm_31", 31],
         ],
       ],
-      note: `${BANDS_NOTE} JKM is the Asian spot LNG benchmark and the one most exposed to Hormuz. Bands and ranges are for the February contract, the front month on Dec. 31 after January expires mid-December. The dashed line is the February contract itself (CME settlements, recorded from Oct. 30), so it compares directly with the bands.`,
+      note: `${BANDS_NOTE} JKM is the Asian spot LNG benchmark and the one most exposed to Hormuz, since Qatar ships about a fifth of the world’s LNG through it. The line is the daily close of the front-month future, so it steps when the contract rolls mid-month. Bands and ranges are for the February contract, the front month on Dec. 31.`,
     },
   };
   /** @type {Fuel} */

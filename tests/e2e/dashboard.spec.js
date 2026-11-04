@@ -282,14 +282,14 @@ test("Brent and LNG buttons swap in their series, bands and ranges", async ({ pa
   const svg = page.locator("#panel svg");
   await expect(svg).toContainText("JAN.");
   await expect(svg).toContainText("War begins");
-  await expect(page.locator(".legend")).toContainText("Brent futures");
-  await expect(page.locator(".legend")).toContainText("Brent spot (EIA)");
-  await expect(page.locator(".legend")).toContainText("February contract");
+  // One line per fuel: the daily front-month close.
+  await expect(page.locator(".legend > span")).toHaveCount(1);
+  await expect(page.locator(".legend")).toContainText("Brent");
   await expect(svg.locator("rect title")).toHaveCount(4);
   await expect(page.locator(".figs")).toContainText("$120 or more");
   await page.click("#seg-lng");
+  await expect(page.locator(".legend > span")).toHaveCount(1);
   await expect(page.locator(".legend")).toContainText("JKM");
-  await expect(page.locator(".legend")).toContainText("February contract");
   await expect(svg.locator("rect title")).toHaveCount(4);
   await expect(page.locator(".figs")).toContainText("Under $20");
   expect(errors).toEqual([]);
