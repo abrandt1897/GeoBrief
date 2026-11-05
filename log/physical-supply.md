@@ -103,3 +103,10 @@ Kpler's preliminary monthly data (via Reuters, Nov 3) put Gulf crude and condens
 - Kpler's figure is crude and condensate, so the chart plots a total-oil estimate of about 19.2 Mbd (16.1 x1.19), dated Oct 31.
 - Both trackers say October is likely to be revised up, because shuttle tankers in the strait often switch off their transponders.
 - No Kpler weekly figure after the week ended Oct 28 (Hormuz) has surfaced yet.
+
+## Hormuz flows near 45% of prewar (Nov 5)
+
+Kpler data cited by the Wall Street Journal (Nov 3) put oil flows through Hormuz, including ship-to-ship transfers, at about 7.8 Mbd in the week through Nov. 1, around 45% of prewar and down from about 14 Mbd in the week to Oct 18. It confirms the drop in CNBC's figure for the week ended Oct 28 and shows the October surge in attacks on tankers now cutting volumes.
+
+- This is the same WSJ total-oil series as the Oct 18 reading, so it's plotted as published.
+- No Kpler total Gulf export figure for the same week has surfaced, so the pipeline line can't be updated for it.
