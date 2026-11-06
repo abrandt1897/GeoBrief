@@ -110,3 +110,10 @@ Kpler data cited by the Wall Street Journal (Nov 3) put oil flows through Hormuz
 
 - This is the same WSJ total-oil series as the Oct 18 reading, so it's plotted as published.
 - No Kpler total Gulf export figure for the same week has surfaced, so the pipeline line can't be updated for it.
+
+## October Hormuz crude at 10.2 Mbd (Nov 6)
+
+Kpler analyst Muyu Xu (via Al Jazeera, Nov 6) put Gulf crude passing through Hormuz at about 10.23 Mbd in October, about 42% of it bound for China and 13% for India, with up to 2 Mbd of Middle East crude of untraced origin.
+
+- The chart plots a total-oil estimate of about 11.6 Mbd (10.23 x1.13), dated Oct 31 beside the October Gulf exports estimate of 19.2, so the pipeline line reads about 7.6 Mbd for October.
+- No Kpler weekly figure after the week through Nov. 1 has surfaced.
