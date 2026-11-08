@@ -108,7 +108,7 @@ Hold Yemen's Red Sea coast; open war with Riyadh (Riyadh/Yanbu/Taif/Khamis Musha
 
 ## Deal Tracker (Oct 7)
 
-P(term | deal). P(deal) ≈ 11% by end-2026, 31% by end-2027 (Vance, Oct 5–6: any deal needs a "meaningful" enrichment-capacity cut; −2 on Nov 3 after the confirmed US strike on Qeshm).
+P(term | deal). P(deal) ≈ 10% by end-2026, 35% by end-2027 (Vance, Oct 5–6: any deal needs a "meaningful" enrichment-capacity cut; −2 on Nov 3 after the confirmed US strike on Qeshm).
 
 | Term                                                   | P   |
 | ------------------------------------------------------ | --- |
@@ -182,16 +182,27 @@ Resolved Nov 3 on the status as of the Nov 2 evening run (Adam: "count the statu
 
 | Scenario            | P   |
 | ------------------- | --- |
-| Limited war / Limbo | 66% |
+| Limited war / Limbo | 68% |
 | Escalated war       | 13% |
-| MOU-style deal      | 14% |
+| MOU-style deal      | 12% |
 | Comprehensive deal  | 7%  |
 
-P(signed deal by YE) 11% sits between comprehensive (7) and MOU + comprehensive (21): 7 comprehensive + 4 signed without a Rubio term (counted in MOU-style with Iran folds 8).
+P(signed deal by YE) 10% sits between comprehensive (7) and MOU + comprehensive (19): 7 comprehensive + 3 signed without a Rubio term (counted in MOU-style).
+
+### Through End-2027 (added Nov 8)
+
+| Scenario            | P   |
+| ------------------- | --- |
+| Limited war / Limbo | 25% |
+| Escalated war       | 12% |
+| MOU-style deal      | 43% |
+| Comprehensive deal  | 20% |
+
+Same four scenarios as year-end, resolved on the one in force on Dec 31, 2027 (`ye2027` in `odds.csv`, `scen_ye2027_*` in `forecasts.csv`). P(signed deal by end-2027) 35% sits between comprehensive (20) and MOU + comprehensive (63): 20 comprehensive + 15 signed without a Rubio term; the rest of MOU-style is truces and interim arrangements. Why a deal leans likelier over 2027: a Democratic Congress controls war funding from Jan 3 (the Dec 11 stopgap likely runs into early 2027, so the next one is a fight over war money), 2028 politics push Trump and Vance to settle before primaries, and the Iron Gate blockade raises Iran's cost of waiting. Escalated 12: the December lame duck is Trump's last free hand, and Israel could act alone. No price lines or tripwires target this horizon yet.
 
 **Gas baseline (AAA, Oct 6):** national regular $4.37 (wk $4.48, mo $4.15); diesel $6.32 (record $6.53 9/22). NY state $4.47 / $6.52; NYC metro $4.55 / $6.73 (≈ +18¢ / +41¢ over national; the NYC lines use the latest gap from `gas.csv`). **2026 reference (AAA):** pre-war $2.98 (Feb 26); high $4.56 (May 21); July low $3.79; Sept peak $4.48 (Sept 24).
 **Gas mechanics:** rockets 2-4¢/day, feathers 1-1.5¢/day (~2.4¢ per $1/bbl); no-shock path → ~$4.10-4.25.
-**Year-end price lines (Dec 31; added Oct 24, `ye_*`, same thresholds as Nov 3):** gas <$4.00 ~31% · ≥$4.50 ~19% · ≥$4.75 ~9% · ≥$5.00 ~3%. Diesel <$6.00 ~46% · ≥$6.50 ~17% · ≥$6.75 ~11% · ≥$7.00 ~7%. Brent (Feb.) <$90 ~27% · ≥$100 ~50% · ≥$110 ~27% · ≥$120 ~15%. JKM (Feb.) <$20 ~8% · ≥$25 ~75% · ≥$28 ~62% · ≥$31 ~44% (Brent and JKM re-derived Nov 4 on the recentred bands). Bands (`scenarios.csv` ye2026): limited = forward 34 + post-election strike round 20 + half-open 12, gas and diesel centred on the Oct 22–23 futures for Dec 31 (Jan RBOB $3.02 + ~$1.10, gas ~$4.15; Jan ULSD $4.63 + ~$1.40, diesel ~$6.05). Brent and JKM recentred and widened Nov 4 (Adam approved, after the Nov 3 price misses): forward sub-bands centre on Feb Brent $100.94 ($88–114) and Feb JKM $30.34 ($25–36) from the Nov 3 settles, with strike round $96–122 / $28–39 and half-open $80–104 / $21–32; widths follow the ~44%/yr realised vol (about ±$18 Brent and ±$5 JKM over the two months left), and runs recentre them automatically when the Feb contract drifts (build.md step 6). Escalated, MOU-style and comprehensive bands sit above and below as on Nov 3.
+**Year-end price lines (Dec 31; added Oct 24, `ye_*`, same thresholds as Nov 3):** gas <$4.00 ~29% · ≥$4.50 ~19% · ≥$4.75 ~9% · ≥$5.00 ~3%. Diesel <$6.00 ~45% · ≥$6.50 ~18% · ≥$6.75 ~11% · ≥$7.00 ~6%. Brent (Feb.) <$90 ~25% · ≥$100 ~51% · ≥$110 ~28% · ≥$120 ~15%. JKM (Feb.) <$20 ~8% · ≥$25 ~77% · ≥$28 ~64% · ≥$31 ~45% (re-derived Nov 8 on the midterm reassessment). Bands (`scenarios.csv` ye2026): limited = forward 34 + post-election strike round 20 + half-open 12, gas and diesel centred on the Oct 22–23 futures for Dec 31 (Jan RBOB $3.02 + ~$1.10, gas ~$4.15; Jan ULSD $4.63 + ~$1.40, diesel ~$6.05). Brent and JKM recentred and widened Nov 4 (Adam approved, after the Nov 3 price misses): forward sub-bands centre on Feb Brent $100.94 ($88–114) and Feb JKM $30.34 ($25–36) from the Nov 3 settles, with strike round $96–122 / $28–39 and half-open $80–104 / $21–32; widths follow the ~44%/yr realised vol (about ±$18 Brent and ±$5 JKM over the two months left), and runs recentre them automatically when the Feb contract drifts (build.md step 6). Escalated, MOU-style and comprehensive bands sit above and below as on Nov 3.
 **Market cross-check:** January Brent settled $104.77 on Nov 2 (−7.6%, its lowest in about four weeks, as traders unwound the war premium); the year-end bands resolve on the February contract ($109.56 on Oct 30, CME). Dated Brent >$120 (Oct 2 floor) said physical was tighter than futures. Futures have faded every lull; supply recovery + G7 release cap upside.
 
 ### Live Tripwires
@@ -217,5 +228,5 @@ Retired Oct 7: the Kpler monthly (lands after Nov 3) and the separate carriers t
 ### Structural
 
 - Hormuz back to ~20 mb/d (all liquids, monthly) by end-2026: ~4% (needs a deal plus fast mine clearance and insurance; the end-2027 card is void)
-- War-ending deal: 11% by end-2026; 31% by end-2027
-- Comprehensive nuclear deal in 2026: ~6% (11% × 50%, rounded up); any comprehensive (≥1 Rubio term) ~7%
+- War-ending deal: 10% by end-2026; 35% by end-2027
+- Comprehensive nuclear deal in 2026: ~5% (10% × 50%); any comprehensive (≥1 Rubio term) ~7%

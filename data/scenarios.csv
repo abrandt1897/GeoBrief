@@ -20,3 +20,7 @@ ye2026,half_open,Half-open,limited_war,,,,,
 ye2026,deal,Deal,,,,,,
 ye2026,limbo,Limbo,limited_war,,,,,
 ye2026,iran_folds,Iran folds,mou_deal,,,,,
+ye2027,limited_war,Limited war / Limbo,limited_war,,,,,"No settlement: strait shut or Iran-controlled, tanker and proxy hits, short infrastructure outages, US–Iran rounds including strike campaigns on military targets, or limbo"
+ye2027,escalated_war,Escalated war,escalated_war,,,,,"A step not yet taken: ground forces in Iran, strikes on Iranian civilian infrastructure, or a major Gulf export hub, power or desalination plant out 7+ days"
+ye2027,mou_deal,MOU-style deal,mou_deal,,,,,"Interim truce or enhanced MOU, or unsigned concessions; no signed comprehensive deal"
+ye2027,comprehensive_deal,Comprehensive deal,comprehensive_deal,,,,,Signed deal in which Iran concedes at least one of Rubio's three terms

@@ -436,3 +436,21 @@ def test_armed_tripwire_cannot_target_a_resolved_forecast() -> None:
 def test_resolved_price_lines_and_scenarios_are_not_rechecked() -> None:
     fc = {"scen_nov3_escalated_war": {**forecast("scen_nov3_escalated_war", 25), "outcome": "0"}}
     assert not any("scen_nov3_escalated_war" in e for e in build.check_scenario_forecasts(GOOD_ODDS, fc))
+
+
+def test_check_deal_2027_bounds_and_order() -> None:
+    odds = [
+        odds_row("2026-11-08", "ye2027", k, p)
+        for k, p in (("limited_war", 25), ("escalated_war", 12), ("mou_deal", 43), ("comprehensive_deal", 20))
+    ]
+    fc = build.latest_forecasts([forecast("deal_ye2027", 35)])
+    assert build.check_deal_2027(odds, fc, brief(deal_p={"ye2026": 10, "ye2027": 35})) == []
+    assert any("outside" in e for e in build.check_deal_2027(odds, {}, brief(deal_p={"ye2026": 10, "ye2027": 15})))
+    assert any("< by end-2026" in e for e in build.check_deal_2027([], {}, brief(deal_p={"ye2026": 30, "ye2027": 20})))
+    assert any("mismatch" in e for e in build.check_deal_2027(odds, fc, brief(deal_p={"ye2026": 10, "ye2027": 30})))
+
+
+def test_check_daily_odds_skips_days_before_a_horizon_starts() -> None:
+    events: list[build.Event] = [{"date": "2026-11-07", "text": "(am, run) x", "chart": None}]
+    odds = [odds_row("2026-11-07", "ye2026", "limited_war", 100)]
+    assert build.check_daily_odds(odds, events) == []

@@ -17,7 +17,7 @@
 /** @typedef {{ date: string, label: string }} SupplyEvent */
 /** @typedef {{ title: string, lead: string, more: string }} SupplyNote */
 /** A day odds moved because a scenario definition changed, not because of news. */
-/** @typedef {{ date: string, horizon: "nov3" | "ye2026" | "all", note: string }} Rescore */
+/** @typedef {{ date: string, horizon: "nov3" | "ye2026" | "ye2027" | "all", note: string }} Rescore */
 /**
  * @typedef {object} Brief
  * @property {string} updated
@@ -159,6 +159,7 @@
   };
   const nov = byDate("nov3");
   const ye = byDate("ye2026");
+  const ye27 = byDate("ye2027");
   const latestNov = nov[nov.length - 1];
   const latestYe = ye[ye.length - 1];
   if (!latestNov || !latestYe) throw new Error("odds.csv has no nov3 or ye2026 rows");
@@ -1022,6 +1023,21 @@
     });
   }
 
+  /** Scenario odds through the end of 2027, the same four scenarios. @param {HTMLElement} el */
+  function odds2027Panel(el) {
+    if (!ye27.length) {
+      el.innerHTML = '<p class="note">No end-2027 odds yet.</p>';
+      return;
+    }
+    scenarioChart(el, {
+      horizon: "ye2027",
+      rows: ye27,
+      end: "2027-12-31",
+      endMark: "Dec. 31, 2027",
+      byLabel: "Dec. 31, 2027",
+    });
+  }
+
   /**
    * A set of forecasts scored together as one multi-outcome forecast.
    * @typedef {object} ForecastGroup
@@ -1325,6 +1341,13 @@
       title: "The Odds Through Year End",
       dek: "GeoBrief’s probability for each path to Dec. 31, re-derived after every material event. Four scenarios: limited and escalated war in orange, MOU-style and comprehensive deals in green. The Nov. 3 forecasts are scored under Calibration.",
       render: oddsPanel,
+    },
+    {
+      id: "odds2027",
+      label: "Through 2027",
+      title: "The Odds Through 2027",
+      dek: "The same four scenarios, scored on whichever is in force on Dec. 31, 2027. A Democratic Congress controls war funding from Jan. 3, and 2028 politics push toward a deal.",
+      render: odds2027Panel,
     },
     {
       id: "gas",

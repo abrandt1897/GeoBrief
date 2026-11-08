@@ -118,7 +118,10 @@ const rescoresFor = (horizon) =>
   );
 
 /** @type {[string, string][]} */
-const SCENARIO_CHARTS = [["odds", "ye2026"]];
+const SCENARIO_CHARTS = [
+  ["odds", "ye2026"],
+  ["odds2027", "ye2027"],
+];
 for (const [tab, horizon] of SCENARIO_CHARTS) {
   test(`${tab} chart: an unlabelled dashed line per re-score, with the note in the readout`, async ({ page }) => {
     const errors = collectErrors(page);
@@ -155,6 +158,19 @@ test("odds history: a dot per scenario even on a single date, and no ticker move
   if (crossed) await expect(item).not.toContainText(/[▲▼]|UNCH/);
 });
 
+test("2027 tab plots the four scenarios from the ye2027 odds", async ({ page }) => {
+  const errors = collectErrors(page);
+  await page.goto(`${PAGE}#odds2027`);
+  await expect(page.locator("#panel svg circle[r='6']")).toHaveCount(4);
+  const latest = /** @type {OddsRow[]} */ (payload().odds).filter((r) => r.horizon === "ye2027");
+  const last = latest.at(-1)?.date ?? "";
+  const sum = latest.filter((r) => r.date === last).reduce((a, r) => a + r.p, 0);
+  expect(Math.abs(sum - 100)).toBeLessThanOrEqual(1);
+  await expect(page.locator("#panel")).toContainText("Dec. 31, 2027");
+  await expect(page.locator("#ye-scenarios")).toBeHidden();
+  expect(errors).toEqual([]);
+});
+
 test("odds chart shows one line per scenario and no toggle", async ({ page }) => {
   await page.goto(PAGE);
   await expect(page.locator("#seg-all")).toHaveCount(0);
@@ -164,6 +180,7 @@ test("odds chart shows one line per scenario and no toggle", async ({ page }) =>
 /** @type {[string, string][]} */
 const TABS = [
   ["odds", "The Odds Through Year End"],
+  ["odds2027", "The Odds Through 2027"],
   ["gas", "Energy Prices Against The Scenarios"],
   ["supply", "How Much Oil Is Getting Out"],
   ["blinks", "The TACO Tracker"],

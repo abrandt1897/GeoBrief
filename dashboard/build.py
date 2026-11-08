@@ -222,13 +222,13 @@ def latest_odds(odds: list[Row], horizon: str) -> dict[str, float]:
 
 
 def check_deal(odds: list[Row], latest_f: dict[str, Row], terms: list[Row], brief: Brief) -> list[str]:
-    """Year-end: comprehensive <= P(signed deal) <= MOU-style + comprehensive; nuclear deal fits inside both."""
+    """Per horizon: comprehensive <= P(signed deal) <= MOU-style + comprehensive; nuclear deal fits inside both."""
+    errors = check_deal_2027(odds, latest_f, brief)
     ye = latest_odds(odds, "ye2026")
     if "comprehensive_deal" not in ye or "mou_deal" not in ye:
-        return []
+        return errors
     comp, mou = ye["comprehensive_deal"], ye["mou_deal"]
     deal = float(brief["deal_p"]["ye2026"])
-    errors: list[str] = []
     if "deal_ye2026" in latest_f and float(latest_f["deal_ye2026"]["p"]) != deal:
         errors.append(f"YE deal mismatch: forecasts.csv {latest_f['deal_ye2026']['p']} vs brief.json {deal:g}")
     if not comp - 0.5 <= deal <= comp + mou + 0.5:
@@ -240,6 +240,22 @@ def check_deal(odds: list[Row], latest_f: dict[str, Row], terms: list[Row], brie
         iaea = next((float(t["p"]) for t in terms if t["rubio"] == "1"), None)
         if iaea is not None and nuke > deal * iaea / 100 + 0.5:
             errors.append(f"P(nuclear deal) {nuke:g} > P(deal) x P(IAEA term) = {deal * iaea / 100:.1f}")
+    return errors
+
+
+def check_deal_2027(odds: list[Row], latest_f: dict[str, Row], brief: Brief) -> list[str]:
+    """End-2027: the same bounds on P(signed deal by end-2027), and a deal by 2027 is at least as likely as by 2026."""
+    ye = latest_odds(odds, "ye2027")
+    deal = float(brief["deal_p"]["ye2027"])
+    errors: list[str] = []
+    if "deal_ye2027" in latest_f and float(latest_f["deal_ye2027"]["p"]) != deal:
+        errors.append(f"2027 deal mismatch: forecasts.csv {latest_f['deal_ye2027']['p']} vs brief.json {deal:g}")
+    if deal < float(brief["deal_p"]["ye2026"]):
+        errors.append(f"P(signed deal by end-2027) {deal:g} < by end-2026 {brief['deal_p']['ye2026']:g}")
+    if "comprehensive_deal" in ye and "mou_deal" in ye:
+        comp, mou = ye["comprehensive_deal"], ye["mou_deal"]
+        if not comp - 0.5 <= deal <= comp + mou + 0.5:
+            errors.append(f"P(deal by 2027) {deal:g} outside comprehensive {comp:g} .. MOU + comp. {comp + mou:g}")
     return errors
 
 
@@ -368,7 +384,7 @@ def check_price_lines(
 def check_scenario_forecasts(odds: list[Row], latest_f: dict[str, Row]) -> list[str]:
     """The scored scenario forecasts (scen_<horizon>_<scenario>) match the latest odds."""
     errors: list[str] = []
-    for horizon in ("nov3", "ye2026"):
+    for horizon in HORIZON_ENDS:
         for k, p in latest_odds(odds, horizon).items():
             fid = f"scen_{horizon}_{k}"
             if fid in latest_f and latest_f[fid]["outcome"]:
@@ -598,7 +614,9 @@ def check_headlines(events: list[Event], headlines: list[Row]) -> list[str]:
 
 
 # The day each odds horizon resolves. Runs before it add a row set every day; none are added after it.
-HORIZON_ENDS = {"nov3": "2026-11-03", "ye2026": "2026-12-31"}
+HORIZON_ENDS = {"nov3": "2026-11-03", "ye2026": "2026-12-31", "ye2027": "2027-12-31"}
+# A horizon added later starts on the day its first row set was written; run days before that need no rows.
+HORIZON_STARTS = {"ye2027": "2026-11-08"}
 
 
 def check_daily_odds(odds: list[Row], events: list[Event]) -> list[str]:
@@ -613,7 +631,7 @@ def check_daily_odds(odds: list[Row], events: list[Event]) -> list[str]:
         f"odds.csv has no {h} rows for {d}, a run day; copy the latest odds with note 'unchanged'"
         for d in run_days
         for h, end in HORIZON_ENDS.items()
-        if d < end and (d, h) not in have
+        if HORIZON_STARTS.get(h, "") <= d < end and (d, h) not in have
     ]
     late = sorted({(r["date"], r["horizon"]) for r in odds if r["date"] >= HORIZON_ENDS.get(r["horizon"], "9999")})
     return missing + [f"odds.csv has {h} rows for {d}, once the horizon resolved; drop them" for d, h in late]
