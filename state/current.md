@@ -1,6 +1,6 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-10 (am run, no change: GCC defence ministers approve a joint military headquarters in Kuwait, a Gulf self-defence step rather than a new escalation; Brent settles at $92.57 on Nov. 9, its lowest since August, on deal hopes; Iran still claims tanker hits that no maritime authority has confirmed, so `tw_irgc_claim` stays armed, and Tasnim denies the Vance–Rezaei Doha meeting, so `tw_accept` stays armed; Feb. Brent 90.52 and Feb. JKM 26.695 sit within half a sub-band of the limited-war bands, so no recentre.)_
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-10 (pm run, no change: Rubio says the economic campaign makes major combat unnecessary and Trump cites "positive momentum," but both are US posture, weak evidence, while Rezaei says there are no talks and the strait stays shut until the seven conditions are met; the report that Iran's Qatar-routed proposal drops toll demands is anonymous and denied, so `tw_strait_open` stays armed; the tanker projectile hit off Oman is unattributed and the IRGC's two new claims name no ship, so `tw_irgc_claim` stays armed; Kpler has Hormuz at 7.82 Mbd for the week to Nov. 8, flat on the week before; Brent dipped below $90 intraday; CME Nov. 10 settlements not yet posted)_
 
 ## Canonical Odds (Oct 14)
 

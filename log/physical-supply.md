@@ -117,3 +117,10 @@ Kpler analyst Muyu Xu (via Al Jazeera, Nov 6) put Gulf crude passing through Hor
 
 - The chart plots a total-oil estimate of about 11.6 Mbd (10.23 x1.13), dated Oct 31 beside the October Gulf exports estimate of 19.2, so the pipeline line reads about 7.6 Mbd for October.
 - No Kpler weekly figure after the week through Nov. 1 has surfaced.
+
+## Hormuz flows hold near 46% of prewar (Nov 10)
+
+Kpler data (via The National, Nov 10) put oil flows through Hormuz at 7.82 Mbd in the week to Nov. 8, about 46% of a 17.14 Mbd prewar level, excluding Iranian exports.
+
+- That is flat on the 7.8 Mbd for the week through Nov. 1 (Kpler via WSJ), so the strait is still running at under half of prewar even as Brent falls on deal hopes.
+- No Kpler Gulf-exports total for the same week has surfaced, so the pipeline line still reads from the October estimate.
