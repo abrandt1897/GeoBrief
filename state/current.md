@@ -1,6 +1,6 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-09 (pm run, no change: after meeting Qatar's prime minister, Trump calls the war "effectively over" but keeps the blockade and Task Force Iron Gate as the "status quo," which is limbo rather than easing, so `tw_blockade` stays armed; Qatar reports "positive discussions" and an Iranian-approved plan to reopen Hormuz for lifting the blockade and $8 billion in funds is reported but unconfirmed; Turkey says Vance and Rezaei meet in Doha next week, which Iran denies, so `tw_accept` stays armed; the East-West pipeline is struck in the Medina region but Saudi Arabia says operations were unaffected, so `tw_eastwest_offline` stays armed.)_
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-10 (am run, no change: GCC defence ministers approve a joint military headquarters in Kuwait, a Gulf self-defence step rather than a new escalation; Brent settles at $92.57 on Nov. 9, its lowest since August, on deal hopes; Iran still claims tanker hits that no maritime authority has confirmed, so `tw_irgc_claim` stays armed, and Tasnim denies the Vance–Rezaei Doha meeting, so `tw_accept` stays armed; Feb. Brent 90.52 and Feb. JKM 26.695 sit within half a sub-band of the limited-war bands, so no recentre.)_
 
 ## Canonical Odds (Oct 14)
 
