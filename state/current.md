@@ -1,6 +1,6 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-11 (am run, no change: Qatar reports positive responses from both sides but Rezaei calls talk of negotiations or a Qatar meeting "a pure lie" and Araghchi ties a two-day Hormuz reopening to Iran's demands being met first, so `tw_accept` and `tw_strait_open` stay armed; maritime monitors count 37+ attacks near the strait in November, a monthly record, but the IRGC's three mine claims name no ship, so `tw_irgc_claim` stays armed; CME Nov. 10 settles: Brent Jan. $91.49, Feb. $89.45 ($11.55 below the $101 forward sub-band centre, inside the $13 shift line), JKM Dec. $31.335, Feb. $27.49 ($3.01 below centre), so no shift; AAA $3.94 / diesel $6.13)_
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-11 (pm run, no change: Rezaei says no enriched material will leave Iran, a refusal to ship out the stockpile rather than a flat refusal of Vance's enrichment-capacity condition, so `tw_enrichment` stays armed; the Iranian army's mine claim and UKMTO's tanker report name no ship, so no confirmed, named claim; Trump's "when we want to end it" is US posture, weak; Houthi cruise missiles at Riyadh were intercepted and nothing hit Bab el-Mandeb, so `tw_bab` stays armed; Nov. 11 CME settles not yet posted, filled next run)_
 
 ## Canonical Odds (Oct 14)
 
