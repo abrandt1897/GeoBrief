@@ -1,6 +1,6 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-11 (pm run, no change: Rezaei says no enriched material will leave Iran, a refusal to ship out the stockpile rather than a flat refusal of Vance's enrichment-capacity condition, so `tw_enrichment` stays armed; the Iranian army's mine claim and UKMTO's tanker report name no ship, so no confirmed, named claim; Trump's "when we want to end it" is US posture, weak; Houthi cruise missiles at Riyadh were intercepted and nothing hit Bab el-Mandeb, so `tw_bab` stays armed; Nov. 11 CME settles not yet posted, filled next run)_
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-12 (am run, no change: the IRGC's claim that two loaded tankers caught fire and Ambrey's projectile hit off Ras al-Khaimah name no ship, so no confirmed, named claim; Ghalibaf's "military deterrence" line and the rejection of direct talks with Vance harden Tehran's public stance without a new step; Brent Feb. settled $90.71 on Nov. 11, $10.29 below the forward sub-band centre, inside the recentre threshold)_
 
 ## Canonical Odds (Oct 14)
 

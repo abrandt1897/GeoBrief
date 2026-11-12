@@ -135,7 +135,10 @@ for (const [tab, horizon] of SCENARIO_CHARTS) {
     await expect(svg.locator("g.rescore")).toHaveCount(0);
     await expect(svg).not.toContainText("RE-SCORED");
     await expect(svg.locator("line.rescore-line")).toHaveCount(want.length);
-    await expect(svg.locator("line.rescore-line").first()).toHaveAttribute("stroke-dasharray", /\d/);
+    // The window can hold no re-score (Oct. 7 left the 2027 tab's 35-day view on Nov. 12); the count check covers that.
+    if (want.length > 0) {
+      await expect(svg.locator("line.rescore-line").first()).toHaveAttribute("stroke-dasharray", /\d/);
+    }
     await svg.focus();
     await expect(page.locator(".tip .tip-note")).toHaveCount(0);
     await expect(page.locator("#panel .note")).toHaveCount(0);
