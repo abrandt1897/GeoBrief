@@ -1,6 +1,6 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-12 (am run, no change: the IRGC's claim that two loaded tankers caught fire and Ambrey's projectile hit off Ras al-Khaimah name no ship, so no confirmed, named claim; Ghalibaf's "military deterrence" line and the rejection of direct talks with Vance harden Tehran's public stance without a new step; Brent Feb. settled $90.71 on Nov. 11, $10.29 below the forward sub-band centre, inside the recentre threshold)_
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-12 (pm run, no change: the Houthi claims on East-West pumping station 7 and Yanbu are unconfirmed and Saudi Arabia reports only interceptions, so `tw_eastwest_offline` stays armed; Iran's four tanker claims name no ship; Trump's "we don't need a deal", the Assembly of Experts' NPT-withdrawal call and Iran's new compensation demand harden both sides without a new step; Brent Jan. rose about 3.3% on Nov. 12, CME settlements for the day not yet posted)_
 
 ## Canonical Odds (Oct 14)
 
