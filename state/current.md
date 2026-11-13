@@ -1,6 +1,6 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-13 (am run, no change: the IRGC's claim that it destroyed a US early-warning radar in Bahrain after a strike on a Sirik telecom tower is unconfirmed by the US or Bahrain, and its LNG-tanker mine claim names no ship, so neither fires a tripwire (`tw_us_strike` and `tw_irgc_claim` have already fired; a confirmed multi-day US campaign would fire `tw_us_campaign`); IEA: Gulf exports excl. Oman 18.4 Mbd in October; Brent Feb. settled $93.53 on Nov. 12, $7.47 below the forward sub-band centre, inside the recentre threshold)_
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-13 (pm run, no change: CENTCOM says US forces shot down the two IRGC drones launched at Bahrain with no damage, denying the radar claim, so `tw_irgc_claim` stays fired from earlier and nothing new fires; Iran's claim that it downed a US MQ-1 near Kuhestak is unconfirmed; the IAEA's concern over Isfahan access and Israel's reported attack preparations harden the standoff without moving year-end odds, because no direct Iran–Israel exchange has occurred; Brent Feb. last settled $93.53 on Nov. 12, inside the recentre threshold)_
 
 ## Canonical Odds (Oct 14)
 
