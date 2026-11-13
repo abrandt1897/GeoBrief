@@ -124,3 +124,10 @@ Kpler data (via The National, Nov 10) put oil flows through Hormuz at 7.82 Mbd i
 
 - That is flat on the 7.8 Mbd for the week through Nov. 1 (Kpler via WSJ), so the strait is still running at under half of prewar even as Brent falls on deal hopes.
 - No Kpler Gulf-exports total for the same week has surfaced, so the pipeline line still reads from the October estimate.
+
+## IEA puts October Gulf exports at 74% of prewar (Nov 13)
+
+The IEA's November Oil Market Report (via Bloomberg/Rigzone and The New Arab, Nov 13) put Gulf oil exports excluding Oman at 18.4 Mbd in October, 74% of prewar, up from about 16.5 Mbd in September, as Saudi Arabia lifted crude output to 10 Mbd and Iraq to 4.6 Mbd.
+
+- The October total sits near Kpler's own October estimate of about 19.2 Mbd, so both trackers show Gulf exports recovering even as weekly Hormuz flows fell below half of prewar in early November.
+- The IEA gave no Hormuz split for October, and no Kpler weekly figure after the week to Nov. 8 has surfaced.
