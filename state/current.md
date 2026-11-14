@@ -1,6 +1,6 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-13 (pm run, no change: CENTCOM says US forces shot down the two IRGC drones launched at Bahrain with no damage, denying the radar claim, so `tw_irgc_claim` stays fired from earlier and nothing new fires; Iran's claim that it downed a US MQ-1 near Kuhestak is unconfirmed; the IAEA's concern over Isfahan access and Israel's reported attack preparations harden the standoff without moving year-end odds, because no direct Iran–Israel exchange has occurred; Brent Feb. last settled $93.53 on Nov. 12, inside the recentre threshold)_
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-14 (am run, no change: the IRGC's claim that three tankers, one a supertanker, hit mines and caught fire in and east of Hormuz names no ship and the US says the main routes are cleared, so it fires no tripwire (`tw_irgc_claim` stays fired from earlier); the UN's count of 25 seafarers killed and the Turkey–Qatar defense pact don't change the year-end paths; Brent Feb. settled $93.03 and JKM Feb. $28.885 on Nov. 13, both inside the recentre thresholds)_
 
 ## Canonical Odds (Oct 14)
 
