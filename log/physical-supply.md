@@ -131,3 +131,10 @@ The IEA's November Oil Market Report (via Bloomberg/Rigzone and The New Arab, No
 
 - The October total sits near Kpler's own October estimate of about 19.2 Mbd, so both trackers show Gulf exports recovering even as weekly Hormuz flows fell below half of prewar in early November.
 - The IEA gave no Hormuz split for October, and no Kpler weekly figure after the week to Nov. 8 has surfaced.
+
+## Kpler: Hormuz at 48% of prewar in the week to Nov. 11 (Nov 15)
+
+Kpler's Nov. 13 media briefing (primary PDF) put Total Hormuz Clearance at 8.26 Mbd over the seven days to Nov. 11, about 48% of a 17.15 Mbd prewar level: 5.66 Mbd of strait transits plus 2.60 Mbd of Gulf of Oman ship-to-ship net exports, excluding Iranian-origin cargoes. That is up slightly from 7.82 Mbd in the week to Nov. 8.
+
+- Adding Fujairah and Oman terminal loadings (4.09) and Red Sea volumes (4.44) gives a regional total of 16.79 Mbd, 72% of prewar, down from more than 24 Mbd in the week to Oct. 18; the latest four days are preliminary and usually settle 1.5 to 2 times higher.
+- Saudi West Coast crude exports held near 3 Mbd in October (East-West estimate about 4.0 with refinery feed), and Saudi crude exports overall ran at 7.0 Mbd, above the 6.2 prewar level.

@@ -1,6 +1,6 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-14 (pm run, no change: Trump will meet Xi and Putin in Shenzhen next week with Iran on the agenda, but US officials expect no agreement and neither Beijing nor Moscow has signaled pressure on Tehran before year end; Baghaei's attack on Rubio's "starve" remark and Araghchi's Article 51 warning add no new step; Iran's three tanker-mine claims still name no ship, so `tw_irgc_claim` stays fired from earlier and nothing new fires)_
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-15 (am run, no change: the IRGC says six drones targeted a US radar at the Al-Riffa base in Bahrain, which Bahrain says it intercepted, so the claim is unconfirmed and fires nothing; Ghalibaf threatens to widen the war if the US "makes a mistake," a conditional threat; Kpler puts Hormuz clearance at 8.26 Mbd in the week to Nov. 11, 48% of prewar)_
 
 ## Canonical Odds (Oct 14)
 
