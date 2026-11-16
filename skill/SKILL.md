@@ -221,6 +221,7 @@ Registry and targets: `data/tripwires.csv`. Targets are moves from today's odds 
 - Direct Iran–Israel exchange: Iranian missiles or drones fired at Israel, or an Israeli strike inside Iran → YE escalated +4, YE MOU-style −3.
 - Houthis declare Bab el-Mandeb closed, or hit a non-Saudi ship in the strait (confirmed by UKMTO) → YE Brent (Feb.) ≥$100 +12, YE gas ≥$4.50 +12.
 - US resumes a multi-day strike campaign on Iran (confirmed by CENTCOM, the Pentagon or the White House), the post-midterm wave Netanyahu is pressing for → YE escalated +5, YE MOU-style −2, YE deal −2.
+- All three carriers (George Washington, George H.W. Bush, Theodore Roosevelt) are still in CENTCOM's area on Dec. 7, three weeks after the Roosevelt arrived, with no relief of the George Washington (per USNI's fleet tracker or CENTCOM); expires if any of them leaves before then → Blink #10 no-blink +5, YE escalated +2.
 
 Retired Oct 7: the Kpler monthly (lands after Nov 3) and the separate carriers tripwire (merged into bombers). Nov 3: every armed tripwire that moved a Nov 3 number now moves the year-end odds or `ye_*` price lines instead. Past tripwires sit in the dashboard's collapsed section.
 
