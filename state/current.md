@@ -1,6 +1,6 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-15 (pm run, no change: the NYT says the Theodore Roosevelt enters CENTCOM's area within a day, joining GHWB and GW, but no official confirmation and some reports say it relieves GW, so `tw_bombers` (three carriers on station) stays armed and fires once three are confirmed on station together; Reuters says Trump may hold off on new strikes unless provoked; Bahrain blames Iran for the Friday and Sunday drone attacks, both intercepted)_
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-16 (am run, no change: a US official told Axios the Theodore Roosevelt entered CENTCOM's area on Nov 15 while GW stayed, so three carrier groups are in the region, but the Pentagon and CENTCOM haven't confirmed it or where the carriers are, so `tw_bombers` (three carriers on station) stays armed until official word; UKMTO reports an unclaimed projectile hit on an outbound tanker in the strait (engine-room fire, no injuries); the IRGC's claimed mine sinking of a supertanker on Nov 15 still names no ship, so `tw_irgc_claim` evidence is unchanged; Gharibabadi says Iran's two-day plan to reopen the strait is on the table but every condition (end of war, blockade, oil sanctions, frozen assets) must be met, so `tw_strait_open` stays armed)_
 
 ## Canonical Odds (Oct 14)
 
@@ -137,7 +137,7 @@ Hold Yemen's Red Sea coast; open war with Riyadh (Riyadh/Yanbu/Taif/Khamis Musha
 
 ## US Capacity & Political Clock
 
-- **Force posture:** GW in Arabian Sea; GHWB back in the Arabian Sea Oct 15 after R&R in Phuket Oct 4-9 (CENTCOM). TR CSG + Makin Island ARG en route; left Singapore Nov 8, enters CENTCOM's area ~Nov 16 (NYT, Nov 15; unconfirmed officially, and some reports say it relieves GW) — GHWB's return makes it a real third carrier if GHWB is still on station when TR arrives (fires `tw_bombers`). Iraq withdrawal complete Sep 30. **Real surge** (3 carriers simultaneously on station / Diego Garcia bombers / extra air defense): none before Nov 3 (`surge_nov3` resolved no, had ~10%); ~45% by YE. Tanker/P-8 traffic alone ≠ surge.
+- **Force posture:** GW in Arabian Sea; GHWB back in the Arabian Sea Oct 15 after R&R in Phuket Oct 4-9 (CENTCOM). TR CSG + Makin Island ARG en route; left Singapore Nov 8, entered CENTCOM's area Nov 15 evening with GW staying (US official to Axios, Nov 16; no Pentagon/CENTCOM confirmation or position yet) — GHWB's return makes it a real third carrier if GHWB is still on station when TR arrives (fires `tw_bombers`). Iraq withdrawal complete Sep 30. **Real surge** (3 carriers simultaneously on station / Diego Garcia bombers / extra air defense): none before Nov 3 (`surge_nov3` resolved no, had ~10%); ~45% by YE. Tanker/P-8 traffic alone ≠ surge.
 - **Losses:** 18 US servicemembers killed (Trump, Sep 30).
 - **Cost:** $43.6B through Sep 3; ~$2-3B/month low intensity; money not binding. **Binding constraint = interceptors** (½–⅔ depleted, 5+ yrs to rebuild) → most plausible no-blink = short, sharp campaign then declared victory.
 - **Congress:** CR to Dec 11; $87.6B supplemental → lame duck. WPR passed 3×; GOP defections 7.
