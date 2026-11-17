@@ -1,6 +1,6 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-16 (pm run: **`tw_bombers` fired, applied at reduced strength** → year-end escalated 13 → 15, limited 68 → 66, Blink #10 no-blink 30 → 35; CENTCOM confirmed the Theodore Roosevelt operating in its area alongside the George H.W. Bush and George Washington, three carriers at once, but calls it a scheduled deployment and GW is due to be relieved; end-2027 unchanged because an overlap of carriers is not a durable shift)_
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-17 (am run: no change; IRGC claims a fifth unnamed mine hit and a third drone attack on Bahrain, both unconfirmed; Araghchi in Muscat; Brent Feb. $90.03, within half a sub-band of the forward centre, so no recentre; no new Kpler week, latest Nov 11)_
 
 ## Canonical Odds (Oct 14)
 
