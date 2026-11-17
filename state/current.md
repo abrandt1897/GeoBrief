@@ -1,6 +1,6 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-17 (am run: no change; IRGC claims a fifth unnamed mine hit and a third drone attack on Bahrain, both unconfirmed; Araghchi in Muscat; Brent Feb. $90.03, within half a sub-band of the forward centre, so no recentre; no new Kpler week, latest Nov 11)_
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-17 (pm run: no change; a US military official confirms a third defensive US strike on Qeshm, an IRGC missile site, after Iran's Bahrain drone attack, which CENTCOM says was intercepted; single defensive hit, so tw_us_campaign stays armed; Houthis claim drones on East-West pumping stations 8 and 9, unconfirmed, no outage; CME Nov 17 settlements not yet posted; no new Kpler week, latest Nov 11)_
 
 ## Canonical Odds (Oct 14)
 
