@@ -145,3 +145,10 @@ Kpler's head of crude analysis told Rudaw on Nov. 16 that Gulf crude exports are
 
 - As total-oil estimates, that is about 18.2 Mbd of Gulf exports and 10.4 Mbd through Hormuz for the month to date; the latest weekly reading (8.26 Mbd through Hormuz in the seven days to Nov. 11) remains lower.
 - Refined products, about 3 Mbd prewar, have no bypass and stay the main shortfall; Iranian crude exports are at zero under the US blockade.
+
+## Gulf exports slide to 64% of prewar (Nov 18)
+
+Kpler's Nov. 18 media briefing (via AP), preliminary through Monday Nov. 16, put oil leaving the Middle East by all routes, including the Gulf of Oman tanker route and the pipelines that skirt the strait, at about 15.0 Mbd, around 64% of prewar and down from 97% in October. Flows through the strait itself were 8.5 Mbd, about 50% of prewar.
+
+- Both readings replace the Rudaw November-to-date estimates dated Nov. 16, so the pipeline line reads about 6.5 Mbd for the week.
+- Kpler says the latest days are preliminary and could rise; the total is down from 16.79 Mbd in the week to Nov. 11 as Iranian attacks on tankers widen.

@@ -315,8 +315,8 @@ date,horizon,scenario,p,note
 2026-11-17,ye2027,escalated_war,12,unchanged
 2026-11-17,ye2027,mou_deal,43,unchanged
 2026-11-17,ye2027,comprehensive_deal,20,unchanged
-2026-11-18,ye2026,limited_war,66,unchanged
-2026-11-18,ye2026,escalated_war,15,unchanged
+2026-11-18,ye2026,limited_war,67,"tw_carriers_hold expired: the George Washington left CENTCOM for the 7th Fleet on Nov 18 (Pacific Fleet via USNI, Navy official via CBS), so the three-carrier surge behind the Nov 16 tw_bombers move was a handover; half of that move comes off (escalated -1 to limited war), the rest stays for the sharper tit-for-tat since (third US strike on Qeshm, Iranian drones at Kuwait and Bahrain)"
+2026-11-18,ye2026,escalated_war,14,"tw_carriers_hold expired: the George Washington left CENTCOM for the 7th Fleet on Nov 18 (Pacific Fleet via USNI, Navy official via CBS), so the three-carrier surge behind the Nov 16 tw_bombers move was a handover; half of that move comes off (escalated -1 to limited war), the rest stays for the sharper tit-for-tat since (third US strike on Qeshm, Iranian drones at Kuwait and Bahrain)"
 2026-11-18,ye2026,mou_deal,12,unchanged
 2026-11-18,ye2026,comprehensive_deal,7,unchanged
 2026-11-18,ye2027,limited_war,25,unchanged
