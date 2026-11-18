@@ -138,3 +138,10 @@ Kpler's Nov. 13 media briefing (primary PDF) put Total Hormuz Clearance at 8.26 
 
 - Adding Fujairah and Oman terminal loadings (4.09) and Red Sea volumes (4.44) gives a regional total of 16.79 Mbd, 72% of prewar, down from more than 24 Mbd in the week to Oct. 18; the latest four days are preliminary and usually settle 1.5 to 2 times higher.
 - Saudi West Coast crude exports held near 3 Mbd in October (East-West estimate about 4.0 with refinery feed), and Saudi crude exports overall ran at 7.0 Mbd, above the 6.2 prewar level.
+
+## Kpler: Gulf crude exports slip to 90% of prewar in November (Nov 18)
+
+Kpler's head of crude analysis told Rudaw on Nov. 16 that Gulf crude exports are running at 15.3 Mbd in November to date, 90% of prewar, down from 16.5 Mbd in October and 17.0 Mbd in September as Iranian attacks on shipping rose. About 60% of those barrels still move through the strait by tanker, against 80% before the war, with the rest on bypass routes.
+
+- As total-oil estimates, that is about 18.2 Mbd of Gulf exports and 10.4 Mbd through Hormuz for the month to date; the latest weekly reading (8.26 Mbd through Hormuz in the seven days to Nov. 11) remains lower.
+- Refined products, about 3 Mbd prewar, have no bypass and stay the main shortfall; Iranian crude exports are at zero under the US blockade.
