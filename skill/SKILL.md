@@ -209,8 +209,11 @@ Same four scenarios as year-end, resolved on the one in force on Dec 31, 2027 (`
 
 Registry and targets: `data/tripwires.csv`. Targets are moves from today's odds (`key+=n` / `key-=n`), or a level (`key=v`) for a resolution; the dashboard fills the levels in. The list below is printed by `python3 dashboard/build.py --tripwire-lines`; a test checks it matches.
 
+**Re-arming (Adam, Nov 19):** when a fired tripwire's condition reverses (the state that fired it no longer holds, e.g. a carrier leaves or bombers withdraw), re-arm it, whether it is still in the current list or already in the past section: `status=armed`, `set_on` = today, `fired_on` blank, the effect back to `{key}` placeholders, and `evidence` keeping the firing and the reversal as a record. One-off events (a strike, a claim, a hit) can't reverse and stay fired.
+
 - Iran formally accepts US sequencing, or round two is scheduled with text → YE deal +8, YE MOU-style +6.
 - Saudi shuttle ship hit outside the Fujairah/Sohar STS zone → YE escalated +3.
+- B-1Bs reappear at Diego Garcia/Gulf, B-2/B-52s forward-deploy, or a third carrier joins the George H.W. Bush and Theodore Roosevelt on station (a relief overlap that ends within days doesn't count) → Blink #10 no-blink +10, YE escalated +3.
 - US blockade easing → YE MOU-style +9.
 - Trump–Pezeshkian meeting → YE MOU-style +4, YE deal +3.
 - CENTCOM-confirmed US deaths from an Iranian attack → YE escalated +6, YE MOU-style −4.
