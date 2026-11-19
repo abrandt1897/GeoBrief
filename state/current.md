@@ -1,6 +1,6 @@
 # Current State — canonical odds, baselines, context
 
-_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-18 (pm run: `tw_carriers_hold` expired when the George Washington left for the 7th Fleet; half the Nov 16 carrier move reversed, YE escalated 15 → 14, limited 66 → 67, Blink #10 no-blink 35 → 32; Kpler week through Nov 16: Gulf total oil 15.0, Hormuz 8.5)_
+_Overwritten each update. Tabular data lives in `data/*.csv`; this file holds the reasoning. Last update: 2026-11-19 (am run: no change; Houthi strike on Riyadh's financial district damages the PIF tower (coalition: missile debris); UKMTO logs an unclaimed engine-room hit on an outbound tanker north of Khasab Nov 18; Trump calls the June MOU "a waste of time"; CENTCOM's Cooper meets IDF chief Zamir amid talk of renewed strikes, weak until a campaign starts; Brent Feb. $89.17, no recentre; no new Kpler week after Nov 16)_
 
 ## Canonical Odds (Oct 14)
 
