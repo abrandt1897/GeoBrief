@@ -213,7 +213,7 @@ Registry and targets: `data/tripwires.csv`. Targets are moves from today's odds 
 
 - Iran formally accepts US sequencing, or round two is scheduled with text → YE deal +8, YE MOU-style +6.
 - Saudi shuttle ship hit outside the Fujairah/Sohar STS zone → YE escalated +3.
-- B-1Bs reappear at Diego Garcia/Gulf, B-2/B-52s forward-deploy, or a third carrier joins the George H.W. Bush and Theodore Roosevelt on station (a relief overlap that ends within days doesn't count) → Blink #10 no-blink +10, YE escalated +3.
+- B-1Bs reappear at Diego Garcia/Gulf, B-2/B-52s forward-deploy, or three carriers on station (a relief carrier doesn't count unless the one it relieves stays on) → Blink #10 no-blink +10, YE escalated +3.
 - US blockade easing → YE MOU-style +9.
 - Trump–Pezeshkian meeting → YE MOU-style +4, YE deal +3.
 - CENTCOM-confirmed US deaths from an Iranian attack → YE escalated +6, YE MOU-style −4.
