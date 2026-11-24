@@ -152,3 +152,10 @@ Kpler's Nov. 18 media briefing (via AP), preliminary through Monday Nov. 16, put
 
 - Both readings replace the Rudaw November-to-date estimates dated Nov. 16, so the pipeline line reads about 6.5 Mbd for the week.
 - Kpler says the latest days are preliminary and could rise; the total is down from 16.79 Mbd in the week to Nov. 11 as Iranian attacks on tankers widen.
+
+## Kpler: Middle East crude exports fall a third straight week (Nov 24)
+
+Kpler data cited in a Reuters column on Nov. 24 put Middle East crude exports at 13.96 Mbd in the week starting Nov. 16, down from 15.77 Mbd the week before and 16.03 Mbd two weeks before, and well below the 20.86 Mbd peak in the week of Oct. 12 and the 18.56 Mbd prewar average.
+
+- As a total-oil estimate (crude x 1.19), that is about 16.6 Mbd for the week to Nov. 22. It is on a crude basis, so it is not directly comparable with the 15.0 Mbd total-oil briefing figure through Nov. 16, which may also still be revised up.
+- No Kpler Hormuz figure for the same week has surfaced; Central Command's claim that more than 108 million barrels moved through the strait last week is not a tracker reading.
