@@ -18,12 +18,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  # Build and deploy are separate jobs: deploy-pages looks the artifact up by
+  # name, and in the same job it can query before GitHub lists the upload
+  # ("No artifacts named github-pages"). A second job starts after the upload
+  # is finalized.
+  build:
     if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -41,5 +42,13 @@ jobs:
       - uses: actions/upload-pages-artifact@v4
         with:
           path: dashboard/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v4
