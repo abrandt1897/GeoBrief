@@ -159,3 +159,10 @@ Kpler data cited in a Reuters column on Nov. 24 put Middle East crude exports at
 
 - As a total-oil estimate (crude x 1.19), that is about 16.6 Mbd for the week to Nov. 22. It is on a crude basis, so it is not directly comparable with the 15.0 Mbd total-oil briefing figure through Nov. 16, which may also still be revised up.
 - No Kpler Hormuz figure for the same week has surfaced; Central Command's claim that more than 108 million barrels moved through the strait last week is not a tracker reading.
+
+## Kpler: Hormuz clearance firms to 9.4 Mbd (Nov 25)
+
+Kpler's Nov. 20 market note put Total Hormuz Clearance (strait transits excluding Iranian barrels, plus Gulf of Oman tanker transfers) at 9.4 Mbd in the seven days to Nov. 18, about 55% of the 17.1 Mbd prewar level, up from the preliminary 8.5 Mbd through Nov. 16 as the data firmed.
+
+- The same note has Yanbu loading under 3 Mbd, with no window given, so it is not recorded as an East-West reading.
+- The Houthis' Nov. 25 claimed strike on Ras Tanura, the main Saudi Gulf export terminal, has no tracker reading on loadings yet; a week-long outage there would count as escalated war.
