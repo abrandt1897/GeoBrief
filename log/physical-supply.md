@@ -166,3 +166,11 @@ Kpler's Nov. 20 market note put Total Hormuz Clearance (strait transits excludin
 
 - The same note has Yanbu loading under 3 Mbd, with no window given, so it is not recorded as an East-West reading.
 - The Houthis' Nov. 25 claimed strike on Ras Tanura, the main Saudi Gulf export terminal, has no tracker reading on loadings yet; a week-long outage there would count as escalated war.
+
+## Kpler: Hormuz clearance steady at 9.25 Mbd (Nov 27)
+
+Kpler data reported by The National put Total Hormuz Clearance at 9.25 Mbd in the seven days to Nov. 24, about 54% of the 17.14 Mbd prewar level and little changed from 9.4 Mbd in the seven days to Nov. 18.
+
+- The Houthi strikes on Ras Tanura, Jazan and Jeddah and the IRGC's unconfirmed mine claims have not yet cut measured strait flows further.
+- A shipping source told CNN that Ras Tanura loadings have been suspended since Nov. 25; no tracker or Aramco statement confirms it, and a seven-day outage there would count as escalated war.
+- No new Kpler Gulf total or East-West/Yanbu reading this week.
